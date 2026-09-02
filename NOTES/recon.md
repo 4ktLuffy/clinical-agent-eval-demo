@@ -105,8 +105,8 @@ Each is a yes/no for you. Numbered for reply.
    across body systems) and operational (weak retrieval, tool error). Score them separately.
 
 3. **Judge only where they use a judge.** Their published methodology uses LLM-as-judge for
-   "non-safety open-ended benchmarks" only; safety runs against clinician gold labels and
-   reports accuracy. So: deterministic label-based precision/recall for refusal and
+   "non-safety open-ended benchmarks" only; safety runs against labels their licensed
+   clinicians annotate, and reports accuracy. So: deterministic label-based precision/recall for refusal and
    escalation, LLM-as-judge for faithfulness/citation quality only. In real mode, report
    judge-vs-label agreement (Cohen's κ) — earning their "calibrate the judge" language and
    making the mock-vs-real honesty structural rather than a disclaimer.
