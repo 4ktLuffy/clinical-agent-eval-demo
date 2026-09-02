@@ -40,16 +40,44 @@ def prf(tp: int, fp: int, fn: int) -> tuple[float, float, float]:
     return (precision, recall, f1)
 
 
-def cohens_kappa(a: Sequence[bool], b: Sequence[bool]) -> float:
+LEVELS = (0.0, 0.5, 1.0)
+
+
+def bucket(score: float) -> float:
+    """Map a continuous 0-1 score onto the three levels the labels use."""
+    if score < 1 / 3:
+        return 0.0
+    if score < 2 / 3:
+        return 0.5
+    return 1.0
+
+
+def cohens_kappa(a: Sequence[object], b: Sequence[object]) -> float:
+    """Cohen's kappa over any hashable categories, not just booleans.
+
+    Returns 0.0 when the raters agree only as much as chance predicts, and when the
+    denominator vanishes -- which happens when one rater uses a single category for
+    every item. On a small, skewed set that is common, so read kappa next to the
+    raw agreement rate rather than on its own.
+    """
     if len(a) != len(b) or not a:
         return 0.0
     n = len(a)
     observed = sum(1 for x, y in zip(a, b) if x == y) / n
-    pa, pb = sum(a) / n, sum(b) / n
-    expected = pa * pb + (1 - pa) * (1 - pb)
-    if expected == 1.0:
+    categories = set(a) | set(b)
+    expected = sum(
+        (sum(1 for x in a if x == c) / n) * (sum(1 for y in b if y == c) / n)
+        for c in categories
+    )
+    if expected >= 1.0:
         return 0.0
     return (observed - expected) / (1 - expected)
+
+
+def agreement(a: Sequence[object], b: Sequence[object]) -> float:
+    if len(a) != len(b) or not a:
+        return 0.0
+    return sum(1 for x, y in zip(a, b) if x == y) / len(a)
 
 
 def scored(pred: Sequence[bool], exp: Sequence[bool]) -> dict:

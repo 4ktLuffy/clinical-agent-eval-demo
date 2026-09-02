@@ -27,7 +27,7 @@ from clinical_agent.telemetry import (
 )
 from clinical_agent.tools import EHRTools
 from eval.judge import build_judge
-from eval.stats import cohens_kappa, scored
+from eval.stats import agreement, bucket, cohens_kappa, scored
 
 ROOT = Path(__file__).resolve().parents[2]
 STAGES = ("retrieve", "tool", "draft", "guardrail")
@@ -100,7 +100,7 @@ def evaluate(
         [t["labels"]["operational_escalation"] for t in turns],
     )
 
-    judged, judge_scores, rule_scores, expect_faithful = [], [], [], []
+    judged, judge_scores, rule_scores, label_faith, label_cite = [], [], [], [], []
     for result, turn in zip(results, turns):
         # Judge only the open-ended, non-safety output: turns the guardrail left alone,
         # where the model's draft stands on its own as the answer. Scoring faithfulness on
@@ -114,7 +114,8 @@ def evaluate(
         rule_scores.append(
             rule_judge.score(result.draft, result.context, list(result.citations), result.chunk_texts)
         )
-        expect_faithful.append(turn["labels"]["expect_faithful"])
+        label_faith.append(turn["labels"]["faithfulness_label"])
+        label_cite.append(turn["labels"]["citation_quality_label"])
 
     mean = lambda xs: sum(xs) / len(xs) if xs else 0.0
     faithfulness = mean([s.faithfulness for s in judge_scores])
@@ -124,19 +125,39 @@ def evaluate(
         / max(1, sum(1 for r in results if r.used_corpus))
     )
 
-    kappa = None
-    if mode == "real" and judged:
-        kappa = {
-            "vs_rule_judge": cohens_kappa(
-                [s.faithful for s in judge_scores], [s.faithful for s in rule_scores]
-            ),
-            "vs_expected_labels": cohens_kappa(
-                [s.faithful for s in judge_scores], expect_faithful
-            ),
-            "n": len(judged),
+    # Calibration is the judge against labels a person assigned by reading each answer
+    # next to the chunks it retrieved. Inter-judge agreement is a different, weaker thing
+    # and is never reported as calibration.
+    calibration = inter_judge = None
+    if judged and all(x is not None for x in label_faith):
+        jf = [bucket(s.faithfulness) for s in judge_scores]
+        jc = [bucket(s.citation_quality) for s in judge_scores]
+        calibration = {
             "judge": judge.name,
+            "n": len(judged),
             "run_date": date.today().isoformat(),
+            "faithfulness": {
+                "kappa": cohens_kappa(jf, label_faith),
+                "agreement": agreement(jf, label_faith),
+            },
+            "citation_quality": {
+                "kappa": cohens_kappa(jc, label_cite),
+                "agreement": agreement(jc, label_cite),
+            },
         }
+        if mode == "real":
+            rf = [bucket(s.faithfulness) for s in rule_scores]
+            rc = [bucket(s.citation_quality) for s in rule_scores]
+            inter_judge = {
+                "faithfulness": {
+                    "kappa": cohens_kappa(jf, rf),
+                    "agreement": agreement(jf, rf),
+                },
+                "citation_quality": {
+                    "kappa": cohens_kappa(jc, rc),
+                    "agreement": agreement(jc, rc),
+                },
+            }
 
     latency = {
         "total": {
@@ -181,7 +202,8 @@ def evaluate(
         "citation_quality_mean": citation_quality,
         "citation_presence_rate": citation_presence,
         "judged_turns": len(judged),
-        "kappa": kappa,
+        "calibration": calibration,
+        "inter_judge_agreement": inter_judge,
         "latency_ms": latency,
         "anomaly_thresholds": thresholds_table(),
         "anomalies": alerts,
@@ -247,15 +269,34 @@ def render(r: dict, turns: list[dict]) -> str:
         f"- mean citation quality: {r['citation_quality_mean']:.2f}",
         f"- citation presence rate: {_pct(r['citation_presence_rate'])}",
     ]
-    if r["kappa"]:
-        k = r["kappa"]
+    if r["calibration"]:
+        c = r["calibration"]
         lines += [
             "",
-            f"- Cohen's kappa, LLM judge vs the deterministic rule judge on the same "
-            f"answers: {k['vs_rule_judge']:.2f} (n={k['n']})",
-            f"- Cohen's kappa, LLM judge vs our expected labels: "
-            f"{k['vs_expected_labels']:.2f} (n={k['n']})",
-            f"- judge model `{k['judge']}`, run {k['run_date']}",
+            "### Judge calibration",
+            "",
+            f"Judge `{c['judge']}` against labels a person assigned by reading each answer "
+            f"next to its retrieved chunks, on the 0 / 0.5 / 1 scale. n={c['n']}, run "
+            f"{c['run_date']}.",
+            "",
+            "| Dimension | Cohen's kappa | Raw agreement |",
+            "|---|---:|---:|",
+            f"| faithfulness | {c['faithfulness']['kappa']:.2f} | "
+            f"{_pct(c['faithfulness']['agreement'])} |",
+            f"| citation quality | {c['citation_quality']['kappa']:.2f} | "
+            f"{_pct(c['citation_quality']['agreement'])} |",
+            "",
+            "n=11 and the faithfulness labels are skewed to one level, so kappa is unstable "
+            "here and is worth reading next to the raw agreement rather than alone.",
+        ]
+    if r["inter_judge_agreement"]:
+        i = r["inter_judge_agreement"]
+        lines += [
+            "",
+            "Inter-judge agreement (LLM judge vs the deterministic rule judge on the same "
+            f"answers) -- not a calibration number: faithfulness kappa "
+            f"{i['faithfulness']['kappa']:.2f}, citation quality kappa "
+            f"{i['citation_quality']['kappa']:.2f}.",
         ]
     lines += ["", "## Latency", "", "| Stage | p50 ms | p95 ms |", "|---|---:|---:|"]
     for stage in ("total",) + STAGES:

@@ -12,7 +12,10 @@ import json
 import logging
 from pathlib import Path
 
-from mcp.server.fastmcp import FastMCP
+try:  # mcp 1.x
+    from mcp.server.fastmcp import FastMCP as _ServerImpl
+except ImportError:  # mcp 2.x renamed the same class
+    from mcp.server.mcpserver import MCPServer as _ServerImpl
 
 # The one injected failure in the whole repo. It is what gives the operational
 # escalation path and the tool-error-burst anomaly rule something real to see.
@@ -33,10 +36,10 @@ def _load(name: str) -> dict:
     return json.loads((_data_dir() / name).read_text(encoding="utf-8"))
 
 
-mcp = FastMCP("synthetic-ehr")
+server = _ServerImpl("synthetic-ehr")
 
 
-@mcp.tool()
+@server.tool()
 def patient_lookup(mrn: str) -> dict:
     """Look up a synthetic Patient resource by medical record number."""
     patients = _load("patients.json")["patients"]
@@ -47,7 +50,7 @@ def patient_lookup(mrn: str) -> dict:
     return {"ok": False, "error": f"no patient with MRN {mrn}"}
 
 
-@mcp.tool()
+@server.tool()
 def list_slots(specialty: str) -> dict:
     """List free synthetic Slot resources for a specialty."""
     slots = _load("appointments.json")["slots"]
@@ -57,7 +60,7 @@ def list_slots(specialty: str) -> dict:
     return {"ok": True, "slots": free}
 
 
-@mcp.tool()
+@server.tool()
 def book_appointment(mrn: str, slot_id: str) -> dict:
     """Book a synthetic Appointment against a Slot."""
     if mrn == FAILING_MRN:
@@ -85,4 +88,4 @@ if __name__ == "__main__":
     # The server is a subprocess of the eval run; its per-request logging would
     # otherwise interleave with the scorecard on the terminal.
     logging.getLogger().setLevel(logging.WARNING)
-    mcp.run()
+    server.run()

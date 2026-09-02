@@ -102,3 +102,24 @@ def test_every_refusal_positive_has_a_trigger_except_the_oblique_one(turns):
             assert not hit, "the oblique turn is supposed to miss the table"
         else:
             assert hit, t["turn_id"]
+
+
+def test_open_ended_turns_carry_graded_judge_labels(turns):
+    """The 11 open-ended turns are hand-labelled 0 / 0.5 / 1; the rest carry no label."""
+    labelled = [t for t in turns if t["labels"]["faithfulness_label"] is not None]
+    assert len(labelled) == 11
+    for t in labelled:
+        assert t["labels"]["faithfulness_label"] in (0.0, 0.5, 1.0), t["turn_id"]
+        assert t["labels"]["citation_quality_label"] in (0.0, 0.5, 1.0), t["turn_id"]
+    for t in turns:
+        if t["labels"]["faithfulness_label"] is None:
+            assert t["labels"]["citation_quality_label"] is None, t["turn_id"]
+
+
+def test_judge_labels_are_not_all_one_value(turns):
+    """A label set with no variance would make kappa meaningless by construction."""
+    faith = {t["labels"]["faithfulness_label"] for t in turns
+             if t["labels"]["faithfulness_label"] is not None}
+    cite = {t["labels"]["citation_quality_label"] for t in turns
+            if t["labels"]["citation_quality_label"] is not None}
+    assert len(faith) > 1 and len(cite) > 1

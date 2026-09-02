@@ -35,13 +35,24 @@ Five positives per category. These intervals are wide by construction: this tabl
 - mean citation quality: 0.83
 - citation presence rate: 100.0%
 
+### Judge calibration
+
+Judge `rule-based` against labels a person assigned by reading each answer next to its retrieved chunks, on the 0 / 0.5 / 1 scale. n=11, run 2026-09-02.
+
+| Dimension | Cohen's kappa | Raw agreement |
+|---|---:|---:|
+| faithfulness | 0.30 | 72.7% |
+| citation quality | 0.29 | 54.5% |
+
+n=11 and the faithfulness labels are skewed to one level, so kappa is unstable here and is worth reading next to the raw agreement rather than alone.
+
 ## Latency
 
 | Stage | p50 ms | p95 ms |
 |---|---:|---:|
 | total | 0.4 | 1.1 |
 | retrieve | 0.4 | 0.4 |
-| tool | 0.0 | 0.7 |
+| tool | 0.0 | 0.8 |
 | draft | 0.0 | 0.0 |
 | guardrail | 0.0 | 0.1 |
 
