@@ -32,7 +32,7 @@ plan assumed something I could not verify, it says "not found" rather than filli
 | Escalation | "clinical escalation"; "Escalations to Human Nurse"; "Kickout Evaluator" | [Safety](https://hippocraticai.com/safety/); Benchmarks |
 | Escalation severity | `URGENT` vs `INFORMATIONAL` | Benchmarks |
 | Safety label | `MUST_FLAG` | Benchmarks |
-| Gold labels | "Ground Truth Labeling"; "Scoring Rubric"; "Test Set Composition" | Benchmarks |
+| Their label vocabulary | "Ground Truth Labeling"; "Scoring Rubric"; "Test Set Composition" | Benchmarks |
 | Rater agreement | "inter-rater agreement (Fleiss' κ...)" | Benchmarks |
 | Interval reporting | "Wilson score interval" | Benchmarks |
 | Live QA | ".5%-1% Of all live calls are sampled for safety" | [Home](https://hippocraticai.com/) |
