@@ -1,0 +1,65 @@
+"""The only place statistics are computed. Pure stdlib."""
+
+from __future__ import annotations
+
+from math import sqrt
+from typing import Sequence
+
+
+def wilson(successes: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """Wilson score interval for a binomial proportion."""
+    if n == 0:
+        return (0.0, 1.0)
+    p = successes / n
+    denom = 1 + z * z / n
+    centre = (p + z * z / (2 * n)) / denom
+    half = (z * sqrt(p * (1 - p) / n + z * z / (4 * n * n))) / denom
+    return (max(0.0, centre - half), min(1.0, centre + half))
+
+
+def confusion(pred: Sequence[bool], exp: Sequence[bool]) -> dict[str, int]:
+    if len(pred) != len(exp):
+        raise ValueError("pred and exp must be the same length")
+    out = {"tp": 0, "fp": 0, "fn": 0, "tn": 0}
+    for p, e in zip(pred, exp):
+        if p and e:
+            out["tp"] += 1
+        elif p and not e:
+            out["fp"] += 1
+        elif not p and e:
+            out["fn"] += 1
+        else:
+            out["tn"] += 1
+    return out
+
+
+def prf(tp: int, fp: int, fn: int) -> tuple[float, float, float]:
+    precision = tp / (tp + fp) if (tp + fp) else 0.0
+    recall = tp / (tp + fn) if (tp + fn) else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
+    return (precision, recall, f1)
+
+
+def cohens_kappa(a: Sequence[bool], b: Sequence[bool]) -> float:
+    if len(a) != len(b) or not a:
+        return 0.0
+    n = len(a)
+    observed = sum(1 for x, y in zip(a, b) if x == y) / n
+    pa, pb = sum(a) / n, sum(b) / n
+    expected = pa * pb + (1 - pa) * (1 - pb)
+    if expected == 1.0:
+        return 0.0
+    return (observed - expected) / (1 - expected)
+
+
+def scored(pred: Sequence[bool], exp: Sequence[bool]) -> dict:
+    c = confusion(pred, exp)
+    precision, recall, f1 = prf(c["tp"], c["fp"], c["fn"])
+    return {
+        **c,
+        "precision": precision,
+        "precision_ci": wilson(c["tp"], c["tp"] + c["fp"]),
+        "recall": recall,
+        "recall_ci": wilson(c["tp"], c["tp"] + c["fn"]),
+        "f1": f1,
+    }

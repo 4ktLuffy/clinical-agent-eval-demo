@@ -1,0 +1,64 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: PHI lint
+        run: python scripts/phi_lint.py
+      - name: Tests
+        run: pytest -q
+      - name: Eval, mock path
+        run: python -m eval.run --model mock
+        env:
+          PYTHONPATH: src
+      - name: Mutation check
+        run: python -m eval.mutation
+        env:
+          PYTHONPATH: src
+      - name: Demo
+        run: ./scripts/demo.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reports-mock
+          path: reports/
+
+  real-model:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for a key
+        id: key
+        run: echo "present=${{ secrets.ANTHROPIC_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-python@v5
+        if: steps.key.outputs.present == 'true'
+        with:
+          python-version: "3.12"
+      - name: Install
+        if: steps.key.outputs.present == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,real]"
+      - name: Eval, real model
+        if: steps.key.outputs.present == 'true'
+        run: python -m eval.run --model real --out reports-real
+        env:
+          PYTHONPATH: src
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: steps.key.outputs.present == 'true'
+        with:
+          name: reports-real
+          path: reports-real/

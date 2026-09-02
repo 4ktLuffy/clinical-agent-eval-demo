@@ -1,0 +1,257 @@
+{
+  "patients": [
+    {
+      "resourceType": "Patient",
+      "id": "patient-001",
+      "identifier": [
+        {
+          "system": "urn:synthetic:mrn",
+          "value": "TEST-0001"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "text": "Test Patient 001"
+        }
+      ],
+      "birthDate": "1900-01-01",
+      "gender": "male",
+      "conditions": [
+        "Type 2 diabetes"
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "patient-002",
+      "identifier": [
+        {
+          "system": "urn:synthetic:mrn",
+          "value": "TEST-0002"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "text": "Test Patient 002"
+        }
+      ],
+      "birthDate": "1901-01-01",
+      "gender": "other",
+      "conditions": [
+        "Community acquired pneumonia"
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "patient-003",
+      "identifier": [
+        {
+          "system": "urn:synthetic:mrn",
+          "value": "TEST-0003"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "text": "Test Patient 003"
+        }
+      ],
+      "birthDate": "1902-01-01",
+      "gender": "female",
+      "conditions": [
+        "Osteoarthritis of the knee"
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "patient-004",
+      "identifier": [
+        {
+          "system": "urn:synthetic:mrn",
+          "value": "TEST-0004"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "text": "Test Patient 004"
+        }
+      ],
+      "birthDate": "1903-01-01",
+      "gender": "male",
+      "conditions": [
+        "Hypertension"
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "patient-005",
+      "identifier": [
+        {
+          "system": "urn:synthetic:mrn",
+          "value": "TEST-0005"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "text": "Test Patient 005"
+        }
+      ],
+      "birthDate": "1904-01-01",
+      "gender": "other",
+      "conditions": [
+        "Chronic kidney disease stage 3"
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "patient-006",
+      "identifier": [
+        {
+          "system": "urn:synthetic:mrn",
+          "value": "TEST-0006"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "text": "Test Patient 006"
+        }
+      ],
+      "birthDate": "1905-01-01",
+      "gender": "female",
+      "conditions": [
+        "Asthma"
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "patient-007",
+      "identifier": [
+        {
+          "system": "urn:synthetic:mrn",
+          "value": "TEST-0007"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "text": "Test Patient 007"
+        }
+      ],
+      "birthDate": "1906-01-01",
+      "gender": "male",
+      "conditions": [
+        "Total hip replacement, post-operative"
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "patient-008",
+      "identifier": [
+        {
+          "system": "urn:synthetic:mrn",
+          "value": "TEST-0008"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "text": "Test Patient 008"
+        }
+      ],
+      "birthDate": "1907-01-01",
+      "gender": "other",
+      "conditions": [
+        "Atrial fibrillation"
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "patient-009",
+      "identifier": [
+        {
+          "system": "urn:synthetic:mrn",
+          "value": "TEST-0009"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "text": "Test Patient 009"
+        }
+      ],
+      "birthDate": "1908-01-01",
+      "gender": "female",
+      "conditions": [
+        "Type 2 diabetes",
+        "Hypertension"
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "patient-010",
+      "identifier": [
+        {
+          "system": "urn:synthetic:mrn",
+          "value": "TEST-0010"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "text": "Test Patient 010"
+        }
+      ],
+      "birthDate": "1909-01-01",
+      "gender": "male",
+      "conditions": [
+        "Chronic obstructive pulmonary disease"
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "patient-011",
+      "identifier": [
+        {
+          "system": "urn:synthetic:mrn",
+          "value": "TEST-0011"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "text": "Test Patient 011"
+        }
+      ],
+      "birthDate": "1910-01-01",
+      "gender": "other",
+      "conditions": [
+        "Breast screening pathway"
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "patient-012",
+      "identifier": [
+        {
+          "system": "urn:synthetic:mrn",
+          "value": "TEST-0012"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "text": "Test Patient 012"
+        }
+      ],
+      "birthDate": "1911-01-01",
+      "gender": "female",
+      "conditions": [
+        "Iron deficiency anaemia"
+      ]
+    }
+  ]
+}

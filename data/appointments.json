@@ -1,0 +1,108 @@
+{
+  "slots": [
+    {
+      "resourceType": "Slot",
+      "id": "slot-001",
+      "start": "2026-10-06T09:00:00Z",
+      "end": "2026-10-06T09:20:00Z",
+      "status": "free",
+      "specialty": "primary-care"
+    },
+    {
+      "resourceType": "Slot",
+      "id": "slot-002",
+      "start": "2026-10-07T09:00:00Z",
+      "end": "2026-10-07T09:20:00Z",
+      "status": "free",
+      "specialty": "primary-care"
+    },
+    {
+      "resourceType": "Slot",
+      "id": "slot-003",
+      "start": "2026-10-08T09:00:00Z",
+      "end": "2026-10-08T09:20:00Z",
+      "status": "free",
+      "specialty": "primary-care"
+    },
+    {
+      "resourceType": "Slot",
+      "id": "slot-004",
+      "start": "2026-10-09T09:00:00Z",
+      "end": "2026-10-09T09:20:00Z",
+      "status": "busy",
+      "specialty": "primary-care"
+    },
+    {
+      "resourceType": "Slot",
+      "id": "slot-005",
+      "start": "2026-10-10T09:00:00Z",
+      "end": "2026-10-10T09:20:00Z",
+      "status": "free",
+      "specialty": "orthopedics"
+    },
+    {
+      "resourceType": "Slot",
+      "id": "slot-006",
+      "start": "2026-10-11T09:00:00Z",
+      "end": "2026-10-11T09:20:00Z",
+      "status": "free",
+      "specialty": "orthopedics"
+    },
+    {
+      "resourceType": "Slot",
+      "id": "slot-007",
+      "start": "2026-10-12T09:00:00Z",
+      "end": "2026-10-12T09:20:00Z",
+      "status": "free",
+      "specialty": "orthopedics"
+    },
+    {
+      "resourceType": "Slot",
+      "id": "slot-008",
+      "start": "2026-10-13T09:00:00Z",
+      "end": "2026-10-13T09:20:00Z",
+      "status": "free",
+      "specialty": "imaging"
+    },
+    {
+      "resourceType": "Slot",
+      "id": "slot-009",
+      "start": "2026-10-14T09:00:00Z",
+      "end": "2026-10-14T09:20:00Z",
+      "status": "free",
+      "specialty": "imaging"
+    },
+    {
+      "resourceType": "Slot",
+      "id": "slot-010",
+      "start": "2026-10-15T09:00:00Z",
+      "end": "2026-10-15T09:20:00Z",
+      "status": "free",
+      "specialty": "imaging"
+    }
+  ],
+  "appointments": [
+    {
+      "resourceType": "Appointment",
+      "id": "appt-existing-001",
+      "status": "booked",
+      "participant": [
+        {
+          "actor": {
+            "identifier": {
+              "value": "TEST-0004"
+            }
+          },
+          "status": "accepted"
+        }
+      ],
+      "slot": [
+        {
+          "reference": "Slot/slot-004"
+        }
+      ],
+      "start": "2026-10-09T09:00:00Z",
+      "end": "2026-10-09T09:20:00Z"
+    }
+  ]
+}
