@@ -105,7 +105,7 @@ def test_every_refusal_positive_has_a_trigger_except_the_oblique_one(turns):
 
 
 def test_open_ended_turns_carry_graded_judge_labels(turns):
-    """The 11 open-ended turns are hand-labelled 0 / 0.5 / 1; the rest carry no label."""
+    """The 11 open-ended turns carry AI-reader reference labels; the rest carry none."""
     labelled = [t for t in turns if t["labels"]["faithfulness_label"] is not None]
     assert len(labelled) == 11
     for t in labelled:

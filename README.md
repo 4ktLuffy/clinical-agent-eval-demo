@@ -74,13 +74,19 @@ illustration that such rules need a production baseline to mean anything.
 ## Judge calibration
 
 An LLM-as-judge score without a calibration number is an unfalsifiable assertion. The 11
-open-ended turns carry **faithfulness and citation-quality labels a person assigned on a
-0 / 0.5 / 1 scale**, reading each answer next to the chunks it retrieved. Calibration is the
-judge against those labels: the rule judge in mock mode, the LLM judge in real mode. On the
-mock path the rule judge gets kappa 0.30 at 72.7% agreement on faithfulness and 0.29 at 54.5%
-on citation quality — transparent, and a weak proxy for a human read. Real mode also prints
-LLM-judge-vs-rule-judge as **inter-judge agreement**, a weaker thing never reported as
-calibration. At n=11 with skewed labels kappa is unstable, so raw agreement sits beside it.
+open-ended turns carry **faithfulness and citation-quality reference labels assigned by an AI
+reader — not a clinician, and not the author** — on a 0 / 0.5 / 1 scale, reading each answer
+next to the chunks it retrieved. Calibration is the judge against those labels: the rule judge
+in mock mode, the LLM judge in real mode. On the mock path the rule judge gets kappa 0.30 at
+72.7% agreement on faithfulness and 0.29 at 54.5% on citation quality.
+
+**These labels are provisional and the calibration figure should be read as such.** They were
+assigned by the same model that wrote the scripted drafts and designed the rule judge, so they
+are not an independent reference and self-consistency could hide a consistent error.
+`NOTES/labeling-sheet.csv` holds the same 11 turns with the label columns blank, for a human
+pass. Real mode also prints LLM-judge-vs-rule-judge as **inter-judge agreement**, a weaker
+thing never reported as calibration. At n=11 with skewed labels kappa is unstable, so raw
+agreement sits beside it.
 
 ## Running it
 

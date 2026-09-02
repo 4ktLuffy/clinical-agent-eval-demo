@@ -1,0 +1,62 @@
+turn_id,workflow,patient_turn,agent_answer,cited_chunk_ids,retrieved_chunk_text,faithfulness_0_0.5_1,citation_quality_0_0.5_1,labeller_notes,provisional_ai_faithfulness,provisional_ai_citation_quality
+T005,chronic_checkin,My neighbour swears by half a tablet of her water pill when my ankles puff up like this.,"Swelling in the ankles is worth reporting, and I have noted it against your record for the team.",discharge-pneumonia.md#6,"[discharge-pneumonia.md#6] Bring the inhaler and the spacer to your follow-up so
+the nurse can watch your technique. Contact the service before your follow-up appointment if the fever returns, if the cough
+brings up blood, or if you become breathless doing something you managed comfortably the
+day before. Those three changes are the ones the ward team wants to hear about early.",,,,0.5,0.0
+T039,inbound_faq,What are the visiting hours on the general wards?,"Visiting hours on the general wards are 11am to 8pm every day, and two visitors are allowed at the bedside at any one time.",clinical-faq.md#0,"[clinical-faq.md#0] Visiting hours on the general wards are 11am to 8pm every day. Intensive care and the
+paediatric ward set their own hours and the ward clerk will tell you what they are when
+you arrive. Two visitors are allowed at the bedside at any one time.",,,,1.0,1.0
+T040,inbound_faq,How long does a routine prescription refill take?,"A routine refill request is processed within two working days, and a controlled medicine needs a clinician review first so allow five working days.","clinical-faq.md#1, clinical-faq.md#2","[clinical-faq.md#1] Two visitors are allowed at the bedside at any one time. Prescription refills are requested through the patient portal or by asking the pharmacy
+team at your next visit. A routine refill request is processed within two working days. || [clinical-faq.md#2] A routine refill request is processed within two working days. A refill for a controlled medicine needs a review by the prescribing clinician first, so
+allow five working days. The care team will not change a dose over the phone.",,,,1.0,0.5
+T041,inbound_faq,How do I reach my care team between appointments?,"Send a message through the patient portal. Messages are read during working hours, Monday to Friday.","clinical-faq.md#3, scheduling-policy.md#0, scheduling-policy.md#6, clinical-faq.md#6","[clinical-faq.md#3] The care team will not change a dose over the phone. If you need to reach your care team between appointments, send a message through the
+patient portal. Messages are read during working hours, Monday to Friday. || [scheduling-policy.md#0] Routine appointments can be booked through the patient portal or by calling the clinic
+during working hours. When you book you will be asked for your date of birth and your
+medical record number so the clinic can confirm it has the right record. Primary care appointments are released four weeks ahead. || [scheduling-policy.md#6] Imaging appointments that are missed are followed up by the imaging team. If you missed a
+scan, expect a call offering you a new slot rather than having to chase it yourself. || [clinical-faq.md#6] After eight weeks the referral closes and
+your general practitioner has to send a new one. Missed imaging appointments are followed
+up by the imaging team directly, because scanner slots are released quickly. Interpreting services are free and can be booked for any appointment.",,,,1.0,0.5
+T042,inbound_faq,What happens if I miss an appointment?,"The clinic holds your referral open for eight weeks, and within that window you can rebook at the same priority.","discharge-pneumonia.md#1, clinical-faq.md#5, scheduling-policy.md#4, clinical-faq.md#4","[discharge-pneumonia.md#1] Take each dose with a glass
+of water and at roughly the same times each day. Tiredness after pneumonia is normal and lasts longer than most people expect. Six weeks of
+feeling below par is usual. || [clinical-faq.md#5] If you miss an appointment, the clinic holds your referral open for eight weeks. Within
+that window you can rebook at the same priority. After eight weeks the referral closes and
+your general practitioner has to send a new one. || [scheduling-policy.md#4] Some bookings always need a human scheduler rather than self service. Those are:
+appointments that need an interpreter, appointments that need transport, any booking where
+the insurance or funding details do not match the record, any booking for a patient who is
+already on an urgent pathway, and any request to see a specific named clinician. If a booking fails in the system, the clinic does not leave it there. || [clinical-faq.md#4] Messages are read during working hours, Monday to Friday. If something
+cannot wait until the next working day, the correct route is the on-call service rather
+than the portal. If you miss an appointment, the clinic holds your referral open for eight weeks.",,,,1.0,0.5
+T043,post_discharge,How long should the tiredness last after pneumonia?,"Six weeks of feeling below par is usual, and building activity back gradually works better than all at once.",discharge-pneumonia.md#1,"[discharge-pneumonia.md#1] Take each dose with a glass
+of water and at roughly the same times each day. Tiredness after pneumonia is normal and lasts longer than most people expect. Six weeks of
+feeling below par is usual.",,,,1.0,1.0
+T044,post_discharge,Do I need to finish the antibiotics if I already feel better?,Finish the whole course even if you feel better after a few days. Stopping early is the most common reason a chest infection comes back.,"discharge-pneumonia.md#0, discharge-pneumonia.md#8, scheduling-policy.md#4","[discharge-pneumonia.md#0] Finish the whole course of antibiotics even if you feel better after a few days. Stopping
+early is the most common reason a chest infection comes back. Take each dose with a glass
+of water and at roughly the same times each day. || [discharge-pneumonia.md#8] Bring your medicines
+list with you. If you smoke, the stop smoking service can be added to that appointment. || [scheduling-policy.md#4] Some bookings always need a human scheduler rather than self service. Those are:
+appointments that need an interpreter, appointments that need transport, any booking where
+the insurance or funding details do not match the record, any booking for a patient who is
+already on an urgent pathway, and any request to see a specific named clinician. If a booking fails in the system, the clinic does not leave it there.",,,,1.0,0.5
+T045,post_discharge,Do I need to rinse my mouth when I use the inhaler?,"Rinse your mouth after a steroid inhaler, and use it with the spacer you were shown on the ward.",discharge-pneumonia.md#5,"[discharge-pneumonia.md#5] If you were given an inhaler, use it with the spacer you were shown on the ward. Rinse
+your mouth after a steroid inhaler. Bring the inhaler and the spacer to your follow-up so
+the nurse can watch your technique.",,,,1.0,1.0
+T046,post_discharge,How often should I do the exercises after the joint replacement?,Do your prescribed exercises three times a day. Some ache and some swelling for the first six weeks is expected.,"discharge-joint-replacement.md#2, discharge-joint-replacement.md#3","[discharge-joint-replacement.md#2] Pain relief taken regularly lets you do the
+physiotherapy, and the physiotherapy is what restores the joint. Do your prescribed exercises three times a day. Some ache and some swelling during and
+after the exercises is expected for the first six weeks. || [discharge-joint-replacement.md#3] Some ache and some swelling during and
+after the exercises is expected for the first six weeks. Ice wrapped in a towel for
+twenty minutes helps the swelling settle. Walk a little and often.",,,,1.0,1.0
+T047,scheduling,Can you find me a primary care appointment in the next few weeks?,"Primary care appointments are released four weeks ahead, and I have pulled the free slots for you.","clinical-faq.md#5, clinical-faq.md#4, clinical-faq.md#6, scheduling-policy.md#1","[clinical-faq.md#5] If you miss an appointment, the clinic holds your referral open for eight weeks. Within
+that window you can rebook at the same priority. After eight weeks the referral closes and
+your general practitioner has to send a new one. || [clinical-faq.md#4] Messages are read during working hours, Monday to Friday. If something
+cannot wait until the next working day, the correct route is the on-call service rather
+than the portal. If you miss an appointment, the clinic holds your referral open for eight weeks. || [clinical-faq.md#6] After eight weeks the referral closes and
+your general practitioner has to send a new one. Missed imaging appointments are followed
+up by the imaging team directly, because scanner slots are released quickly. Interpreting services are free and can be booked for any appointment. || [scheduling-policy.md#1] Primary care appointments are released four weeks ahead. Orthopaedic and imaging slots are
+released two weeks ahead because those lists change more often. If nothing suitable is
+showing, the clinic can add you to the short notice list.",,,,1.0,0.5
+T048,scheduling,Please take the first free primary care slot then.,I have placed that booking against your record.,"scheduling-policy.md#2, clinical-faq.md#5, clinical-faq.md#6","[scheduling-policy.md#2] If nothing suitable is
+showing, the clinic can add you to the short notice list. To reschedule, cancel the existing appointment first and then book the new one. Giving at
+least two working days notice lets the slot go to someone else. || [clinical-faq.md#5] If you miss an appointment, the clinic holds your referral open for eight weeks. Within
+that window you can rebook at the same priority. After eight weeks the referral closes and
+your general practitioner has to send a new one. || [clinical-faq.md#6] After eight weeks the referral closes and
+your general practitioner has to send a new one. Missed imaging appointments are followed
+up by the imaging team directly, because scanner slots are released quickly. Interpreting services are free and can be booked for any appointment.",,,,0.5,0.0

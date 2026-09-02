@@ -37,7 +37,9 @@ Five positives per category. These intervals are wide by construction: this tabl
 
 ### Judge calibration
 
-Judge `rule-based` against labels a person assigned by reading each answer next to its retrieved chunks, on the 0 / 0.5 / 1 scale. n=11, run 2026-09-02.
+Judge `rule-based` against reference labels assigned by an AI reader -- not a clinician, and not the author -- reading each answer next to its retrieved chunks, on the 0 / 0.5 / 1 scale. n=11, run 2026-09-02.
+
+These labels are provisional: they came from the same model that wrote the scripted drafts and designed the rule judge, so they are not an independent reference. See NOTES/labeling-sheet.csv for a blank sheet for a human pass.
 
 | Dimension | Cohen's kappa | Raw agreement |
 |---|---:|---:|
@@ -50,8 +52,8 @@ n=11 and the faithfulness labels are skewed to one level, so kappa is unstable h
 
 | Stage | p50 ms | p95 ms |
 |---|---:|---:|
-| total | 0.4 | 1.1 |
-| retrieve | 0.4 | 0.4 |
+| total | 0.4 | 1.2 |
+| retrieve | 0.4 | 0.5 |
 | tool | 0.0 | 0.8 |
 | draft | 0.0 | 0.0 |
 | guardrail | 0.0 | 0.1 |

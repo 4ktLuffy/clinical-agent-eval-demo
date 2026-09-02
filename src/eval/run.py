@@ -125,9 +125,11 @@ def evaluate(
         / max(1, sum(1 for r in results if r.used_corpus))
     )
 
-    # Calibration is the judge against labels a person assigned by reading each answer
-    # next to the chunks it retrieved. Inter-judge agreement is a different, weaker thing
-    # and is never reported as calibration.
+    # Calibration is the judge against reference labels assigned by an AI reader -- not a
+    # clinician, and not the author -- reading each answer next to the chunks it retrieved.
+    # Those labels came from the same model that wrote the scripted drafts and designed the
+    # rule judge, so they are provisional rather than an independent reference.
+    # Inter-judge agreement is a different, weaker thing and is never reported as calibration.
     calibration = inter_judge = None
     if judged and all(x is not None for x in label_faith):
         jf = [bucket(s.faithfulness) for s in judge_scores]
@@ -275,9 +277,13 @@ def render(r: dict, turns: list[dict]) -> str:
             "",
             "### Judge calibration",
             "",
-            f"Judge `{c['judge']}` against labels a person assigned by reading each answer "
-            f"next to its retrieved chunks, on the 0 / 0.5 / 1 scale. n={c['n']}, run "
-            f"{c['run_date']}.",
+            f"Judge `{c['judge']}` against reference labels assigned by an AI reader -- not "
+            f"a clinician, and not the author -- reading each answer next to its retrieved "
+            f"chunks, on the 0 / 0.5 / 1 scale. n={c['n']}, run {c['run_date']}.",
+            "",
+            "These labels are provisional: they came from the same model that wrote the "
+            "scripted drafts and designed the rule judge, so they are not an independent "
+            "reference. See NOTES/labeling-sheet.csv for a blank sheet for a human pass.",
             "",
             "| Dimension | Cohen's kappa | Raw agreement |",
             "|---|---:|---:|",
