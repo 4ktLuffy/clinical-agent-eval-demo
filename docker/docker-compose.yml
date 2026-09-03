@@ -1,8 +1,14 @@
 # HAPI FHIR JPA server backed by Postgres. Synthetic data only.
+#
+# The project name is explicit. Without it Compose derives the name from this file's
+# parent directory, which is "docker" in every checkout -- so a second clone silently
+# attached to the first clone's containers and database volume. Override with
+# COMPOSE_PROJECT_NAME to run two stacks side by side.
+name: ${COMPOSE_PROJECT_NAME:-clinical-agent-eval}
+
 services:
   db:
     image: postgres:16-alpine
-    container_name: cae-fhir-db
     environment:
       POSTGRES_DB: hapi
       POSTGRES_USER: hapi
@@ -17,7 +23,6 @@ services:
 
   fhir:
     image: hapiproject/hapi:latest
-    container_name: cae-fhir
     depends_on:
       db:
         condition: service_healthy
@@ -33,7 +38,8 @@ services:
       HAPI_FHIR_BULK_EXPORT_ENABLED: "false"
       JAVA_OPTS: "-Xmx2500m"
     ports:
-      - "8080:8080"
+      # Overridable so a second checkout can run alongside the first.
+      - "${FHIR_PORT:-8080}:8080"
     # No container healthcheck: the HAPI image is distroless, so there is no shell or curl
     # inside it to run one. Readiness is asserted from the host by `make fhir-up`, which is
     # where a deployment would check it anyway.

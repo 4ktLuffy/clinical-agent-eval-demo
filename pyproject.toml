@@ -11,8 +11,8 @@ license = { text = "MIT" }
 dependencies = ["mcp>=1.9,<3"]  # verified against 1.28.1 and 2.0.0
 
 [project.optional-dependencies]
-real = ["anthropic>=0.40"]
-dev = ["pytest>=8.0"]
+real = ["anthropic>=0.40,<1.0"]
+dev = ["pytest>=8.0,<10.0"]
 
 [tool.setuptools]
 package-dir = { "" = "src" }

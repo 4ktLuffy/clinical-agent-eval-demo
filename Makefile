@@ -5,7 +5,7 @@ PATIENTS ?= 200
 SEED ?= 20260902
 PY ?= .venv/bin/python
 
-.PHONY: fhir-up fhir-down fhir-check synthea load clean-fhir conversations eval smoke replay loadtest verify
+.PHONY: fhir-up fhir-down fhir-check synthea synthea-jar load clean-fhir readme-check conversations eval smoke replay loadtest verify
 
 fhir-up:  ## Bring up HAPI FHIR + Postgres and wait for the capability statement
 	$(COMPOSE) up -d
@@ -21,8 +21,13 @@ fhir-down:
 clean-fhir:  ## Destroys the synthetic database volume
 	$(COMPOSE) down -v
 
-synthea:  ## Generate synthetic FHIR R4 bundles. Runs Synthea in a JDK container; no host JRE needed.
-	@test -f tools/synthea-with-dependencies.jar || { echo "missing tools/synthea-with-dependencies.jar; run make synthea-jar"; exit 1; }
+synthea: tools/synthea-with-dependencies.jar  ## Generate synthetic FHIR R4 bundles. Runs Synthea in a JDK container; no host JRE needed.
+	@# make only checks that the jar exists. A download interrupted halfway leaves a
+	@# file that exists and is unusable, and the failure surfaces as an unhelpful
+	@# "Unable to access jarfile". Validate it here, before the container starts.
+	@python3 -c "import zipfile,sys;\
+	  sys.exit(0) if zipfile.is_zipfile('tools/synthea-with-dependencies.jar') else sys.exit(1)" \
+	  || { echo "tools/synthea-with-dependencies.jar is truncated or corrupt; rm it and rerun"; exit 1; }
 	mkdir -p data/synthea
 	docker run --rm -v "$(PWD)/tools:/tools" -v "$(PWD)/data/synthea:/out" \
 	  eclipse-temurin:21-jre java -jar /tools/synthea-with-dependencies.jar \
@@ -31,12 +36,21 @@ synthea:  ## Generate synthetic FHIR R4 bundles. Runs Synthea in a JDK container
 	  --exporter.practitioner.fhir.export false --generate.log_patients.detail none
 	@echo "bundles: $$(ls data/synthea/fhir/*.json 2>/dev/null | wc -l)"
 
-synthea-jar:
-	mkdir -p tools
-	curl -sSL -C - --retry 5 -o tools/synthea-with-dependencies.jar \
-	  https://github.com/synthetichealth/synthea/releases/download/master-branch-latest/synthea-with-dependencies.jar
+synthea-jar: tools/synthea-with-dependencies.jar  ## Fetch the Synthea jar (188 MB)
 
-load:  ## Load the generated bundles into HAPI
+tools/synthea-with-dependencies.jar:
+	mkdir -p tools
+	@# Download to a temp name and move only on success, so an interrupted download
+	@# never leaves something at the real path that make will treat as done.
+	curl -sSL -C - --retry 5 --retry-delay 3 -o $@.part \
+	  https://github.com/synthetichealth/synthea/releases/download/master-branch-latest/synthea-with-dependencies.jar
+	@python3 -c "import zipfile,sys;\
+	  sys.exit(0) if zipfile.is_zipfile('$@.part') else sys.exit(1)" \
+	  || { echo "downloaded jar is not a valid archive"; rm -f $@.part; exit 1; }
+	mv $@.part $@
+	@echo "  jar verified"
+
+load:  ## Load the generated bundles into HAPI. Refuses to load on top of existing data.
 	$(PY) scripts/load_synthea.py --fhir-url $(FHIR_URL) --bundle-dir data/synthea/fhir
 
 fhir-check:  ## Assert the loaded dataset looks the way the agent expects

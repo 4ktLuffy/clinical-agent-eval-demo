@@ -18,6 +18,19 @@ from pathlib import Path
 TIMEOUT_S = 300
 
 
+def _patient_count(fhir_url: str) -> int:
+    """Patients already on the server, or 0 if it cannot be asked."""
+    try:
+        request = urllib.request.Request(
+            f"{fhir_url}/Patient?_summary=count",
+            headers={"Accept": "application/fhir+json"},
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return int(json.loads(response.read()).get("total", 0))
+    except Exception:  # noqa: BLE001 - an unreachable server is the caller's problem
+        return 0
+
+
 def post_bundle(fhir_url: str, bundle: dict) -> tuple[bool, str]:
     body = json.dumps(bundle).encode("utf-8")
     request = urllib.request.Request(
@@ -41,7 +54,23 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--fhir-url", default="http://localhost:8080/fhir")
     parser.add_argument("--bundle-dir", type=Path, default=Path("data/synthea/fhir"))
     parser.add_argument("--limit", type=int, default=0, help="0 loads every bundle")
+    parser.add_argument("--force", action="store_true",
+                        help="load even if the server already holds patients")
     args = parser.parse_args(argv)
+
+    # Loading is POST-per-bundle, so running it twice creates a second copy of every
+    # patient rather than updating them. Nothing errors; the counts just double and every
+    # downstream number is quietly wrong. Refuse instead.
+    existing = _patient_count(args.fhir_url)
+    if existing and not args.force:
+        print(
+            f"refusing to load: {args.fhir_url} already holds {existing} patients.\n"
+            "  This loader POSTs, so a second run duplicates every record.\n"
+            "  Use `make clean-fhir` for an empty database, or pass --force if you "
+            "really mean to add another copy.",
+            file=sys.stderr,
+        )
+        return 1
 
     bundles = sorted(args.bundle_dir.glob("*.json"))
     # Synthea writes hospital and practitioner bundles alongside the patient ones; load

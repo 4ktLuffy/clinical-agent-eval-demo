@@ -13,7 +13,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SKIP_DIRS = {".git", "reports", "reports-real", "__pycache__", ".venv", ".pytest_cache", "NOTES"}
+SKIP_DIRS = {".git", "reports", "reports-real", "__pycache__", ".venv", ".pytest_cache"}
+# NOTES/ is tracked and therefore ships, so it IS scanned for PHI patterns. It is exempt
+# only from the forbidden-phrase check, because the design note legitimately quotes the
+# banned words in the course of stating the rule about them.
+PHRASE_EXEMPT_DIRS = {"NOTES"}
 SKIP_SUFFIXES = {".pyc", ".png", ".jpg", ".jpeg", ".gif", ".pdf", ".lock"}
 SELF = Path(__file__).resolve()
 
@@ -77,6 +81,8 @@ def main() -> int:
             for name, pattern in PATTERNS:
                 for match in pattern.finditer(line):
                     hits.append(f"{rel}:{lineno}: {name}: {match.group(0)!r}")
+            if set(rel.parts) & PHRASE_EXEMPT_DIRS:
+                continue
             lowered = line.lower()
             for phrase in FORBIDDEN_PHRASES:
                 if phrase in lowered:
