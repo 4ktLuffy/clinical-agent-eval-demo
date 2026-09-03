@@ -11,3 +11,7 @@ __pycache__/
 reports/*
 !reports/scorecard.md
 reports-real/
+
+# Generated / downloaded build inputs, not source.
+tools/*.jar
+data/synthea/
