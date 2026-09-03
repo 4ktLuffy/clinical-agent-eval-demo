@@ -159,7 +159,10 @@ The original 50-turn guardrail scorecard is still here:
 ## Running it
 
 Python 3.12. If you create the venv with `uv venv`, note it ships without `pip` — use
-`uv pip install -e ".[dev]"` or `python -m venv .venv` instead.
+`uv pip install -e ".[dev]"` or `python -m venv .venv` instead. `make synthea` runs Synthea
+in a container and reads the jar over a bind mount, so the checkout must sit somewhere your
+Docker VM mounts — under `$HOME` on a default colima or Docker Desktop setup. `make synthea`
+checks this and says so rather than failing with a Java error.
 
 ```bash
 make fhir-up && make fixture-load           # live FHIR in ~30s, 10 patients, no download

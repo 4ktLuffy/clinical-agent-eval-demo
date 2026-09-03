@@ -28,6 +28,17 @@ synthea: tools/synthea-with-dependencies.jar  ## Generate synthetic FHIR R4 bund
 	@python3 -c "import zipfile,sys;\
 	  sys.exit(0) if zipfile.is_zipfile('tools/synthea-with-dependencies.jar') else sys.exit(1)" \
 	  || { echo "tools/synthea-with-dependencies.jar is truncated or corrupt; rm it and rerun"; exit 1; }
+	@# Synthea runs in a container and reads the jar over a bind mount, so the checkout
+	@# has to live somewhere the Docker VM actually mounts. On colima that is $$HOME by
+	@# default; a checkout under /tmp silently mounts an empty directory and the failure
+	@# surfaces as Java's unhelpful "Unable to access jarfile". Check it here instead.
+	@docker run --rm -v "$(PWD)/tools:/probe" alpine test -f /probe/synthea-with-dependencies.jar \
+	  || { echo ""; \
+	       echo "The jar exists on the host but is not visible inside the container."; \
+	       echo "  checkout: $(PWD)"; \
+	       echo "  Docker cannot bind-mount this path. Move the checkout under your home"; \
+	       echo "  directory, or add this path to your Docker/colima mounts, then retry."; \
+	       exit 1; }
 	mkdir -p data/synthea
 	docker run --rm -v "$(PWD)/tools:/tools" -v "$(PWD)/data/synthea:/out" \
 	  eclipse-temurin:21-jre java -jar /tools/synthea-with-dependencies.jar \
