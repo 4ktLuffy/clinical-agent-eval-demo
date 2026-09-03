@@ -88,7 +88,16 @@ def main(argv: list[str] | None = None) -> int:
     started = time.time()
     ok = failed = 0
     for index, path in enumerate(ordered, start=1):
-        bundle = json.loads(path.read_text(encoding="utf-8"))
+        try:
+            bundle = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            # A generator killed part-way through leaves a truncated bundle. Name the file
+            # and carry on; crashing with a raw JSONDecodeError says nothing about which of
+            # 215 files is bad, or that regenerating is the fix.
+            failed += 1
+            print(f"  SKIPPED {path.name}: not valid JSON at line {exc.lineno} "
+                  f"(truncated? regenerate with `make synthea`)", file=sys.stderr)
+            continue
         success, detail = post_bundle(args.fhir_url, bundle)
         if success:
             ok += 1
