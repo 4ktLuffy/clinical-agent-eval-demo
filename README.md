@@ -53,8 +53,8 @@ Each maps to language in the [Forward Deployed Engineer posting](https://jobs.as
 Quotes are verbatim and checked by `scripts/verify_quotes.py`.
 
 **Real FHIR.** `make fhir-up && make synthea && make load` brings up HAPI FHIR JPA 8.12.0
-(R4 4.0.1) on Postgres 16 and loads 213 Synthea patients — 11,947 encounters, 10,337
-medication requests, 121,010 observations. `make fhir-check` asserts the dataset
+(R4 4.0.1) on Postgres 16 and loads 214 Synthea patients — 12,088 encounters, 10,799
+medication requests, 122,480 observations. `make fhir-check` asserts the dataset
 before anything talks to it. This is the "RAG pipeline grounded in customer data" half of the
 day-90 outcome, with the customer's data replaced by generated records.
 

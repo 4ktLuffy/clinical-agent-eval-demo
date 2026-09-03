@@ -439,7 +439,7 @@ Branch `feat/real-fhir-deployment`, pushed. No PR, no issues, no comments.
 
 | Item | Verdict | Evidence |
 |---|---|---|
-| A1 fresh-clone repro | **pass, one gap** | fixture path 92s end to end; full-Synthea path still running at time of writing |
+| A1 fresh-clone repro | **pass** | both paths verified end to end; the full path found the worst defect of the night |
 | A2 README fact check | **pass** | `readme-check: 30 regenerated numbers, 0 mismatched`, green in CI |
 | A3 data hygiene | **pass** | largest blob in all history, all branches: 464 KB |
 | A4 adversarial scope | **pass** | 14 attack vectors, all refused, all audited, 24 live tests |
@@ -506,3 +506,46 @@ Ordered by how much I would want them challenged.
   is verified, that one is not.
 - **The README is 190 lines**, well past the original ~120 target. That target predates six
   new components and I have not re-cut it.
+
+
+---
+
+# A1 closed, and the defect it found
+
+The full-Synthea fresh-clone path now works end to end:
+
+```
+### make synthea     bundles: 216              TIME 24s
+### make load        loaded 216/216 (0 failed) TIME 383s
+### make fhir-check  Patient 214, Encounter 12,088, MedicationRequest 10,799,
+                     Condition 8,527, Observation 122,480   -> fhir-check passed
+### pytest           119 passed                TIME 5s
+```
+
+Getting there took four more fixes, and the last one is the reason A1 was worth doing.
+
+1. **`/tmp` is not mounted into the Docker VM.** `make synthea` bind-mounts the jar into a
+   container, so a checkout outside `$HOME` mounts an empty directory and fails with Java's
+   `Unable to access jarfile`. `make synthea` now probes the mount and says what is wrong.
+   This is why my first three attempts failed: they all ran from `/tmp`.
+2. **Synthea was OOM-killed (exit 137).** I had left five HAPI stacks running on a 6 GB VM.
+   My own mess, but worth recording: the failure mode is a silent SIGKILL mid-write.
+3. **The loader crashed on the truncated bundle that left behind**, with a raw
+   `JSONDecodeError` naming a character offset. It now names the file and says to regenerate.
+4. **`make synthea` excluded the hospital and practitioner bundles.** Synthea points every
+   Encounter at those by conditional reference, so HAPI rejected all 214 patient bundles with
+   a 404 — `ok=0 failed=214`. **The documented `make synthea && make load` path had never
+   worked.** The 213-patient dataset I reported on night 1 came from a manual command with
+   different flags, and I did not notice because I never ran the documented path.
+
+That last one is the honest headline of this pass. The README described a pipeline that could
+not run, the numbers in it were real but produced another way, and only a fresh-clone
+reproduction attempt could have caught it.
+
+**The dataset numbers changed as a consequence**, because the fixed export flags produce a
+slightly different set: 214 patients rather than 213, 12,088 encounters rather than 11,947,
+10,799 medication requests rather than 10,337, 122,480 observations rather than 121,010.
+`reports/fhir-check.json` is regenerated from the documented path and the README now matches
+it. `readme-check: 30 regenerated numbers, 0 mismatched`.
+
+Fixes this pass: **11**, each with a negative control.

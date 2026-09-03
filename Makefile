@@ -43,8 +43,12 @@ synthea: tools/synthea-with-dependencies.jar  ## Generate synthetic FHIR R4 bund
 	docker run --rm -v "$(PWD)/tools:/tools" -v "$(PWD)/data/synthea:/out" \
 	  eclipse-temurin:21-jre java -jar /tools/synthea-with-dependencies.jar \
 	  -p $(PATIENTS) -s $(SEED) -cs $(SEED) --exporter.baseDirectory /out \
-	  --exporter.fhir.export true --exporter.hospital.fhir.export false \
-	  --exporter.practitioner.fhir.export false --generate.log_patients.detail none
+	  --exporter.fhir.export true --generate.log_patients.detail none
+	@# The hospital and practitioner bundles are exported deliberately. Synthea points
+	@# every Encounter at them by conditional reference, so excluding them makes HAPI
+	@# reject all 214 patient bundles with a 404. An earlier version of this target
+	@# passed --exporter.hospital.fhir.export false and --exporter.practitioner.fhir.export
+	@# false, and the documented `make synthea && make load` path could never have worked.
 	@echo "bundles: $$(ls data/synthea/fhir/*.json 2>/dev/null | wc -l)"
 
 synthea-jar: tools/synthea-with-dependencies.jar  ## Fetch the Synthea jar (188 MB)
