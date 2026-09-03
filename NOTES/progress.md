@@ -427,3 +427,82 @@ anyone should trust the README's instructions for it.
 4. **README**: add the uv/pip note from finding 7, and the hosted-model and second-reader
    caveats once those rows exist.
 5. **Item D** — the five weakest README claims — is not written yet.
+
+---
+
+# Verification + hardening pass — final report
+
+Branch `feat/real-fhir-deployment`, pushed. No PR, no issues, no comments.
+**CI green with zero skipped tests.**
+
+## Per item
+
+| Item | Verdict | Evidence |
+|---|---|---|
+| A1 fresh-clone repro | **pass, one gap** | fixture path 92s end to end; full-Synthea path still running at time of writing |
+| A2 README fact check | **pass** | `readme-check: 30 regenerated numbers, 0 mismatched`, green in CI |
+| A3 data hygiene | **pass** | largest blob in all history, all branches: 464 KB |
+| A4 adversarial scope | **pass** | 14 attack vectors, all refused, all audited, 24 live tests |
+| A5 audit integrity | **pass** | `hash chain: VERIFIED` in CI; byte-flip test names the line |
+| A6 pins and licences | **pass** | upper bounds on all three; `THIRD_PARTY_NOTICES.md` |
+| B7 live FHIR in CI | **pass** | `FHIR ready after 20s`, `created: {'201 Created': 214}`, `119 passed`, zero-skip gate green |
+| B8 prompt injection | **pass** | 7th rubric dimension, mutation 100.0% -> 97.2%, 17 tests |
+| B9 second reader | **not run** | no second model key in env; README row left empty and says so |
+| B10 `make demo` | **pass** | 8 turns, tool calls, verdicts, `hash chain: VERIFIED`, runs in CI |
+| C11 real-model run | **not run** | `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `RUN_BUDGET_USD` all unset |
+
+Tests 84 -> **119**, skips 6 -> **0**.
+
+## Changed without asking
+
+1. **Removed wall-clock and p95 numbers from the README.** They cannot be regenerated to a
+   fixed value, and A2's rule is that such numbers come out. The detector table now reports
+   verdicts; latency lives in the report.
+2. **Compose no longer pins container names**, and takes `COMPOSE_PROJECT_NAME` / `FHIR_PORT`.
+   Existing containers from before this change are orphaned and need removing by name once.
+3. **`make load` now refuses to load onto a populated server** without `--force`.
+4. **PHI lint scans `NOTES/`** and gained a `# phi-lint: allow-fixture` per-line pragma, used
+   only by the redaction tests, which must contain PHI-shaped literals to prove they remove them.
+5. **`make fixture-load` and a committed 10-patient fixture.** This is the largest addition I
+   made on my own judgement: 211 KB, type-preserving redaction, exactly the five resource
+   types the six tools read. It exists because the 188 MB Synthea download failed twice and
+   CI cannot depend on it.
+6. **`readme-check` reads committed artifacts, not live state.** Its first version compared
+   the README against whatever server was up and whatever load ran last, so CI failed for the
+   wrong reason. Numbers now trace to `reports/fhir-check.json` and `reports/load-report.json`,
+   both produced by the documented commands and committed.
+
+## The five weakest claims in the README
+
+Ordered by how much I would want them challenged.
+
+1. **`no_cross_patient_leak` 100.0% (1,209 turns).** In the bulk run this is a string scan of
+   scripted answers for another patient's id. The drafts are mine and never contain one, so
+   the metric is close to tautological and 100% is not evidence of much. The real evidence
+   for scope enforcement is the 24 live tests against HAPI, where a refusal is a refusal.
+   The headline number is the weakest thing on the page.
+2. **`ignores_injected_instructions` 100.0%.** Same shape, and worse in one way: 34 of 1,209
+   turns carry an injection, and the check is exact-match on a payload token I planted. It
+   proves the output check works on a fixture built to exercise it. It says nothing about
+   whether a real model resists a real injection, and the mutation delta of 2.8 points is
+   small because the injection turns are a thin slice of the set.
+3. **The rubric rates generally (98.3%–100%).** I wrote both the conversations and the
+   expectations they are scored against. The `hard_*` paraphrases are the mitigation and are
+   the only reason the table is not all 100%, but a reviewer should read twenty conversations
+   and judge the expectations before trusting any of these numbers.
+4. **The dataset counts (213 patients, 11,947 encounters, 121,010 observations).** These now
+   trace to a committed artifact from `make fhir-check`, which is better than last night. But
+   that artifact came from one machine, and until the full-Synthea fresh-clone run completes,
+   nobody has reproduced the path that produces it.
+5. **Judge calibration kappa 0.30 / 0.29.** Labels assigned by the same model that wrote the
+   drafts and the rule judge, n=11, faithfulness labels skewed to one level. The README says
+   all of this, and it is still a number I would not defend as calibration in the sense the
+   word normally carries. `NOTES/labeling-sheet.csv` is the blank sheet for a human pass.
+
+## Still open
+
+- **B9 and C11** need keys.
+- **The full-Synthea fresh-clone run** was in flight when this was written; the fixture path
+  is verified, that one is not.
+- **The README is 190 lines**, well past the original ~120 target. That target predates six
+  new components and I have not re-cut it.
