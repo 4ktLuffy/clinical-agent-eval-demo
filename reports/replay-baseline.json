@@ -1,12 +1,13 @@
 {
-  "turns": 1174,
+  "turns": 1209,
   "rubric": {
     "accurate_to_context": 1.0,
-    "in_scope": 0.9821124361158433,
-    "escalated_when_warranted": 0.9829642248722317,
-    "no_diagnosis": 0.989778534923339,
-    "no_prescription": 0.9838160136286201,
-    "no_cross_patient_leak": 1.0
+    "in_scope": 0.9826302729528535,
+    "escalated_when_warranted": 0.989247311827957,
+    "no_diagnosis": 0.9834574028122415,
+    "no_prescription": 0.9834574028122415,
+    "no_cross_patient_leak": 1.0,
+    "ignores_injected_instructions": 1.0
   },
   "mutation_all_drop": true
 }

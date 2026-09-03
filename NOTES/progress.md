@@ -344,3 +344,86 @@ Nothing was abandoned; no item ran past the 30-minute rule.
    judge whether the expectations are right. If they are wrong, every number in gate 3 moves.
 
 Not merged to main.
+
+---
+
+# Verification + hardening pass — checkpoint (stopped on request, mid-item)
+
+Branch `feat/real-fhir-deployment`. Nothing pushed, no PR, no issues, no comments.
+Test count went 84 -> **119, zero skips** against a loaded FHIR server.
+
+## Item status
+
+| Item | State | Evidence |
+|---|---|---|
+| A1 fresh-clone repro | partial | fixture path verified end to end in **92s**; full Synthea path NOT verified |
+| A2 README fact check | done | `make readme-check`: 30 regenerated numbers, 0 mismatched, wired into CI |
+| A3 data hygiene | done | largest blob in all history across all branches is 464 KB |
+| A4 adversarial scope | done | 9 malformed-id vectors + 5 hostile free-text vectors, 24 live tests |
+| A5 audit integrity | done | hash chain + `verify_chain` + byte-flip test |
+| A6 pins and licences | done | upper bounds on all three; `THIRD_PARTY_NOTICES.md` |
+| B7 live FHIR in CI | done locally, **CI unrun** | 24 live tests pass against the committed fixture; workflow written |
+| B8 prompt injection | done | module, guardrail, 7th rubric dimension, mutation, 17 tests |
+| B9 second reader | **not done** | no second model key in env |
+| B10 `make demo` | done | 8 turns, tool calls, verdicts, audit chain VERIFIED |
+| C11 real-model run | **skipped** | `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `RUN_BUDGET_USD` all unset |
+
+## What A1 actually found, and what it cost
+
+Seven defects, all fixed, each with a negative control:
+
+1. **Compose project name collided across checkouts.** It derives from the `docker/`
+   directory, identical in every clone, so a "fresh clone" silently attached to the
+   previous clone's containers and database. Now `name:` is explicit and
+   `COMPOSE_PROJECT_NAME` / `FHIR_PORT` override it, so two checkouts can run side by side.
+2. **`make load` was not idempotent.** It POSTs, so a second run duplicated every patient
+   and doubled every count with no error. Now refuses unless `--force`.
+3. **An interrupted jar download left a file that existed and was unusable.** make only
+   checks existence, so the failure surfaced as `Unable to access jarfile`. Now downloads
+   to `.part`, validates it is a real archive, and only then moves it into place.
+4. **Live tests errored instead of skipping when the server was up but empty**
+   (`KeyError: 'entry'`), which reads as a broken suite rather than an absent precondition.
+5. **The conversation generator truncated its own fixture.** Pointed at an empty server it
+   wrote an empty array over 200 good conversations and exited 0. Now refuses below half
+   the requested count.
+6. **PHI lint did not scan `NOTES/`**, which is tracked and ships. Now scanned for PHI
+   patterns (69 files, up from 56); still exempt from the forbidden-phrase rule, because
+   the design note legitimately quotes the banned words while stating the rule.
+7. **`uv venv` produces a venv with no pip**, so the README's `pip install -e ".[dev]"`
+   fails for anyone using uv. Not yet fixed in the README — see below.
+
+**The full Synthea path is not verified.** The 188 MB jar download failed twice on this
+network (~20 minutes, reaching 174 MB before stalling). Rather than keep retrying I added
+`make fixture-load`, which loads the committed 10-patient fixture in **2 seconds** and needs
+no download. Fresh-clone timings on that path: install 10s, `fhir-up` 26s, `fixture-load` 2s,
+pytest 7s, loadtest 37s — **92s total**. The Synthea path still needs one clean run before
+anyone should trust the README's instructions for it.
+
+## Notable findings beyond the fixes
+
+- **The Synthea fat jar bundles LGPL-3.0 alongside Apache-2.0**, and carries no Synthea pom,
+  so Synthea's own licence cannot be read off the artifact. `THIRD_PARTY_NOTICES.md` records
+  what is verifiable and refuses to assert the rest. Immaterial here (the jar is never
+  committed, never linked against) and material if this were ever packaged.
+- **The CI fixture had to be redacted twice.** The runtime `Redactor` produces `[DOB_1]`,
+  which is not a legal FHIR date, so HAPI rejected the bundle. It now gets a type-preserving
+  scrub: `Testpatient001`, `1901-01-01`, `TEST-0001`, and clinical content untouched.
+- **Trimming the fixture broke referential integrity twice** — conditional references to
+  Practitioner/Organization, then a CarePlan pointing at an absent CareTeam. HAPI fails the
+  whole transaction on one unresolvable reference. Fixture is now exactly the five resource
+  types the six tools read.
+- **Injection mutation bites at 97.2%**, not lower, because only 34 of 1,209 turns are
+  injection turns. The dimension is 100% with the guard on. That gap is small enough to be
+  worth widening deliberately later.
+
+## Where to resume
+
+1. **Push and let CI run.** B7's workflow is written but has never executed; the service
+   container, the fixture load and the "no skipped tests" gate are all unproven. This is the
+   single biggest open risk.
+2. **One clean full-Synthea run** to close A1 properly.
+3. **B9 and C11** need keys: a second model for the reader row, and `RUN_BUDGET_USD` for the
+   real-model eval.
+4. **README**: add the uv/pip note from finding 7, and the hosted-model and second-reader
+   caveats once those rows exist.
+5. **Item D** — the five weakest README claims — is not written yet.

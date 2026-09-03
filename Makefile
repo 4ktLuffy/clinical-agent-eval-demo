@@ -91,3 +91,6 @@ verify:  ## Everything a deploy must pass
 
 readme-check:  ## Regenerate every number in the README and diff it
 	PYTHONPATH=src $(PY) scripts/readme_check.py
+
+demo:  ## Eight turns against live FHIR with the mock model, plus the audit chain
+	PYTHONPATH=src $(PY) scripts/live_demo.py --fhir-url $(FHIR_URL)

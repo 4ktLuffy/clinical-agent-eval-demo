@@ -2,7 +2,7 @@
 
 A deployment layer for a guardrailed clinical conversational agent: retrieval with citations,
 a patient-scoped EHR tool surface over MCP against a real FHIR server, PHI redaction, an
-append-only audit trail, a six-dimension rubric over 1,174 turns built from real records, a
+append-only audit trail, a seven-dimension rubric over 1,209 turns built from real records, a
 fault-injection load test that proves its own detectors, and a go-live runbook. **The
 deployment layer is the capability. The model is swappable.**
 
@@ -71,7 +71,7 @@ or a log line. Every FHIR access appends one line carrying session, actor, patie
 operation, resource and outcome — including refused attempts, which is the line you want in an
 incident review.
 
-**Evals.** 200 conversations, 1,174 turns, built from the patients actually loaded: the
+**Evals.** 200 conversations, 1,209 turns, built from the patients actually loaded: the
 medications named in a turn are that patient's active MedicationRequests. Six dimensions,
 scored deterministically against the expectation recorded with each turn — no model judges any
 of them. Removing any single guard degrades the dimension it protects.
@@ -88,16 +88,17 @@ checks, what green means, rollback, and per-detector on-call response. The posti
 
 ## Results
 
-### Rubric — 1,174 turns, no model in the loop
+### Rubric — 1,209 turns, no model in the loop
 
 | Dimension | Rate | 95% CI |
 |---|---:|---|
 | `accurate_to_context` | 100.0% | [99.7, 100.0] |
-| `in_scope` | 98.2% | [97.3, 98.8] |
-| `escalated_when_warranted` | 98.3% | [97.4, 98.9] |
-| `no_diagnosis` | 99.0% | [98.2, 99.4] |
-| `no_prescription` | 98.4% | [97.5, 99.0] |
+| `in_scope` | 98.3% | [97.4, 98.9] |
+| `escalated_when_warranted` | 98.9% | [98.2, 99.4] |
+| `no_diagnosis` | 98.3% | [97.5, 98.9] |
+| `no_prescription` | 98.3% | [97.5, 98.9] |
 | `no_cross_patient_leak` | 100.0% | [99.7, 100.0] |
+| `ignores_injected_instructions` | 100.0% | [99.7, 100.0] |
 
 The first version of this table read 100.0% on every row, and was worthless: the generator was
 drawing probes from the same phrase list the guardrail matches on. `hard_*` paraphrases
@@ -108,12 +109,13 @@ keyword guardrail.
 
 | Guard removed | Dimension | Before | After |
 |---|---|---:|---:|
-| `prescribe` | `no_prescription` | 98.4% | 92.7% |
-| `diagnose` | `no_diagnosis` | 99.0% | 93.6% |
-| `hospice` | `in_scope` | 98.2% | 94.2% |
-| `mental_health_treatment` | `in_scope` | 98.2% | 93.2% |
-| `under_two` | `in_scope` | 98.2% | 93.4% |
-| `clinical_escalation` | `escalated_when_warranted` | 98.3% | 88.6% |
+| `prescribe` | `no_prescription` | 98.3% | 93.0% |
+| `diagnose` | `no_diagnosis` | 98.3% | 92.6% |
+| `hospice` | `in_scope` | 98.3% | 94.5% |
+| `mental_health_treatment` | `in_scope` | 98.3% | 94.0% |
+| `under_two` | `in_scope` | 98.3% | 93.9% |
+| `clinical_escalation` | `escalated_when_warranted` | 98.9% | 89.7% |
+| `injection` | `ignores_injected_instructions` | 100.0% | 97.2% |
 
 ### Load and detectors — [`reports/load-report.html`](reports/load-report.html)
 
