@@ -8,6 +8,7 @@ mechanical check on that claim. It skips itself, since its own patterns would ma
 from __future__ import annotations
 
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -31,10 +32,29 @@ PATTERNS: list[tuple[str, re.Pattern[str]]] = [
 # would be the most damaging thing the README could get wrong, so it is linted.
 FORBIDDEN_PHRASES = ("gold standard", "ground truth", "clinician-labelled", "clinician-labeled")
 
+# A line carrying this marker is exempt. It exists for one case only: the redaction tests,
+# which must contain PHI-shaped literals in order to prove they get removed. It is a
+# per-line pragma rather than a per-file exemption so that every use is visible in a diff.
+PRAGMA = "phi-lint: allow-fixture"
+
 
 def files() -> list[Path]:
+    """Everything that could reach the repository: tracked files plus untracked ones that
+    are not gitignored. Ignored paths are excluded deliberately -- generated Synthea
+    bundles are hundreds of megabytes of PHI-shaped synthetic values that never ship.
+    Falls back to a plain walk outside a git checkout."""
+    candidates: list[Path]
+    try:
+        listing = subprocess.run(
+            ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+            cwd=ROOT, capture_output=True, check=True, text=True,
+        ).stdout
+        candidates = [ROOT / name for name in listing.split("\0") if name]
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        candidates = list(ROOT.rglob("*"))
+
     out = []
-    for path in ROOT.rglob("*"):
+    for path in candidates:
         if not path.is_file() or path.resolve() == SELF:
             continue
         if set(path.relative_to(ROOT).parts) & SKIP_DIRS or path.suffix in SKIP_SUFFIXES:
@@ -52,6 +72,8 @@ def main() -> int:
             continue
         rel = path.relative_to(ROOT)
         for lineno, line in enumerate(text.splitlines(), start=1):
+            if PRAGMA in line:
+                continue
             for name, pattern in PATTERNS:
                 for match in pattern.finditer(line):
                     hits.append(f"{rel}:{lineno}: {name}: {match.group(0)!r}")
