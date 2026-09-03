@@ -328,6 +328,15 @@ Nothing was abandoned; no item ran past the 30-minute rule.
    `docker context use colima && colima stop --profile fhir`. To remove it entirely:
    `colima delete --profile fhir`. I also installed `docker-compose` via Homebrew.
 
+   Two corrections to that, found after the fact. You already had a stopped `arm` profile
+   (aarch64, 6 CPU / 10 GB) — I did not check `colima list` before creating a third VM, and
+   `arm` would have done the job. Delete `fhir` and use `arm` if you prefer.
+
+   Separately, host DNS failed for a few minutes near the end of the run and I initially
+   suspected the VM I had started. It was not: the `limactl` process holding TCP :53 belongs
+   to your pre-existing `default` profile, and resolution recovered on its own. I changed
+   nothing to fix it. Worth knowing that two running colima VMs contend for :53.
+
 3. **Whether the 98% rubric numbers mean anything to you.** I wrote both the conversations and
    the expectations they are scored against, which is the same self-consistency trap as the
    labels. The `hard_*` paraphrases are the mitigation — they are the only reason the table is
