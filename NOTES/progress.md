@@ -253,3 +253,85 @@ verbatim and present in the README, including that it says "before customers do"
 13. **The README is 161 lines, over the ~120 line target from the original brief.** That
     target predates four new components. I did not restate it as a constraint for this build;
     say the word and I will cut the component paragraphs down.
+
+---
+
+# Morning report
+
+## Per gate
+
+| Gate | Status | Evidence |
+|---|---|---|
+| 0. Label provenance + labeling sheet | done | `NOTES/labeling-sheet.csv`, 11 rows, blank columns |
+| 1. Real FHIR | done | HAPI 8.12.0 / R4, 213 patients, `make fhir-check` passes |
+| 2. Scoped MCP over FHIR | done | cross-patient cancel refused against live HAPI, resource untouched |
+| 3. Evals at their shape | done | 1,174 turns, 6 dimensions, all 6 guards bite, replay gate blocks |
+| 4. Load, latency, detectors | done | 58,700 turns in 32s, 4/4 detectors fired, baseline quiet |
+| 5. Go-live runbook | done | `RUNBOOK.md`, 181 lines |
+| 6. README rewrite | done | limitations first, 6 quotes verified by a CI check |
+
+## Tests and CI
+
+- **84 tests pass locally** with the FHIR stack up (was 52 at the start of the night).
+- **CI on `feat/real-fhir-deployment` is green**: 78 passed, 6 skipped. The 6 skipped are the
+  live-FHIR scope tests, which skip by design when no endpoint answers — they are not silently
+  passing. CI also runs the quote check, the conversation eval with per-guard mutation, the
+  replay gate, and a 400-session load test with the detector proof.
+- 7 commits on the branch. `main` is untouched at `2692a2e`. No PR, no issues, no comments.
+
+## Decisions I made without you
+
+1. Wrote "reference labels assigned by an AI reader", not "a second AI reader" — there was no
+   second reader and the phrase would have replaced one false provenance claim with another.
+2. Created a **second colima profile** (`--profile fhir --arch aarch64`) rather than
+   reconfiguring your default x86_64 one, which had your containers running on it.
+3. **Installed `docker-compose` via Homebrew** — a host change.
+4. No container healthcheck on HAPI; the image is distroless. Readiness is asserted host-side.
+5. Synthea runs in a container; no JDK installed on the host.
+6. Kept `ehr_server.py` and added `fhir_mcp_server.py` beside it rather than rewriting in
+   place, so the offline demo and CI keep working without Docker.
+7. Live-FHIR tests skip when no endpoint answers.
+8. PHI lint now honours `.gitignore`; it was scanning 879 MB of generated Synthea bundles.
+9. Added a `# phi-lint: allow-fixture` per-line pragma for the redaction tests.
+10. No LLM judge in the conversation eval — all six dimensions are deterministic, and no key
+    is present in this environment anyway. Every run prints "mock path only".
+11. Cross-patient leak is scored two ways: a cheap scan on all 1,174 turns, and the real
+    enforcement test against live HAPI.
+12. Injected latency fault set to +600 ms rather than lowering the cliff threshold to meet a
+    1.7x rise. A 1.7x rise is drift; the rule is deliberately not tuned to page on it.
+13. README is 161 lines, over the original ~120 target, which predates four new components.
+
+## Blockers hit, and what happened
+
+| Blocker | Cost | Resolution |
+|---|---|---|
+| Docker daemon down, no compose plugin, no JRE | ~15 min | colima profile + brew compose + Synthea in a container |
+| HAPI `SIGILL` crash | ~20 min | amd64 image under emulation; native arm64 profile fixed it |
+| Synthea jar truncated at 52 MB of 188 MB | ~10 min | curl timeout; resumed with `-C -` |
+| HAPI permanently "unhealthy" | ~5 min | distroless image, healthcheck cannot run; removed it |
+| PHI lint failing on Synthea bundles | ~10 min | lint now honours `.gitignore` |
+| Two detectors silent at 2,000 sessions | ~25 min | two real detector bugs, fixed with regression tests |
+
+Nothing was abandoned; no item ran past the 30-minute rule.
+
+## The three things to check first
+
+1. **The label provenance wording, because I did not do what you asked.** You specified
+   "a second AI reader". I wrote "an AI reader" and added a paragraph saying the labels came
+   from the same model that wrote the drafts and the rule judge, so they are provisional. If
+   you want the literal wording it needs an actual second pass by a different model first.
+   `NOTES/labeling-sheet.csv` is ready for your own pass, with the provisional labels in the
+   last two columns so you can cover them and avoid anchoring.
+
+2. **Host changes, still live.** A second colima VM (`fhir`, 4 CPU / 6 GB) is **running now**,
+   and your docker context is switched to `colima-fhir`. To restore:
+   `docker context use colima && colima stop --profile fhir`. To remove it entirely:
+   `colima delete --profile fhir`. I also installed `docker-compose` via Homebrew.
+
+3. **Whether the 98% rubric numbers mean anything to you.** I wrote both the conversations and
+   the expectations they are scored against, which is the same self-consistency trap as the
+   labels. The `hard_*` paraphrases are the mitigation — they are the only reason the table is
+   not 100% — but a human should read twenty conversations from `data/conversations.json` and
+   judge whether the expectations are right. If they are wrong, every number in gate 3 moves.
+
+Not merged to main.
