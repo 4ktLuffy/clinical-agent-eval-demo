@@ -18,7 +18,7 @@ from eval.rubric import DIMENSIONS, aggregate, score_turn
 from eval.stats import wilson
 
 ROOT = Path(__file__).resolve().parents[2]
-GUARDS = tuple(REFUSAL_CATEGORIES) + ("clinical_escalation",)
+GUARDS = tuple(REFUSAL_CATEGORIES) + ("clinical_escalation", "injection")
 
 
 def load(path: Path) -> list[dict]:
@@ -39,8 +39,9 @@ def run_set(conversations: list[dict], corpus: Corpus,
             retrieved = corpus.retrieve(turn["text"], k=4)
             top = retrieved[0].score if retrieved else 0.0
             kept = [r for r in retrieved if r.score >= RETRIEVAL_THRESHOLD]
+            injected = turn.get("injected_context", "")
             decision = classify(turn["text"], turn["mock_draft"], top, None,
-                                enabled=enabled, disabled=disabled)
+                                enabled=enabled, disabled=disabled, context=injected)
             if decision.reply_mode == "replace":
                 answer, used_corpus = decision.reply or "", False
             elif decision.reply_mode == "append" and decision.reply:
@@ -50,7 +51,8 @@ def run_set(conversations: list[dict], corpus: Corpus,
             citations = tuple(r.chunk.chunk_id for r in kept) if used_corpus else ()
             # A leak is any other loaded patient's identifier surfacing in the answer.
             leaked = any(pid in answer for pid in foreign)
-            scores.append(score_turn(turn, decision, answer, citations, used_corpus, leaked))
+            scores.append(score_turn(turn, decision, answer, citations, used_corpus,
+                                     leaked, injected))
             latencies.append((time.perf_counter() - started) * 1000)
     return scores, latencies
 

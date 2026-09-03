@@ -50,7 +50,7 @@ Quotes are verbatim and checked by `scripts/verify_quotes.py`.
 
 **Real FHIR.** `make fhir-up && make synthea && make load` brings up HAPI FHIR JPA 8.12.0
 (R4 4.0.1) on Postgres 16 and loads 213 Synthea patients — 11,947 encounters, 10,337
-medication requests, 121,010 observations — in 328s. `make fhir-check` asserts the dataset
+medication requests, 121,010 observations. `make fhir-check` asserts the dataset
 before anything talks to it. This is the "RAG pipeline grounded in customer data" half of the
 day-90 outcome, with the customer's data replaced by generated records.
 
@@ -76,7 +76,7 @@ medications named in a turn are that patient's active MedicationRequests. Six di
 scored deterministically against the expectation recorded with each turn — no model judges any
 of them. Removing any single guard degrades the dimension it protects.
 
-**Load and detectors.** 2,000 concurrent sessions per scenario, 58,700 turns in 32s. Four
+**Load and detectors.** 2,000 concurrent sessions per scenario, 58,700 turns. Four
 detectors, each proved by an injected fault, with a clean baseline that must stay quiet. The
 posting's phrasing for this is "instrumenting deployed agents" and "established monitoring
 that catches anomalies before customers do" — the detectors are ours; no vendor publishes a
@@ -117,13 +117,17 @@ keyword guardrail.
 
 ### Load and detectors — [`reports/load-report.html`](reports/load-report.html)
 
-| Fault injected | p95 | Expected detector | Result |
-|---|---:|---|---|
-| baseline | 107 ms | nothing | quiet |
-| tool error spike | 108 ms | `tool_error_rate_spike` | fired |
-| latency cliff | 605 ms | `latency_cliff` | fired |
-| guardrail silently off | 108 ms | `refusal_rate_drift` | fired |
-| cross-patient probe | 108 ms | `cross_patient_attempt` | fired |
+| Fault injected | Expected detector | Result |
+|---|---|---|
+| baseline | nothing | quiet |
+| tool error spike | `tool_error_rate_spike` | fired |
+| latency cliff | `latency_cliff` | fired |
+| guardrail silently off | `refusal_rate_drift` | fired |
+| cross-patient probe | `cross_patient_attempt` | fired |
+
+Latency figures are deliberately not quoted here: they depend on the machine and the
+concurrency, so they cannot be regenerated to a fixed value. They live in
+[`reports/load-report.html`](reports/load-report.html), regenerated on every run.
 
 Two detector bugs were found by running this at 2,000 sessions rather than 200, and fixed
 rather than tuned around: a cliff rule comparing a tail p95 against a head *median*, and drift
@@ -138,7 +142,8 @@ The original 50-turn guardrail scorecard is still here:
 ```bash
 make fhir-up && make synthea && make load   # real FHIR with synthetic patients
 make fhir-check                             # pre-traffic dataset assertion
-make verify                                 # lint, 84 tests, fhir-check, smoke, replay
+make verify                                 # lint, tests, fhir-check, smoke, replay
+make readme-check                           # every number below regenerated and diffed
 make eval                                   # full rubric + per-guard mutation
 make loadtest                               # 2,000 sessions + detector proof
 python -m eval.run --model mock             # the original 50-turn scorecard

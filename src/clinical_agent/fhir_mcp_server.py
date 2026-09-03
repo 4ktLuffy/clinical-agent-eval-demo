@@ -22,7 +22,11 @@ try:  # mcp 1.x
 except ImportError:  # mcp 2.x renamed the same class
     from mcp.server.mcpserver import MCPServer as _ServerImpl
 
-from clinical_agent.fhir_client import CrossPatientAccess, PatientScopedFhir
+from clinical_agent.fhir_client import (
+    CrossPatientAccess,
+    MalformedResourceId,
+    PatientScopedFhir,
+)
 
 server = _ServerImpl("scoped-fhir-ehr")
 
@@ -48,6 +52,8 @@ def _result(call) -> dict:
         outcome = call()
     except CrossPatientAccess as exc:
         return {"ok": False, "error": f"scope violation refused: {exc}"}
+    except MalformedResourceId as exc:
+        return {"ok": False, "error": f"malformed id refused: {exc}"}
     if outcome.ok:
         return {"ok": True, **(outcome.data or {})}
     return {"ok": False, "error": outcome.error}

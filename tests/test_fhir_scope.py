@@ -19,23 +19,43 @@ from clinical_agent.tools import ScopedFhirTools
 FHIR_URL = os.environ.get("CLINICAL_AGENT_FHIR_URL", "http://localhost:8080/fhir")
 
 
-def _reachable() -> bool:
+def _loaded_patients() -> int:
+    """Patients on the server, or -1 if there is no server.
+
+    Reachability alone is not enough: a server that is up but empty made these tests
+    raise KeyError('entry') out of the fixture rather than skip, which reads as a broken
+    test suite instead of an absent precondition.
+    """
     try:
-        urllib.request.urlopen(f"{FHIR_URL}/metadata", timeout=5)
-        return True
+        with urllib.request.urlopen(f"{FHIR_URL}/metadata", timeout=5):
+            pass
     except Exception:
-        return False
+        return -1
+    try:
+        with urllib.request.urlopen(f"{FHIR_URL}/Patient?_summary=count", timeout=10) as response:
+            return int(json.loads(response.read()).get("total", 0))
+    except Exception:
+        return 0
 
 
-pytestmark = pytest.mark.skipif(not _reachable(), reason=f"no FHIR server at {FHIR_URL}")
+_PATIENTS = _loaded_patients()
+pytestmark = pytest.mark.skipif(
+    _PATIENTS < 2,
+    reason=(
+        f"no FHIR server at {FHIR_URL}" if _PATIENTS < 0
+        else f"FHIR server at {FHIR_URL} holds {_PATIENTS} patients; need at least 2 "
+             "(run: make synthea && make load)"
+    ),
+)
 
 
 @pytest.fixture(scope="module")
 def two_patients() -> tuple[str, str]:
     payload = json.loads(urllib.request.urlopen(f"{FHIR_URL}/Patient?_count=2").read())
-    ids = [e["resource"]["id"] for e in payload["entry"]]
-    assert len(ids) >= 2, "need at least two loaded patients"
-    return ids[0], ids[1]
+    entries = payload.get("entry", [])
+    if len(entries) < 2:
+        pytest.skip(f"{FHIR_URL} returned {len(entries)} patients; need 2")
+    return entries[0]["resource"]["id"], entries[1]["resource"]["id"]
 
 
 def test_reads_are_scoped_and_redacted(two_patients, tmp_path):

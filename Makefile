@@ -5,7 +5,7 @@ PATIENTS ?= 200
 SEED ?= 20260902
 PY ?= .venv/bin/python
 
-.PHONY: fhir-up fhir-down fhir-check synthea synthea-jar load clean-fhir readme-check conversations eval smoke replay loadtest verify
+.PHONY: fhir-up fhir-down fhir-check synthea synthea-jar load clean-fhir readme-check fixture-load ci-fixture conversations eval smoke replay loadtest verify
 
 fhir-up:  ## Bring up HAPI FHIR + Postgres and wait for the capability statement
 	$(COMPOSE) up -d
@@ -56,6 +56,17 @@ load:  ## Load the generated bundles into HAPI. Refuses to load on top of existi
 fhir-check:  ## Assert the loaded dataset looks the way the agent expects
 	$(PY) scripts/fhir_check.py --fhir-url $(FHIR_URL)
 
+fixture-load:  ## Load the small committed fixture (10 patients). No 188 MB download.
+	@curl -sf -X POST $(FHIR_URL) -H 'Content-Type: application/fhir+json' \
+	  --data-binary @data/ci-fixture/bundle.json -o /tmp/fixture-load.json \
+	  -w "  HTTP %{http_code}\n"
+	@$(PY) -c "import json,collections; d=json.load(open('/tmp/fixture-load.json')); \
+	  print('  created:', dict(collections.Counter(e.get('response',{}).get('status','?') \
+	  for e in d.get('entry',[]))))"
+
+ci-fixture:  ## Rebuild data/ci-fixture/bundle.json from a full Synthea run
+	PYTHONPATH=src $(PY) scripts/make_ci_fixture.py
+
 conversations:  ## Regenerate the conversation set from whatever is loaded in FHIR
 	PYTHONPATH=src $(PY) scripts/generate_conversations.py --fhir-url $(FHIR_URL) --count 200
 
@@ -77,3 +88,6 @@ verify:  ## Everything a deploy must pass
 	$(MAKE) fhir-check
 	$(MAKE) smoke
 	$(MAKE) replay
+
+readme-check:  ## Regenerate every number in the README and diff it
+	PYTHONPATH=src $(PY) scripts/readme_check.py

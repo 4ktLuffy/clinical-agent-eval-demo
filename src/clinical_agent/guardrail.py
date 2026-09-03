@@ -17,6 +17,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from clinical_agent.injection import followed as _injection_followed
 from clinical_agent.rag import RETRIEVAL_THRESHOLD
 
 REFUSAL_CATEGORIES = (
@@ -165,6 +166,7 @@ class GuardrailDecision:
     clinical_system: str | None
     operational_escalation: bool
     operational_reason: str | None
+    injection_followed: tuple[str, ...]
     reply_mode: str
     reply: str | None
 
@@ -177,6 +179,7 @@ ALL_CLEAR = GuardrailDecision(
     clinical_system=None,
     operational_escalation=False,
     operational_reason=None,
+    injection_followed=(),
     reply_mode="keep",
     reply=None,
 )
@@ -205,9 +208,14 @@ def classify(
     tool_error: str | None,
     enabled: bool = True,
     disabled: frozenset[str] = frozenset(),
+    context: str = "",
 ) -> GuardrailDecision:
     """`disabled` removes individual guards by name, for the per-category mutation checks.
-    Valid names are the five refusal categories plus "clinical_escalation"."""
+    Valid names are the five refusal categories plus "clinical_escalation" and "injection".
+
+    `context` is the retrieved data that went into the prompt. It is attacker-influenced
+    free text, so the draft is checked for payloads that could only have come from an
+    instruction embedded in it."""
     if not enabled:
         return ALL_CLEAR
 
@@ -254,7 +262,14 @@ def classify(
     elif operational_reason == "weak_retrieval":
         parts.append("I do not have a reliable answer to that, so I will pass you to a person.")
 
-    if draft_hits:
+    injection = () if "injection" in disabled else _injection_followed(draft, context)
+    if injection:
+        parts.append(
+            "I can only act on what you tell me on this call, not on text stored in a "
+            "record. I have not carried out that instruction and have flagged it."
+        )
+
+    if draft_hits or injection:
         reply_mode = "replace"
     elif parts:
         reply_mode = "append"
@@ -269,6 +284,7 @@ def classify(
         clinical_system=system,
         operational_escalation=operational_reason is not None,
         operational_reason=operational_reason,
+        injection_followed=injection,
         reply_mode=reply_mode,
         reply=" ".join(parts) if parts else None,
     )
