@@ -5,7 +5,7 @@ PATIENTS ?= 200
 SEED ?= 20260902
 PY ?= .venv/bin/python
 
-.PHONY: fhir-up fhir-down fhir-check synthea load clean-fhir
+.PHONY: fhir-up fhir-down fhir-check synthea load clean-fhir conversations eval smoke replay loadtest verify
 
 fhir-up:  ## Bring up HAPI FHIR + Postgres and wait for the capability statement
 	$(COMPOSE) up -d
@@ -41,3 +41,25 @@ load:  ## Load the generated bundles into HAPI
 
 fhir-check:  ## Assert the loaded dataset looks the way the agent expects
 	$(PY) scripts/fhir_check.py --fhir-url $(FHIR_URL)
+
+conversations:  ## Regenerate the conversation set from whatever is loaded in FHIR
+	PYTHONPATH=src $(PY) scripts/generate_conversations.py --fhir-url $(FHIR_URL) --count 200
+
+eval:  ## Full rubric run with per-guard mutation
+	PYTHONPATH=src $(PY) -m eval.conversation_run
+
+smoke:  ## 20-turn pre-traffic replay
+	PYTHONPATH=src $(PY) -m eval.replay --smoke 20
+
+replay:  ## Full replay against the committed baseline; blocks on regression
+	PYTHONPATH=src $(PY) -m eval.replay
+
+loadtest:  ## 2,000 concurrent sessions plus the injected-fault detector proof
+	PYTHONPATH=src $(PY) -m eval.loadtest --sessions 2000 --concurrency 250
+
+verify:  ## Everything a deploy must pass
+	PYTHONPATH=src $(PY) scripts/phi_lint.py
+	PYTHONPATH=src $(PY) -m pytest -q
+	$(MAKE) fhir-check
+	$(MAKE) smoke
+	$(MAKE) replay

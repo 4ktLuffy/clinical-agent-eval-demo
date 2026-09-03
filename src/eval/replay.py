@@ -21,8 +21,18 @@ BASELINE = ROOT / "reports" / "replay-baseline.json"
 TOLERANCE = 0.01  # a dimension may not fall more than one point below baseline
 
 
-def current(conversations_path: Path) -> dict:
+def current(conversations_path: Path, smoke_turns: int = 0) -> dict:
     conversations = load(conversations_path)
+    if smoke_turns:
+        # Pre-traffic smoke: take whole conversations until the turn budget is met, so the
+        # multi-turn shape is preserved rather than truncating mid-conversation.
+        picked, count = [], 0
+        for conversation in conversations:
+            if count >= smoke_turns:
+                break
+            picked.append(conversation)
+            count += len(conversation["turns"])
+        conversations = picked
     corpus = Corpus.load(ROOT / "data" / "corpus")
     scores, _ = run_set(conversations, corpus)
     rubric = aggregate(scores)
@@ -43,17 +53,32 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--baseline", type=Path, default=BASELINE)
     parser.add_argument("--update-baseline", action="store_true")
     parser.add_argument("--tolerance", type=float, default=TOLERANCE)
+    parser.add_argument("--smoke", type=int, default=0,
+                        help="run only enough conversations to cover N turns")
     args = parser.parse_args(argv)
 
     key_present = bool(os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("OPENAI_API_KEY"))
     print(f"replay: {'real-model judge available' if key_present else 'mock path only, no API key present'}")
 
-    now = current(args.conversations)
+    now = current(args.conversations, smoke_turns=args.smoke)
 
     if args.update_baseline:
         args.baseline.parent.mkdir(parents=True, exist_ok=True)
         args.baseline.write_text(json.dumps(now, indent=2) + "\n", encoding="utf-8")
         print(f"baseline written to {args.baseline} ({now['turns']} turns)")
+        return 0
+
+    if args.smoke:
+        # A smoke run is a liveness check, not a regression gate: too few turns for the
+        # baseline rates to be comparable. It passes if nothing is broken outright.
+        broken = [d for d, r in now["rubric"].items() if r < 0.80]
+        print(f"smoke: {now['turns']} turns")
+        for dimension, rate in now["rubric"].items():
+            print(f"  {dimension:<28} {rate * 100:>6.1f}%")
+        if broken or not now["mutation_all_drop"]:
+            print("SMOKE FAILED: " + ", ".join(broken or ["a guard stopped biting"]), file=sys.stderr)
+            return 1
+        print("smoke passed")
         return 0
 
     if not args.baseline.exists():

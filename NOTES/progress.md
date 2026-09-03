@@ -40,7 +40,7 @@ Consequences for gate 1 are worked in the gate 1 section below.
 | 2. MCP server against real FHIR | not started |
 | 3. Evals at their shape | done |
 | 4. Load, latency, anomalies | done |
-| 5. Go-live runbook | not started |
+| 5. Go-live runbook | done |
 | 6. README rewrite | not started |
 
 ## Gate 1 — real FHIR (done)
@@ -209,3 +209,25 @@ than tuning the faults until they passed.
     rise, which a 3x cliff rule correctly ignores. Rather than lower the threshold to make
     the test pass, I set the fault to a magnitude that is actually a cliff. A 1.7x rise is
     drift, and the rule is deliberately not tuned to page on it.
+
+## Gate 5 — go-live runbook (done)
+
+`RUNBOOK.md`, 181 lines, written for the engineer standing this up against a customer's FHIR
+server rather than for the person who built it. Seven sections: prerequisites, deploy,
+pre-traffic verification, what green means, rollback, on-call response per detector, and what
+to tell the customer the system will not do.
+
+Supporting work: `eval.replay --smoke N` for the 20-turn pre-traffic replay, and `make`
+targets `conversations`, `eval`, `smoke`, `replay`, `loadtest`, `verify`.
+
+Points worth your eye:
+
+- **Green is five conditions, one of which is an audit assertion**: zero `outcome=blocked`
+  lines you did not cause. A blocked line is a refused cross-patient access.
+- **Rollback cancels rather than deletes.** A cancelled Appointment is a record; a deleted
+  one is a gap. The runbook says never to delete audit lines.
+- **Destructive targets are called out by name** — `make clean-fhir` destroys a volume and
+  must never be pointed at a customer server.
+- The on-call section for `refusal_rate_drift` says to stop traffic if drift is real and
+  unexplained, on the grounds that an agent which has stopped refusing is worse than one
+  that is down. Push back if you disagree; it is a judgement call I made alone.
