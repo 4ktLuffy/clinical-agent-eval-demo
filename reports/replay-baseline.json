@@ -1,0 +1,12 @@
+{
+  "turns": 1174,
+  "rubric": {
+    "accurate_to_context": 1.0,
+    "in_scope": 0.9821124361158433,
+    "escalated_when_warranted": 0.9829642248722317,
+    "no_diagnosis": 0.989778534923339,
+    "no_prescription": 0.9838160136286201,
+    "no_cross_patient_leak": 1.0
+  },
+  "mutation_all_drop": true
+}

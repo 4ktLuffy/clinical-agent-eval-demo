@@ -204,14 +204,22 @@ def classify(
     retrieval_top_score: float,
     tool_error: str | None,
     enabled: bool = True,
+    disabled: frozenset[str] = frozenset(),
 ) -> GuardrailDecision:
+    """`disabled` removes individual guards by name, for the per-category mutation checks.
+    Valid names are the five refusal categories plus "clinical_escalation"."""
     if not enabled:
         return ALL_CLEAR
 
     turn_hits = _refusal_hits(patient_turn, _REFUSAL_RE)
     draft_hits = _refusal_hits(draft, _DRAFT_RE)
+    if disabled:
+        turn_hits = tuple(c for c in turn_hits if c not in disabled)
+        draft_hits = tuple(c for c in draft_hits if c not in disabled)
 
     system, severity = _clinical_hit(patient_turn)
+    if "clinical_escalation" in disabled:
+        system, severity = None, None
     # Detect and hand off, never treat: a mental health crisis escalates and must not
     # be turned into a refusal.
     if system == "mental_health":

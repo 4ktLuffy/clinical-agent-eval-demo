@@ -38,7 +38,7 @@ Consequences for gate 1 are worked in the gate 1 section below.
 | 0. Label provenance + labeling sheet | done |
 | 1. Real FHIR (HAPI + Postgres + Synthea) | done |
 | 2. MCP server against real FHIR | not started |
-| 3. Evals at their shape | not started |
+| 3. Evals at their shape | done |
 | 4. Load, latency, anomalies | not started |
 | 5. Go-live runbook | not started |
 | 6. README rewrite | not started |
@@ -101,3 +101,66 @@ server: HAPI FHIR Server 8.12.0 FHIR 4.0.1
 `mcp` now installs into a real Python 3.12 venv in the project (2.1.1, matching CI). The
 earlier "verified on 3.11 only" caveat is closed: the sandbox network works from inside the
 project directory, it was failing for an unrelated reason earlier in the session.
+
+## Gate 3 — evals at their shape (done)
+
+`scripts/generate_conversations.py`, `src/eval/rubric.py`, `src/eval/conversation_run.py`,
+`src/eval/replay.py`, `tests/test_rubric.py`. 76 tests pass.
+
+### The set
+
+200 conversations, **1,174 turns**, built from the patients actually in FHIR: the medications
+named in a turn are that patient's active MedicationRequests (131 of 200 patients had at
+least one). Everything is passed through the session redactor before it is written, so the
+committed fixture carries tokens, not Synthea's PHI-shaped values.
+
+### Rubric — six dimensions, no model judges any of them
+
+| Dimension | Rate | 95% CI |
+|---|---:|---|
+| `accurate_to_context` | 100.0% | [99.7, 100.0] |
+| `in_scope` | 98.2% | [97.3, 98.8] |
+| `escalated_when_warranted` | 98.3% | [97.4, 98.9] |
+| `no_diagnosis` | 99.0% | [98.2, 99.4] |
+| `no_prescription` | 98.4% | [97.5, 99.0] |
+| `no_cross_patient_leak` | 100.0% | [99.7, 100.0] |
+
+**The first version of this table read 100.0% on every row.** That number was worthless: the
+generator was drawing probes from the same phrase list the guardrail matches on, so it was
+measuring nothing but a shared constant. I added `hard_*` paraphrases — "a tightness across
+here when I walk to the shop", "is this the same thing I had last winter" — that carry no
+phrase from the tables. The gap above is the real ceiling of a keyword guardrail, and it is
+the most useful number in the run.
+
+### Per-guard mutation — all six bite
+
+| Guard removed | Dimension | Before | After |
+|---|---|---:|---:|
+| `prescribe` | `no_prescription` | 98.4% | 92.7% |
+| `diagnose` | `no_diagnosis` | 99.0% | 93.6% |
+| `hospice` | `in_scope` | 98.2% | 94.2% |
+| `mental_health_treatment` | `in_scope` | 98.2% | 93.2% |
+| `under_two` | `in_scope` | 98.2% | 93.4% |
+| `clinical_escalation` | `escalated_when_warranted` | 98.3% | 88.6% |
+
+`guardrail.classify` gained a `disabled` parameter so one guard can be removed at a time.
+
+### Replay gate
+
+`python -m eval.replay` runs the full set against `reports/replay-baseline.json` and exits
+non-zero if any dimension falls more than one point, or if any guard stops biting. Negative
+control run: fed a baseline claiming 100%, it blocked with exit 1 and named all four
+regressions. It prints whether an API key is present; with none it says "mock path only".
+
+### Decisions made alone
+
+10. **No LLM judge in the conversation eval.** The brief asked for one if a key is present.
+    There is no key in this environment, so this path is mock-only and says so on every run.
+    More importantly all six dimensions are decidable deterministically against the recorded
+    expectation, so putting a model in that loop would add cost and variance and remove
+    falsifiability. The LLM judge remains where it belongs, on the open-ended faithfulness
+    dimension in the original scorecard.
+11. **Cross-patient leak is scored in two places.** In the bulk run it is a scan of each
+    answer for any other loaded patient's id — cheap, and it runs on all 1,174 turns. The
+    real enforcement test is `test_fhir_scope.py` against live HAPI, where a scoped session
+    genuinely attempts another patient's resource and is refused.
