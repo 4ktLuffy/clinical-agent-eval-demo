@@ -12,6 +12,7 @@ reports/*
 !reports/scorecard.md
 !reports/conversation-eval.md
 !reports/replay-baseline.json
+!reports/load-report.html
 reports-real/
 
 # Generated / downloaded build inputs, not source.

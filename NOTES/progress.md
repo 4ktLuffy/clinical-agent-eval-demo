@@ -39,7 +39,7 @@ Consequences for gate 1 are worked in the gate 1 section below.
 | 1. Real FHIR (HAPI + Postgres + Synthea) | done |
 | 2. MCP server against real FHIR | not started |
 | 3. Evals at their shape | done |
-| 4. Load, latency, anomalies | not started |
+| 4. Load, latency, anomalies | done |
 | 5. Go-live runbook | not started |
 | 6. README rewrite | not started |
 
@@ -164,3 +164,48 @@ regressions. It prints whether an API key is present; with none it says "mock pa
     answer for any other loaded patient's id — cheap, and it runs on all 1,174 turns. The
     real enforcement test is `test_fhir_scope.py` against live HAPI, where a scoped session
     genuinely attempts another patient's resource and is refused.
+
+## Gate 4 — load, latency, detectors (done)
+
+`src/clinical_agent/detectors.py`, `src/eval/loadtest.py`, `tests/test_detectors.py`.
+84 tests pass. `reports/load-report.html` is generated locally with inline CSS and **zero
+external references** (checked: 0 `src=`/`href=` pointing at http).
+
+### Run
+
+2,000 concurrent synthetic sessions per scenario, concurrency 250, five scenarios,
+**58,700 turns in 32s** on the mock model path. No API key present, so the real-model
+variant was not run.
+
+| Fault | p95 | Expected detector | Result |
+|---|---:|---|---|
+| baseline | 107 ms | nothing | quiet |
+| tool_error_spike | 108 ms | `tool_error_rate_spike` | fired |
+| latency_cliff | 605 ms | `latency_cliff` | fired |
+| guardrail_silently_off | 108 ms | `refusal_rate_drift` | fired |
+| cross_patient_probe | 108 ms | `cross_patient_attempt` | fired |
+
+The load test exits non-zero if any expected detector fails to fire **or** if the baseline
+raises anything, so the proof is a build gate rather than a claim.
+
+### Two real detector bugs, found by running it at size
+
+Both were invisible at 200 sessions and only appeared at 2,000. I fixed the detectors rather
+than tuning the faults until they passed.
+
+1. **`latency_cliff` compared a tail p95 against a head median.** Two different statistics.
+   Under load the ordinary queueing tail made a healthy system look like a cliff, and at
+   2,000 sessions the mismatch also hid a genuine 6x one. Now it compares p95 with p95.
+2. **Both drift detectors used "everything except the window" as their baseline.** A fault
+   that has been running for a while contaminates that baseline and hides itself — the
+   guardrail-off scenario dragged the whole-run refusal average down to meet its own tail,
+   and the latency fault did the same. Both now reference the **earliest** window, which is
+   also the question a deploy actually asks: is this worse than how it started. There is a
+   regression test for exactly this masking case.
+
+### Decision made alone
+
+12. **The injected latency fault is +600 ms, not +180 ms.** The first value produced a 1.7x
+    rise, which a 3x cliff rule correctly ignores. Rather than lower the threshold to make
+    the test pass, I set the fault to a magnitude that is actually a cliff. A 1.7x rise is
+    drift, and the rule is deliberately not tuned to page on it.
