@@ -41,7 +41,7 @@ Consequences for gate 1 are worked in the gate 1 section below.
 | 3. Evals at their shape | done |
 | 4. Load, latency, anomalies | done |
 | 5. Go-live runbook | done |
-| 6. README rewrite | not started |
+| 6. README rewrite | done |
 
 ## Gate 1 — real FHIR (done)
 
@@ -231,3 +231,25 @@ Points worth your eye:
 - The on-call section for `refusal_rate_drift` says to stop traffic if drift is real and
   unexplained, on the grounds that an agent which has stopped refusing is worse than one
   that is down. Push back if you disagree; it is a judgement call I made alone.
+
+## Gate 6 — README rewrite (done)
+
+161 lines. Limitations are the **first section after the opening paragraph**, before any
+result: AI-reader labels not clinician, model is not Polaris and this is not a Hippocratic AI
+system, Synthea data is synthetic, not FHIR-conformant in the conformance-suite sense, not
+voice, and the escalation table is not a triage engine.
+
+Mermaid architecture diagram, one paragraph per component mapping to the posting, the rubric
+and mutation tables, the load and detector table, and `#264` linked as the prior
+permission-scoping and audit work in production code — the same problem solved at the Odoo
+layer that this repo solves at the FHIR layer.
+
+`scripts/verify_quotes.py` pins the posting text and asserts all six quoted phrases are
+verbatim and present in the README, including that it says "before customers do" and not
+"notice". It runs in CI. It caught two phrases I had paraphrased rather than quoted.
+
+### Decision made alone
+
+13. **The README is 161 lines, over the ~120 line target from the original brief.** That
+    target predates four new components. I did not restate it as a constraint for this build;
+    say the word and I will cut the component paragraphs down.
