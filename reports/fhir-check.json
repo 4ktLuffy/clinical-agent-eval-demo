@@ -1,0 +1,27 @@
+{
+  "fhir_url": "http://localhost:8084/fhir",
+  "server": "HAPI FHIR Server 8.12.0 FHIR 4.0.1",
+  "results": {
+    "Patient": {
+      "found": 213,
+      "minimum": 150
+    },
+    "Encounter": {
+      "found": 11947,
+      "minimum": 500
+    },
+    "MedicationRequest": {
+      "found": 10337,
+      "minimum": 100
+    },
+    "Condition": {
+      "found": 8457,
+      "minimum": 200
+    },
+    "Observation": {
+      "found": 121010,
+      "minimum": 500
+    }
+  },
+  "failures": []
+}

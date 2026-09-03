@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from pathlib import Path
 import urllib.error
 import urllib.request
 
@@ -46,6 +47,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="fhir_check")
     parser.add_argument("--fhir-url", default="http://localhost:8080/fhir")
     parser.add_argument("--json", action="store_true", help="emit machine-readable output")
+    parser.add_argument("--out", type=Path, default=None,
+                        help="also write the result here, as the artifact the README cites")
     args = parser.parse_args(argv)
 
     try:
@@ -65,8 +68,14 @@ def main(argv: list[str] | None = None) -> int:
         if 0 <= found < minimum:
             failures.append(f"{resource}: {found} < {minimum}")
 
+    payload = {"fhir_url": args.fhir_url, "server": server, "results": results,
+               "failures": failures}
+    if args.out:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        print(f"wrote {args.out}")
     if args.json:
-        print(json.dumps({"server": server, "results": results, "failures": failures}, indent=2))
+        print(json.dumps(payload, indent=2))
     else:
         print(f"server: {server}")
         for resource, entry in results.items():

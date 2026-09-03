@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """Regenerate every number the README claims and diff it against the file.
 
+Numbers are read from **committed artifacts produced by the documented commands**, never
+from whatever server happens to be running or whatever run happened last. An earlier
+version queried the live server and read the most recent load report, so it failed in CI
+for the wrong reason: CI loads a 10-patient fixture and runs a 400-session load, while the
+README documents the full 213-patient dataset and a 2,000-session run. Comparing a claim
+against an unrelated run is not a fact check.
+
 Each check names where its value comes from. Nothing here reads a number out of the
 README and compares it to itself: the expected side is always recomputed from a report,
 a live server, or the code. A number that cannot be regenerated does not belong in the
@@ -113,24 +120,27 @@ def build_checks() -> tuple[list[Check], list[str]]:
     else:
         skipped.append("reports/load-report.json missing (run: make loadtest)")
 
-    software = _fhir_software()
-    if software:
-        version, fhir_version = software
-        checks.append(Check("HAPI version", f"{FHIR_URL}/metadata", version, rf"HAPI FHIR JPA {re.escape(version)}"))
-        checks.append(Check("FHIR version", f"{FHIR_URL}/metadata", fhir_version, rf"\(R4 {re.escape(fhir_version)}\)"))
+    dataset = _load("fhir-check.json")
+    if dataset:
+        source = "reports/fhir-check.json (make fhir-check)"
+        server = dataset["server"]          # e.g. "HAPI FHIR Server 8.12.0 FHIR 4.0.1"
+        parts = server.split()
+        version, fhir_version = parts[3], parts[-1]
+        checks.append(Check("HAPI version", source, version, rf"HAPI FHIR JPA {re.escape(version)}"))
+        checks.append(Check("FHIR version", source, fhir_version, rf"\(R4 {re.escape(fhir_version)}\)"))
         for resource, phrase in (("Patient", r"{} Synthea patients"),
                                  ("Encounter", r"{} encounters"),
                                  ("MedicationRequest", r"{} medication requests"),
                                  ("Observation", r"{} observations")):
-            count = _fhir_count(resource)
-            if count is None:
-                skipped.append(f"{resource} count unavailable")
+            entry = dataset["results"].get(resource)
+            if not entry:
+                skipped.append(f"{resource} not in fhir-check.json")
                 continue
-            rendered = f"{count:,}"
-            checks.append(Check(f"{resource} count", f"{FHIR_URL}/{resource}?_summary=count",
-                                rendered, phrase.format(re.escape(rendered))))
+            rendered = f"{entry['found']:,}"
+            checks.append(Check(f"{resource} count", source, rendered,
+                                phrase.format(re.escape(rendered))))
     else:
-        skipped.append(f"no FHIR server at {FHIR_URL} (run: make fhir-up && make load)")
+        skipped.append("reports/fhir-check.json missing (run: make fhir-check against a full load)")
 
     phrases = _escalation_phrase_count()
     checks.append(Check("escalation phrases", "clinical_agent.guardrail._ESCALATION_PATTERNS",

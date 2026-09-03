@@ -79,7 +79,9 @@ jobs:
         env:
           PYTHONPATH: src
       - name: Load test and detector proof
-        run: python -m eval.loadtest --sessions 400 --concurrency 100
+        # Smaller than the documented run, so it writes elsewhere rather than
+        # overwriting the committed artifact the README cites.
+        run: python -m eval.loadtest --sessions 400 --concurrency 100 --out reports-ci
         env:
           PYTHONPATH: src
       - name: Live demo with audit chain verification

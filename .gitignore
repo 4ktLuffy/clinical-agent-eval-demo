@@ -13,6 +13,8 @@ reports/*
 !reports/conversation-eval.md
 !reports/replay-baseline.json
 !reports/load-report.html
+!reports/load-report.json
+!reports/fhir-check.json
 reports-real/
 
 # Generated / downloaded build inputs, not source.

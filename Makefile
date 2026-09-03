@@ -54,7 +54,7 @@ load:  ## Load the generated bundles into HAPI. Refuses to load on top of existi
 	$(PY) scripts/load_synthea.py --fhir-url $(FHIR_URL) --bundle-dir data/synthea/fhir
 
 fhir-check:  ## Assert the loaded dataset looks the way the agent expects
-	$(PY) scripts/fhir_check.py --fhir-url $(FHIR_URL)
+	$(PY) scripts/fhir_check.py --fhir-url $(FHIR_URL) --out reports/fhir-check.json
 
 fixture-load:  ## Load the small committed fixture (10 patients). No 188 MB download.
 	@curl -sf -X POST $(FHIR_URL) -H 'Content-Type: application/fhir+json' \

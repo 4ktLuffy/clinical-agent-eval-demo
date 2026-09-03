@@ -26,19 +26,19 @@ the baseline row must stay quiet. A row is PASS only if that held.</p>
 <table>
 <tr><th>Fault</th><th>Turns</th><th>p50 ms</th><th>p95 ms</th><th>p99 ms</th>
     <th>Refusal</th><th>Tool errors</th><th>Expected</th><th>Fired</th><th>Verdict</th></tr>
-<tr class='ok'><td><code>baseline</code></td><td>11740</td><td>105.47</td><td>108.24</td><td>110.11</td><td>24.9%</td><td>0.0%</td><td><em>none</em></td><td><em>quiet</em></td><td>PASS</td></tr>
-<tr class='ok'><td><code>tool_error_spike</code></td><td>11740</td><td>105.77</td><td>108.43</td><td>113.12</td><td>24.9%</td><td>35.4%</td><td>tool_error_rate_spike</td><td><code>tool_error_rate_spike</code></td><td>PASS</td></tr>
-<tr class='ok'><td><code>latency_cliff</code></td><td>11740</td><td>106.83</td><td>604.64</td><td>605.50</td><td>24.9%</td><td>0.0%</td><td>latency_cliff</td><td><code>latency_cliff</code></td><td>PASS</td></tr>
-<tr class='ok'><td><code>guardrail_silently_off</code></td><td>11740</td><td>104.20</td><td>108.04</td><td>111.22</td><td>18.8%</td><td>0.0%</td><td>refusal_rate_drift</td><td><code>refusal_rate_drift</code></td><td>PASS</td></tr>
-<tr class='ok'><td><code>cross_patient_probe</code></td><td>11740</td><td>106.10</td><td>109.16</td><td>110.80</td><td>24.9%</td><td>0.0%</td><td>cross_patient_attempt</td><td><code>cross_patient_attempt</code></td><td>PASS</td></tr>
+<tr class='ok'><td><code>baseline</code></td><td>12090</td><td>105.62</td><td>118.56</td><td>149.21</td><td>23.5%</td><td>0.0%</td><td><em>none</em></td><td><em>quiet</em></td><td>PASS</td></tr>
+<tr class='ok'><td><code>tool_error_spike</code></td><td>12090</td><td>105.33</td><td>109.14</td><td>112.43</td><td>23.5%</td><td>35.4%</td><td>tool_error_rate_spike</td><td><code>tool_error_rate_spike</code></td><td>PASS</td></tr>
+<tr class='ok'><td><code>latency_cliff</code></td><td>12090</td><td>106.06</td><td>604.22</td><td>605.16</td><td>23.5%</td><td>0.0%</td><td>latency_cliff</td><td><code>latency_cliff</code></td><td>PASS</td></tr>
+<tr class='ok'><td><code>guardrail_silently_off</code></td><td>12090</td><td>104.61</td><td>111.41</td><td>115.95</td><td>17.6%</td><td>0.0%</td><td>refusal_rate_drift</td><td><code>refusal_rate_drift</code></td><td>PASS</td></tr>
+<tr class='ok'><td><code>cross_patient_probe</code></td><td>12090</td><td>105.20</td><td>111.46</td><td>125.02</td><td>23.5%</td><td>0.0%</td><td>cross_patient_attempt</td><td><code>cross_patient_attempt</code></td><td>PASS</td></tr>
 </table>
 <h2>Alerts raised</h2>
 <table>
 <tr><th>Fault</th><th>Detector</th><th>Alert</th></tr>
 <tr><td><code>tool_error_spike</code></td><td><code>tool_error_rate_spike</code></td><td>tool_error_rate_spike: 35.4% of 4000 tool calls failed</td></tr>
-<tr><td><code>latency_cliff</code></td><td><code>latency_cliff</code></td><td>latency_cliff: tail p95 605ms is over 3x the opening p95 111ms</td></tr>
-<tr><td><code>guardrail_silently_off</code></td><td><code>refusal_rate_drift</code></td><td>refusal_rate_drift: last 200 turns at 0.0% vs run baseline 28.5%</td></tr>
-<tr><td><code>cross_patient_probe</code></td><td><code>cross_patient_attempt</code></td><td>cross_patient_attempt: 47 refused scope violation(s) in sessions s00119, s00155, s00175, s00215, s00321</td></tr>
+<tr><td><code>latency_cliff</code></td><td><code>latency_cliff</code></td><td>latency_cliff: tail p95 607ms is over 3x the opening p95 110ms</td></tr>
+<tr><td><code>guardrail_silently_off</code></td><td><code>refusal_rate_drift</code></td><td>refusal_rate_drift: last 200 turns at 0.0% vs run baseline 22.0%</td></tr>
+<tr><td><code>cross_patient_probe</code></td><td><code>cross_patient_attempt</code></td><td>cross_patient_attempt: 50 refused scope violation(s) in sessions s00119, s00155, s00175, s00215, s00248</td></tr>
 </table>
 <h2>Detector thresholds</h2>
 <p class="note">These rules are ours. No vendor publishes a rule set; only the outcome.</p>

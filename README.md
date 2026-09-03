@@ -76,7 +76,7 @@ medications named in a turn are that patient's active MedicationRequests. Six di
 scored deterministically against the expectation recorded with each turn — no model judges any
 of them. Removing any single guard degrades the dimension it protects.
 
-**Load and detectors.** 2,000 concurrent sessions per scenario, 58,700 turns. Four
+**Load and detectors.** 2,000 concurrent sessions per scenario, 60,450 turns. Four
 detectors, each proved by an injected fault, with a clean baseline that must stay quiet. The
 posting's phrasing for this is "instrumenting deployed agents" and "established monitoring
 that catches anomalies before customers do" — the detectors are ours; no vendor publishes a
