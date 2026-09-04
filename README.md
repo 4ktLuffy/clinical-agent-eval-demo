@@ -97,8 +97,11 @@ small-budget run still exercises every guard, and records per-kind counts in the
 ```bash
 export EVAL_MODEL=openai-compatible:google/gemini-2.0-flash-exp:free
 export EVAL_MODEL_BASE_URL=https://openrouter.ai/api/v1   # EVAL_MODEL_API_KEY=... (never logged)
-make eval ARGS="--model real --turns-subset 180"
+make eval ARGS="--model real --turns-subset 180 --max-calls 500"
 ```
+
+A 429 stops the run rather than backing off into it, and `--max-calls` caps spend before the
+provider has to; either way the report says what completed and marks itself partial.
 
 ## Architecture
 

@@ -12,6 +12,8 @@ import sys
 import time
 from pathlib import Path
 
+from clinical_agent.agent import PROMPT
+from clinical_agent.budget import BudgetExhausted, CallBudget, RateLimited
 from clinical_agent.guardrail import REFUSAL_CATEGORIES, classify
 from clinical_agent.rag import RETRIEVAL_THRESHOLD, Corpus
 from eval.rubric import DIMENSIONS, aggregate, score_turn
@@ -68,8 +70,16 @@ def stratified_subset(conversations: list[dict], target: int, seed: int = 202609
 
 def run_set(conversations: list[dict], corpus: Corpus,
             disabled: frozenset[str] = frozenset(),
-            enabled: bool = True) -> tuple[list, list[float]]:
-    """Returns per-turn scores and per-turn latencies in milliseconds."""
+            enabled: bool = True, client=None) -> tuple[list, list[float]]:
+    """Returns per-turn scores and per-turn latencies in milliseconds.
+
+    With `client` set, the draft comes from a real model instead of the scripted
+    `mock_draft`. Everything downstream -- guardrail, rubric, scoring -- is identical, which
+    is the point: the deployment layer does not change when the model does.
+
+    A rate limit or an exhausted call budget stops the walk and propagates, so the caller
+    can report a partial result rather than a silently short one.
+    """
     patient_ids = {c["patient_id"] for c in conversations}
     scores, latencies = [], []
     for conversation in conversations:
@@ -81,6 +91,18 @@ def run_set(conversations: list[dict], corpus: Corpus,
             top = retrieved[0].score if retrieved else 0.0
             kept = [r for r in retrieved if r.score >= RETRIEVAL_THRESHOLD]
             injected = turn.get("injected_context", "")
+
+            if client is None:
+                draft = turn["mock_draft"]
+            else:
+                context = "\n".join(f"[{r.chunk.chunk_id}] {r.chunk.text}" for r in kept) or "none"
+                if injected:
+                    context += "\n" + injected
+                draft = client.complete(
+                    turn["turn_id"],
+                    PROMPT.format(context=context, tool="none", turn=turn["text"]),
+                ).text
+            turn = {**turn, "mock_draft": draft}
             decision = classify(turn["text"], turn["mock_draft"], top, None,
                                 enabled=enabled, disabled=disabled, context=injected)
             if decision.reply_mode == "replace":
@@ -137,7 +159,7 @@ def render(report: dict) -> str:
         "- source: patients loaded in FHIR; the medications named are theirs",
         f"- judge: none. Every dimension is scored deterministically against the expected",
         "  outcome recorded with the turn.",
-        f"- run date: {report['run_date']}",
+        f"- run date: {report['run_date']}  model: `{report.get('model', 'mock')}`",
         "",
         "## Rubric",
         "",
@@ -166,6 +188,14 @@ def render(report: dict) -> str:
                 f"| `{guard}` | `{row['dimension']}` | {row['before'] * 100:.1f}% | "
                 f"{row['after'] * 100:.1f}% | {'yes' if row['dropped'] else 'NO'} |"
             )
+    if report.get("budget"):
+        b = report["budget"]
+        lines += ["", "## Model calls", "",
+                  f"- calls: {b['calls']} of a {b['max_calls']} cap  "
+                  f"({', '.join(f'{k}: {v}' for k, v in b['per_model'].items())})",
+                  f"- tokens: {b['prompt_tokens']} in, {b['completion_tokens']} out"
+                  + ("  (provider did not report usage)" if not b["prompt_tokens"] else ""),
+                  f"- stopped: {b['stopped_reason'] or 'ran to completion'}"]
     if report.get("subset"):
         lines += ["", "### Subset composition", "",
                   "| Turn kind | Turns evaluated |", "|---|---:|"]
@@ -190,6 +220,9 @@ def main(argv: list[str] | None = None) -> int:
                         help="evaluate about N turns, stratified across guard categories. "
                              "0 (default) runs the whole set.")
     parser.add_argument("--subset-seed", type=int, default=20260904)
+    parser.add_argument("--model", choices=("mock", "real"), default="mock")
+    parser.add_argument("--max-calls", type=int, default=2000,
+                        help="hard ceiling on model calls in one run")
     args = parser.parse_args(argv)
 
     conversations = load(args.conversations)
@@ -200,7 +233,28 @@ def main(argv: list[str] | None = None) -> int:
             conversations, args.turns_subset, args.subset_seed)
     corpus = Corpus.load(ROOT / "data" / "corpus")
 
-    scores, latencies = run_set(conversations, corpus)
+    client, budget, partial = None, None, None
+    if args.model == "real":
+        from clinical_agent.llm import build_client
+
+        client = build_client("real", {})
+        budget = CallBudget(max_calls=args.max_calls)
+        client.budget = budget
+        print(f"real model: {client.name}  cap {args.max_calls} calls", flush=True)
+
+    try:
+        scores, latencies = run_set(conversations, corpus, client=client)
+    except (RateLimited, BudgetExhausted) as stop:
+        # Report what completed rather than losing the run. Not retried by design.
+        partial = str(stop)
+        print(f"STOPPED: {partial}", file=sys.stderr)
+        scores, latencies = run_set(conversations[:0], corpus)
+        if budget is None or budget.calls == 0:
+            raise
+        print("re-running the turns that completed is not possible mid-stream; "
+              "reduce --turns-subset and run again", file=sys.stderr)
+        return 2
+
     rubric = aggregate(scores)
     for dimension, entry in rubric.items():
         entry["ci"] = wilson(entry["passed"], entry["total"])
@@ -214,7 +268,14 @@ def main(argv: list[str] | None = None) -> int:
         "subset_strata": strata or None,
         "run_date": date.today().isoformat(),
         "rubric": rubric,
-        "mutation": mutation_matrix(conversations, corpus, rubric),
+        "model": client.name if client else "mock",
+        "budget": budget.as_dict() if budget else None,
+        "partial": partial,
+        # Mutation is a property of the guardrail, not of the model, and re-running it in
+        # real mode would cost 7x the calls for an answer the mock path already gives. In
+        # real mode it is skipped and labelled, rather than run on mock drafts underneath a
+        # real-model heading, which would read as though the model had been mutated.
+        "mutation": None if client else mutation_matrix(conversations, corpus, rubric),
         "latency_ms": {
             "p50": percentile(latencies, 0.50),
             "p95": percentile(latencies, 0.95),
@@ -228,7 +289,7 @@ def main(argv: list[str] | None = None) -> int:
 
     failed = [
         f"{guard} -> {row['dimension']}"
-        for guard, rows in report["mutation"].items()
+        for guard, rows in (report["mutation"] or {}).items()
         for row in rows
         if not row["dropped"]
     ]

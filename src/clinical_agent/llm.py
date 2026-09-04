@@ -10,6 +10,8 @@ import os
 from dataclasses import dataclass
 from typing import Protocol
 
+from clinical_agent.budget import CallBudget, RateLimited, is_rate_limit
+
 DEFAULT_MODEL = "claude-opus-5"
 
 # Provider selection. EVAL_MODEL is "<provider>:<model>":
@@ -78,19 +80,28 @@ class AnthropicClient:
         self.name = model
         self._model = model
         self._client = None
+        self.budget = CallBudget()
 
     def complete(self, turn_id: str, prompt: str) -> Draft:
+        self.budget.spend(self._model)
         if self._client is None:
             import anthropic
 
             self._client = anthropic.Anthropic(
                 api_key=os.environ.get("ANTHROPIC_API_KEY") or os.environ[ENV_API_KEY]
             )
-        message = self._client.messages.create(
-            model=self._model,
-            max_tokens=400,
-            messages=[{"role": "user", "content": prompt}],
-        )
+        try:
+            message = self._client.messages.create(
+                model=self._model,
+                max_tokens=400,
+                messages=[{"role": "user", "content": prompt}],
+            )
+        except Exception as exc:
+            if is_rate_limit(exc):
+                self.budget.note_rate_limit(self._model)
+                raise RateLimited(self.budget.stopped_reason) from exc
+            raise
+        self.budget.record_usage(getattr(message, "usage", None))
         text = "".join(block.text for block in message.content if block.type == "text")
         return Draft(text=text.strip(), model=self._model)
 
@@ -98,7 +109,8 @@ class AnthropicClient:
 class OpenAICompatibleClient:
     """Any endpoint speaking the OpenAI chat API: OpenRouter, Gemini, vLLM, LM Studio."""
 
-    def __init__(self, model: str, base_url: str, api_key: str) -> None:
+    def __init__(self, model: str, base_url: str, api_key: str,
+                 budget: CallBudget | None = None) -> None:
         if not base_url:
             raise RuntimeError(
                 f"{ENV_BASE_URL} must be set for the openai-compatible provider "
@@ -111,17 +123,26 @@ class OpenAICompatibleClient:
         self._base_url = base_url
         self._api_key = api_key
         self._client = None
+        self.budget = budget or CallBudget()
 
     def complete(self, turn_id: str, prompt: str) -> Draft:
         if self._client is None:
             import openai
 
             self._client = openai.OpenAI(base_url=self._base_url, api_key=self._api_key)
-        response = self._client.chat.completions.create(
-            model=self._model,
-            max_tokens=400,
-            messages=[{"role": "user", "content": prompt}],
-        )
+        self.budget.spend(self._model)
+        try:
+            response = self._client.chat.completions.create(
+                model=self._model,
+                max_tokens=400,
+                messages=[{"role": "user", "content": prompt}],
+            )
+        except Exception as exc:
+            if is_rate_limit(exc):
+                self.budget.note_rate_limit(self._model)
+                raise RateLimited(self.budget.stopped_reason) from exc
+            raise
+        self.budget.record_usage(getattr(response, "usage", None))
         return Draft(text=(response.choices[0].message.content or "").strip(), model=self._model)
 
 
