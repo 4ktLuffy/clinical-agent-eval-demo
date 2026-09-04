@@ -61,11 +61,12 @@ def evaluate(
     guardrail: bool,
     out_dir: Path,
     sample_rate: float,
+    judge_mode: str | None = None,
 ) -> dict[str, Any]:
     scripts = {t["turn_id"]: t["mock_draft"] for t in turns}
     corpus = Corpus.load(ROOT / "data" / "corpus")
     client = build_client(mode, scripts)
-    judge = build_judge(mode)
+    judge = build_judge(judge_mode or mode)
     rule_judge = build_judge("mock")
 
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -184,7 +185,9 @@ def evaluate(
                 "agreement": agreement(jc, label_cite),
             },
         }
-        if mode == "real":
+        # Gated on the judge, not the drafting client: --judge real runs an LLM judge
+        # over mock drafts, and that row still has a rule judge to disagree with.
+        if (judge_mode or mode) == "real":
             rf = [bucket(s.faithfulness) for s in rule_scores]
             rc = [bucket(s.citation_quality) for s in rule_scores]
             inter_judge = {
@@ -379,6 +382,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="eval.run")
     parser.add_argument("--model", choices=("mock", "real"), default="mock")
     parser.add_argument("--no-guardrail", action="store_true")
+    parser.add_argument("--judge", choices=("mock", "real"), default=None,
+                        help="judge independently of the drafting client, so a judge row "
+                             "can be measured against the same drafts")
     parser.add_argument("--sample-rate", type=float, default=1.0)
     parser.add_argument("--turns", type=Path, default=ROOT / "data" / "turns.json")
     parser.add_argument("--out", type=Path, default=ROOT / "reports")
@@ -389,6 +395,7 @@ def main(argv: list[str] | None = None) -> int:
         turns,
         mode=args.model,
         guardrail=not args.no_guardrail,
+        judge_mode=args.judge,
         out_dir=args.out,
         sample_rate=args.sample_rate,
     )

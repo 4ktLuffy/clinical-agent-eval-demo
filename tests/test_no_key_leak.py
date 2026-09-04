@@ -11,9 +11,16 @@ import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-KEY_VARS = ("EVAL_MODEL_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY")
+KEY_VARS = (
+    "EVAL_MODEL_API_KEY",
+    "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY",
+    "CLINICAL_API_KEY",
+    "GROQ_API_KEY",
+)
 PREFIX_LEN = 8
-SCAN_DIRS = ("reports", "reports-real", "audit")
+# Every reports* directory, so a new judge row cannot be added outside the scan.
+SCAN_DIRS = tuple(sorted(p.name for p in ROOT.glob("reports*") if p.is_dir())) + ("audit",)
 
 
 def _scan_targets() -> list[Path]:
@@ -87,3 +94,15 @@ def test_no_key_shaped_string_is_tracked_in_git():
                 continue
             offenders.append(f"{name}: {match.group(0)[:12]}...")
     assert not offenders, offenders
+
+
+def test_env_file_is_never_tracked_by_git():
+    """The key lives in .env. If .env is ever staged or tracked, the scan above would not
+    catch it, because the scan only walks report and audit directories."""
+    import subprocess
+
+    tracked = subprocess.run(
+        ["git", "ls-files", "--error-unmatch", ".env"],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    assert tracked.returncode != 0, ".env is tracked by git and would carry the key"

@@ -27,8 +27,10 @@ Real models have now been run, on a 180-turn stratified subset:
 
 - `openai/gpt-oss-20b` via Groq, 180 calls, free tier, $0. Rubric identical to mock -- see the
   section below, which is the reason that row is not quoted as a quality result.
-- `qwen2.5:7b` and `granite4:7b-a1b-h` locally via Ollama, for judge calibration and the
-  second-reader comparison.
+- `openai/gpt-oss-120b` via Groq as the judge, and `qwen/qwen3.8-27b` via Groq as the
+  independent second reader, both over the same mock drafts and the same 11 open-ended turns.
+  Earlier local 7B runs (`qwen2.5:7b`, `granite4:7b-a1b-h`) have been superseded and are not
+  quoted here.
 
 The first real run found a crash in the reporting path that no test covered: `render()` called
 `.items()` on the `mutation: None` that real mode deliberately sets. Fixed. Nobody had rendered
@@ -74,17 +76,29 @@ The one number that did move is latency: p50 2,644 ms against 0.54 ms on the moc
 4. **The dataset counts.** They trace to `reports/fhir-check.json`, produced by the documented
    `make synthea && make load`. That path is now verified from a fresh clone, but it has been
    run on one machine.
-5. **Judge calibration.** With a real 7B judge, kappa on faithfulness came out at or below
-   zero -- chance agreement -- on n=11 with labels skewed to one level. Raw agreement of 55%
-   to 82% looks respectable only because a judge that answers "faithful" every time scores
-   well against a skewed label set. The rule judge's earlier kappa 0.30 / 0.29. Labels assigned by the same model that wrote the
-   drafts and the rule judge, n=11, skewed to one level. `NOTES/labeling-sheet.csv` is the
-   blank sheet for a human pass. This is not calibration in the sense the word normally
-   carries.
+5. **Judge calibration.** On n=11 with labels skewed to one level, `openai/gpt-oss-120b`
+   reached kappa +0.19 on faithfulness (95% bootstrap [+0.00, +0.48]) and +0.35 on citation
+   quality ([-0.03, +0.73]); `qwen/qwen3.8-27b` reached +0.02 ([-0.28, +0.42]) and +0.32
+   ([+0.00, +0.69]). **Every one of those intervals touches or crosses zero**, so none of
+   them establishes better-than-chance agreement. Raw agreement of 55% to 64% looks
+   respectable only because a judge that answers "faithful" every time scores well against a
+   skewed label set. n=11 is far too small for these intervals to narrow. Labels were
+   assigned by an AI reader, not a clinician; `NOTES/labeling-sheet.csv` is the blank sheet
+   for a human pass. This is not calibration in the sense the word normally carries.
 
 ## Defects found in this repository's own tooling
 
 Worth stating, because they are the argument for the tooling rather than against it.
+
+- **The judge's token budget silently discarded its hardest turns.** `max_tokens=300` was
+  sized for a non-reasoning model. `openai/gpt-oss-120b` spends 236-298 tokens reasoning
+  before it emits anything, so the JSON was cut mid-object (`finish_reason=length`) on 4 of
+  11 turns. Those turns were dropped as unparseable, and kappa was then computed on the 7
+  that survived -- reporting +0.42 where the full 11 give +0.19. The dropped turns were the
+  long ones, so the loss was not random: it removed exactly the turns the judge found hard.
+  The budget is now `CLINICAL_JUDGE_MAX_TOKENS` (default 1200), and both judge rows were
+  re-run at 2500 with zero turns dropped. Before the `valid=False` fix, these truncations
+  would have entered kappa as confident 0.0 scores rather than being excluded at all.
 
 - **`make synthea` excluded the hospital and practitioner bundles**, so every patient bundle
   carried unresolvable references and HAPI rejected all 214 with a 404. The documented

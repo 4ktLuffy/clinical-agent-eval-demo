@@ -114,16 +114,19 @@ class LLMJudge:
         )
         try:
             if self._provider == "openai-compatible":
+                # Reasoning models spend most of a small budget on reasoning tokens and
+                # then truncate the JSON mid-object (finish_reason=length), which used to
+                # look like a judging failure rather than a budget we set too low.
                 response = self._client.chat.completions.create(
                     model=self._model,
-                    max_tokens=300,
+                    max_tokens=int(os.environ.get("CLINICAL_JUDGE_MAX_TOKENS", "1200")),
                     messages=[{"role": "user", "content": prompt}],
                 )
                 raw = (response.choices[0].message.content or "").strip()
             else:
                 message = self._client.messages.create(
                     model=self._model,
-                    max_tokens=300,
+                    max_tokens=int(os.environ.get("CLINICAL_JUDGE_MAX_TOKENS", "1200")),
                     messages=[{"role": "user", "content": prompt}],
                 )
                 raw = "".join(b.text for b in message.content if b.type == "text").strip()

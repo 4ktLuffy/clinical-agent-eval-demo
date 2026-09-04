@@ -6,9 +6,10 @@ hash-chained audit trail, a seven-dimension rubric over 1,209 turns built from r
 a fault-injection load test that proves its own detectors, and a go-live runbook. **The
 deployment layer is the capability. The model is swappable.**
 
-**Read [`LIMITATIONS.md`](LIMITATIONS.md) first.** Every number below is from the mock path —
-no real model has ever run, and the judge labels were assigned by an AI reader, not a clinician
-and not the author. This is not a Hippocratic AI system.
+**Read [`LIMITATIONS.md`](LIMITATIONS.md) first.** Every number in the tables below is from
+the mock path. Real models have been run once each, on a subset, and are reported separately;
+the judge labels were assigned by an AI reader, not a clinician and not the author. This is not
+a Hippocratic AI system.
 
 ## Results
 
@@ -62,6 +63,13 @@ turn for turn**. That is not the deployment layer being model-agnostic — it is
 largely model-insensitive, because five of seven dimensions are decided by the guardrail reading
 the patient's turn rather than the model's answer. See [`LIMITATIONS.md`](LIMITATIONS.md). The one
 figure that moved was latency: p50 2644 ms against 0.43 ms on the mock path.
+
+**Judge calibration, same 11 open-ended turns, same mock drafts.** `openai/gpt-oss-120b` via
+Groq: faithfulness kappa **+0.19** (95% bootstrap [+0.00, +0.48]), citation **+0.35**
+([-0.03, +0.73]). Independent second reader `qwen/qwen3.8-27b` via Groq: **+0.02**
+([-0.28, +0.42]) and **+0.32** ([+0.00, +0.69]). **Every interval touches or crosses zero**, so
+no judge here is demonstrably better than chance at n=11. Reported because it is the honest
+result, not because it is a good one.
 
 Latency is not quoted in the tables above: it is machine-dependent and cannot be regenerated to a
 fixed value, so it lives in the report. Two detector bugs surfaced only at 2,000 sessions — a cliff rule comparing a
