@@ -584,3 +584,68 @@ Running `make verify` as a user would then found three more things:
 hint; a smoke run with a genuinely broken dimension still exits 1.
 
 Fixes this pass: **14**, each with a negative control.
+
+
+---
+
+# README cut, and C11 made runnable
+
+## README
+
+123 -> 130 lines (the env-var docs you asked for added 11). Results table is at **line 17**,
+so it lands on the first screen. Limitations moved to `LIMITATIONS.md` (64 lines) with a
+three-line summary and link in the README's first ten lines. Every new component is one line.
+
+`readme-check` now scans **README.md and LIMITATIONS.md together**, because moving a claim
+between them must not silently drop it from the check. Negative controls: breaking a rubric
+number fails it; changing "about thirty phrases" in LIMITATIONS fails it too.
+
+`LIMITATIONS.md` records the three defects found in this repo's own tooling, including the
+`make fhir-check` artifact-clobbering one and that `make readme-check` is what caught it.
+
+**One self-inflicted mistake worth recording.** I ran `git checkout -- README.md` to undo a
+deliberately-broken line during a negative control, and it reverted the entire uncommitted
+rewrite. Redone from a backup copy. Do not use git as an undo for uncommitted work.
+
+## C11 — answer to your question: no, it did not
+
+`AnthropicClient` called `anthropic.Anthropic()` with no `base_url` and demanded
+`ANTHROPIC_API_KEY`. An OpenRouter or Gemini key could not have been used. Added:
+
+| Variable | Meaning |
+|---|---|
+| `EVAL_MODEL` | `<provider>:<model>` — `anthropic:claude-opus-5` or `openai-compatible:google/gemini-2.0-flash-exp:free`. Only the first colon separates, so model names containing colons work. |
+| `EVAL_MODEL_BASE_URL` | e.g. `https://openrouter.ai/api/v1`. Required for `openai-compatible`. |
+| `EVAL_MODEL_API_KEY` | The key. `ANTHROPIC_API_KEY` still works for the anthropic provider. |
+| `CLINICAL_JUDGE_MODEL` | Optional. A different model — and a different provider — for the judge, which is what B9's second reader needs. |
+
+`openai>=1.40,<3.0` added to the `real` extra, imported lazily so mock mode never needs it.
+Both providers were exercised through their error paths (missing base URL, missing key);
+neither has been run against a live endpoint.
+
+**Key safety.** `tests/test_no_key_leak.py` scans `reports/`, `reports-real/` and `audit/`
+for the first 8 characters of any set key, and separately scans every tracked file for
+key-shaped strings. It carries a negative control that plants a synthetic key and proves the
+scanner finds it, so the test cannot pass merely by having nothing to look at.
+
+## `--turns-subset`
+
+Stratified across turn kind, which maps onto the guard categories. A flat random sample of
+180 from 1,209 would leave some guards with nothing to bite on and make a budget run look
+better than it is. Verified at 180 turns:
+
+```
+appointments 30, cross_patient 8, diagnose 10, escalate_info 9, escalate_urgent 7,
+hard_diagnose 3, hard_escalate 2, hard_prescribe 3, hard_scope 3, hospice 7, injection 5,
+medications 30, mental_health 8, opener 30, prescribe 10, safe 7, under_two 8
+```
+
+Every guard category and every `hard_*` paraphrase is represented. The report records
+`turns_evaluated`, `turns_available`, the seed, and the per-kind table. Deterministic for a
+given seed. `make eval ARGS="--model real --turns-subset 180"` is the intended first run.
+
+## Ready for a key
+
+Nothing further can be verified without one. With a key set I would run: the subset eval on
+~180 turns, judge calibration, then B9 with `CLINICAL_JUDGE_MODEL` pointed at a second model,
+and report cost, latency, rubric and agreement as separate scorecard rows.

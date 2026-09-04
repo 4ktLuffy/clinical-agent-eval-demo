@@ -25,6 +25,47 @@ def load(path: Path) -> list[dict]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def stratified_subset(conversations: list[dict], target: int, seed: int = 20260904
+                      ) -> tuple[list[dict], dict[str, int]]:
+    """Take about `target` turns, stratified across turn kind.
+
+    Kind maps onto the guard categories -- prescribe, diagnose, hospice, mental_health,
+    under_two, escalate_*, injection, cross_patient, plus the safe and hard_* turns. A flat
+    random sample of 150 turns from 1,209 would leave some guards with nothing to bite on
+    and make the run look better than it is. Taking a proportional slice of every kind, with
+    at least one from each, keeps every guard represented so a real-model run on a small
+    budget still exercises all of them.
+
+    Deterministic for a given seed. Returns the reduced conversations and the per-kind count.
+    """
+    import random
+
+    by_kind: dict[str, list[tuple[int, dict]]] = {}
+    for index, conversation in enumerate(conversations):
+        for turn in conversation["turns"]:
+            by_kind.setdefault(turn.get("kind", "unknown"), []).append((index, turn))
+
+    total = sum(len(v) for v in by_kind.values())
+    target = max(1, min(target, total))
+    rng = random.Random(seed)
+
+    chosen_ids: set[str] = set()
+    counts: dict[str, int] = {}
+    for kind in sorted(by_kind):
+        pool = sorted(by_kind[kind], key=lambda pair: pair[1]["turn_id"])
+        share = max(1, round(target * len(pool) / total))
+        picked = rng.sample(pool, min(share, len(pool)))
+        counts[kind] = len(picked)
+        chosen_ids.update(turn["turn_id"] for _, turn in picked)
+
+    reduced = []
+    for conversation in conversations:
+        turns = [t for t in conversation["turns"] if t["turn_id"] in chosen_ids]
+        if turns:
+            reduced.append({**conversation, "turns": turns})
+    return reduced, counts
+
+
 def run_set(conversations: list[dict], corpus: Corpus,
             disabled: frozenset[str] = frozenset(),
             enabled: bool = True) -> tuple[list, list[float]]:
@@ -90,7 +131,9 @@ def render(report: dict) -> str:
     lines = [
         "# Conversation eval",
         "",
-        f"- conversations: {report['conversations']}  turns: {report['turns']}",
+        f"- conversations: {report['conversations']}  turns: {report['turns']}"
+        + (f" (stratified subset of {report['turns_available']}, seed {report['subset_seed']})"
+           if report.get("subset") else ""),
         "- source: patients loaded in FHIR; the medications named are theirs",
         f"- judge: none. Every dimension is scored deterministically against the expected",
         "  outcome recorded with the turn.",
@@ -123,6 +166,13 @@ def render(report: dict) -> str:
                 f"| `{guard}` | `{row['dimension']}` | {row['before'] * 100:.1f}% | "
                 f"{row['after'] * 100:.1f}% | {'yes' if row['dropped'] else 'NO'} |"
             )
+    if report.get("subset"):
+        lines += ["", "### Subset composition", "",
+                  "| Turn kind | Turns evaluated |", "|---|---:|"]
+        lines += [f"| `{k}` | {v} |" for k, v in sorted(report["subset_strata"].items())]
+        lines += ["",
+                  "A flat random sample would leave some guards with nothing to bite on. Every",
+                  "kind above is represented, so a small-budget run still exercises all of them."]
     lines += ["", "## Latency (harness only, scripted drafts)", "",
               f"- p50 {report['latency_ms']['p50']:.2f} ms, p95 {report['latency_ms']['p95']:.2f} ms,"
               f" p99 {report['latency_ms']['p99']:.2f} ms"]
@@ -136,9 +186,18 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="eval.conversation_run")
     parser.add_argument("--conversations", type=Path, default=ROOT / "data" / "conversations.json")
     parser.add_argument("--out", type=Path, default=ROOT / "reports")
+    parser.add_argument("--turns-subset", type=int, default=0,
+                        help="evaluate about N turns, stratified across guard categories. "
+                             "0 (default) runs the whole set.")
+    parser.add_argument("--subset-seed", type=int, default=20260904)
     args = parser.parse_args(argv)
 
     conversations = load(args.conversations)
+    available = sum(len(c["turns"]) for c in conversations)
+    strata: dict[str, int] = {}
+    if args.turns_subset:
+        conversations, strata = stratified_subset(
+            conversations, args.turns_subset, args.subset_seed)
     corpus = Corpus.load(ROOT / "data" / "corpus")
 
     scores, latencies = run_set(conversations, corpus)
@@ -149,6 +208,10 @@ def main(argv: list[str] | None = None) -> int:
     report = {
         "conversations": len(conversations),
         "turns": len(scores),
+        "turns_available": available,
+        "subset": bool(strata),
+        "subset_seed": args.subset_seed if strata else None,
+        "subset_strata": strata or None,
         "run_date": date.today().isoformat(),
         "rubric": rubric,
         "mutation": mutation_matrix(conversations, corpus, rubric),

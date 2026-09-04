@@ -23,7 +23,9 @@ results, not after.
 The second-reader column and the hosted-model row are empty because no API key has been
 present on any run. **Every number in the README is from the mock path**, where the drafts are
 scripted. `--model real` exists and is wired into CI behind a secret, but it has never
-executed, so treat it as unproven code.
+executed, so treat it as unproven code. It now accepts Anthropic or any OpenAI-compatible
+endpoint, and `--turns-subset` exists so a first run can be small — but neither path has been
+exercised against a live endpoint, only against their error paths.
 
 ## The five weakest claims, in order
 

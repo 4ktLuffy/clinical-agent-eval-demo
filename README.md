@@ -27,8 +27,8 @@ Mock path, guardrail on. Regenerate: `make eval`. Full output: [`reports/convers
 200 conversations, 1,209 turns, built from the patients actually loaded: the medications
 named in a turn are that patient's own. Every dimension is scored deterministically against the
 expectation recorded with each turn; no model judges any of them. The table read 100.0%
-everywhere until `hard_*` paraphrases were added carrying no phrase from the guardrail's
-tables — that gap is the honest ceiling of a keyword guardrail.
+everywhere until `hard_*` paraphrases were added carrying no phrase from the guardrail's tables
+— that gap is the honest ceiling of a keyword guardrail.
 
 ### Remove a guard, its dimension must get worse
 
@@ -44,8 +44,7 @@ tables — that gap is the honest ceiling of a keyword guardrail.
 
 ### Fault injection — [`reports/load-report.html`](reports/load-report.html)
 
-2,000 concurrent sessions per scenario, 60,450 turns. Each row injects one fault; the named
-detector must fire and the baseline must stay quiet, or the run exits non-zero.
+2,000 concurrent sessions per scenario, 60,450 turns. Each row injects one fault; the named detector must fire and the baseline stay quiet, or the run exits non-zero.
 
 | Fault injected | Expected detector | Result |
 |---|---|---|
@@ -55,10 +54,9 @@ detector must fire and the baseline must stay quiet, or the run exits non-zero.
 | guardrail silently off | refusal_rate_drift | fired |
 | cross-patient probe | cross_patient_attempt | fired |
 
-Latency is not quoted: it is machine-dependent and cannot be regenerated to a fixed value, so
-it lives in the report. Two detector bugs surfaced only at 2,000 sessions — a cliff rule
-comparing a tail p95 against a head *median*, and drift baselines a long-running fault
-contaminated until it hid itself.
+Latency is not quoted: it is machine-dependent and cannot be regenerated to a fixed value, so it
+lives in the report. Two detector bugs surfaced only at 2,000 sessions — a cliff rule comparing a
+tail p95 against a head *median*, and drift baselines a long-running fault hid itself behind.
 
 ## What is in it
 
@@ -75,8 +73,8 @@ contaminated until it hid itself.
 ## Running it
 
 Python 3.12. `uv venv` ships without `pip` — use `uv pip install -e ".[dev]"` or `python -m venv`.
-`make synthea` bind-mounts into a container, so the checkout must sit where your Docker VM
-mounts (`$HOME` on a default colima); it checks and says so.
+`make synthea` bind-mounts into a container, so the checkout must sit where your Docker VM mounts
+(`$HOME` on a default colima); it checks and says so.
 
 ```bash
 make fhir-up && make fixture-load           # live FHIR in ~30s, 10 patients, no download
@@ -88,8 +86,19 @@ make demo                                   # 8 turns live, with the audit chain
 make readme-check                           # every number above, regenerated and diffed
 ```
 
-Tests that need FHIR skip themselves when no endpoint answers; CI runs a HAPI service
-container and a committed 10-patient fixture, so there are zero skips there.
+Tests needing FHIR skip when no endpoint answers; CI runs a HAPI service container and the committed fixture, so there are zero skips there.
+
+The real-model path takes Anthropic or any OpenAI-compatible endpoint (OpenRouter, Gemini,
+vLLM). `EVAL_MODEL` is `<provider>:<model>` — only the first colon separates, so model names
+containing colons work. `CLINICAL_JUDGE_MODEL` set to a different model gives an independent
+second reader. `--turns-subset N` takes a stratified slice across guard categories, so a
+small-budget run still exercises every guard, and records per-kind counts in the report.
+
+```bash
+export EVAL_MODEL=openai-compatible:google/gemini-2.0-flash-exp:free
+export EVAL_MODEL_BASE_URL=https://openrouter.ai/api/v1   # EVAL_MODEL_API_KEY=... (never logged)
+make eval ARGS="--model real --turns-subset 180"
+```
 
 ## Architecture
 
@@ -107,16 +116,14 @@ flowchart LR
 The [Forward Deployed Engineer posting](https://jobs.ashbyhq.com/Hippocratic%20AI/378e1797-b92c-4fce-98d2-03481e214bb5)
 says that by day 90 you will have "designed and implemented a RAG pipeline grounded in customer
 data", "built tool-calling and MCP integrations", "executed a production go-live with zero
-surprises", and "established monitoring that catches anomalies before customers do" —
-architectures it calls "handling errors gracefully and enforcing safety constraints", and
-monitoring as "instrumenting deployed agents". This repo is a miniature of that arc; what it
-cannot show is the customer.
+surprises", and "established monitoring that catches anomalies before customers do" — architectures
+it calls "handling errors gracefully and enforcing safety constraints", and monitoring as
+"instrumenting deployed agents". A miniature of that arc; what it cannot show is the customer.
 
 ## Related work
 
 Prior permission-scoping and audit work in production code, upstreamed to `apexive/odoo-llm`:
-[#264](https://github.com/apexive/odoo-llm/pull/264) — the same problem solved at the Odoo
-layer. Also [#263](https://github.com/apexive/odoo-llm/pull/263) and [#265](https://github.com/apexive/odoo-llm/pull/265).
+[#264](https://github.com/apexive/odoo-llm/pull/264) (the same problem at the Odoo layer), [#263](https://github.com/apexive/odoo-llm/pull/263), [#265](https://github.com/apexive/odoo-llm/pull/265).
 
 ## Licence
 

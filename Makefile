@@ -86,8 +86,9 @@ ci-fixture:  ## Rebuild data/ci-fixture/bundle.json from a full Synthea run
 conversations:  ## Regenerate the conversation set from whatever is loaded in FHIR
 	PYTHONPATH=src $(PY) scripts/generate_conversations.py --fhir-url $(FHIR_URL) --count 200
 
-eval:  ## Full rubric run with per-guard mutation
-	PYTHONPATH=src $(PY) -m eval.conversation_run
+eval:  ## Full rubric run with per-guard mutation. ARGS passes flags through, e.g.
+       ## ARGS="--model real --turns-subset 180"
+	PYTHONPATH=src $(PY) -m eval.conversation_run $(ARGS)
 
 smoke:  ## 20-turn pre-traffic replay
 	PYTHONPATH=src $(PY) -m eval.replay --smoke 20
