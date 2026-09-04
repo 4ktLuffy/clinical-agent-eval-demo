@@ -92,7 +92,9 @@ jobs:
         run: |
           python -m pytest -q 2>&1 | tee /tmp/pytest.txt
           if grep -qE "[0-9]+ skipped" /tmp/pytest.txt; then
-            echo "tests were skipped; the live FHIR service should make that impossible"
+            echo "tests were skipped; the live FHIR service should make that impossible."
+            echo "Which ones:"
+            python -m pytest -q -rs 2>&1 | grep -E "^SKIPPED" || true
             exit 1
           fi
       - uses: actions/upload-artifact@v4

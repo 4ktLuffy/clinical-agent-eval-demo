@@ -649,3 +649,12 @@ given seed. `make eval ARGS="--model real --turns-subset 180"` is the intended f
 Nothing further can be verified without one. With a key set I would run: the subset eval on
 ~180 turns, judge calibration, then B9 with `CLINICAL_JUDGE_MODEL` pointed at a second model,
 and report cost, latency, rubric and agreement as separate scorecard rows.
+
+
+**CI caught my own gate over-firing.** The `No skipped tests` step failed on the first push
+of this work: `test_no_key_leak.py` skipped three parametrised cases because no key is set in
+CI, and the gate cannot tell a legitimate absence from a missing precondition. Restructured
+so the scan never skips — it iterates whichever keys are set and is vacuous when none are,
+with the always-running negative control carrying the assurance that the scanner works. The
+gate now also prints *which* tests skipped when it fails, which is what I wanted the first
+time it fired. 122 tests, zero skips.
