@@ -18,14 +18,44 @@ results, not after.
 - **Not voice.** Transcript turns from a voice workflow; ASR and TTS are out of scope.
 - **No framework.** One hand-rolled loop, so the path reads in one file and CI runs offline.
 
-## Nothing has been run against a real model
+## What has and has not been run against a real model
 
-The second-reader column and the hosted-model row are empty because no API key has been
-present on any run. **Every number in the README is from the mock path**, where the drafts are
-scripted. `--model real` exists and is wired into CI behind a secret, but it has never
-executed, so treat it as unproven code. It now accepts Anthropic or any OpenAI-compatible
-endpoint, and `--turns-subset` exists so a first run can be small — but neither path has been
-exercised against a live endpoint, only against their error paths.
+**Every number in the README's results tables is from the mock path**, where the drafts are
+scripted. That is deliberate: the mock path is deterministic and reproducible in CI.
+
+Real models have now been run, on a 180-turn stratified subset:
+
+- `openai/gpt-oss-20b` via Groq, 180 calls, free tier, $0. Rubric identical to mock -- see the
+  section below, which is the reason that row is not quoted as a quality result.
+- `qwen2.5:7b` and `granite4:7b-a1b-h` locally via Ollama, for judge calibration and the
+  second-reader comparison.
+
+The first real run found a crash in the reporting path that no test covered: `render()` called
+`.items()` on the `mutation: None` that real mode deliberately sets. Fixed. Nobody had rendered
+a real-model report before, because nobody had run one.
+
+## The rubric barely measures the model
+
+This is the most important limitation here, and it was only discovered by running a real
+model for the first time.
+
+On the identical 180-turn subset, `openai/gpt-oss-20b` drafting and the scripted mock drafts
+produce **the same pass count on all seven dimensions** -- 180/180, 177/180, 178/180, 177/180,
+177/180, 180/180, 180/180, turn for turn. Not close: identical.
+
+That is not evidence that the deployment layer is model-agnostic. It is evidence that the
+rubric is largely model-insensitive by construction. Reading `score_turn`: `in_scope`,
+`escalated_when_warranted`, `no_diagnosis` and `no_prescription` are all decided by the
+guardrail matching phrases in the **patient's turn**, which is fixture text the model never
+influences. `accurate_to_context` keys off whether retrieval cleared its threshold. Only
+`no_cross_patient_leak` and `ignores_injected_instructions` can be failed by model output,
+and one 20B model failed neither.
+
+So five of seven dimensions were decided before the model spoke. **Do not read the rubric as
+a measure of model quality.** It measures whether the guardrail and the scoring are wired up
+correctly, which is worth measuring, and is not the same thing.
+
+The one number that did move is latency: p50 2,644 ms against 0.54 ms on the mock path.
 
 ## The five weakest claims, in order
 
@@ -44,7 +74,10 @@ exercised against a live endpoint, only against their error paths.
 4. **The dataset counts.** They trace to `reports/fhir-check.json`, produced by the documented
    `make synthea && make load`. That path is now verified from a fresh clone, but it has been
    run on one machine.
-5. **Judge calibration kappa 0.30 / 0.29.** Labels assigned by the same model that wrote the
+5. **Judge calibration.** With a real 7B judge, kappa on faithfulness came out at or below
+   zero -- chance agreement -- on n=11 with labels skewed to one level. Raw agreement of 55%
+   to 82% looks respectable only because a judge that answers "faithful" every time scores
+   well against a skewed label set. The rule judge's earlier kappa 0.30 / 0.29. Labels assigned by the same model that wrote the
    drafts and the rule judge, n=11, skewed to one level. `NOTES/labeling-sheet.csv` is the
    blank sheet for a human pass. This is not calibration in the sense the word normally
    carries.

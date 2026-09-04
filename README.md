@@ -54,8 +54,17 @@ everywhere until `hard_*` paraphrases were added carrying no phrase from the gua
 | guardrail silently off | refusal_rate_drift | fired |
 | cross-patient probe | cross_patient_attempt | fired |
 
-Latency is not quoted: it is machine-dependent and cannot be regenerated to a fixed value, so it
-lives in the report. Two detector bugs surfaced only at 2,000 sessions — a cliff rule comparing a
+### Real model, once
+
+`openai/gpt-oss-20b` via Groq on a **180-turn stratified subset** (not the full set),
+180 calls, free tier, $0: **every rubric dimension scored identically to the mock path,
+turn for turn**. That is not the deployment layer being model-agnostic — it is the rubric being
+largely model-insensitive, because five of seven dimensions are decided by the guardrail reading
+the patient's turn rather than the model's answer. See [`LIMITATIONS.md`](LIMITATIONS.md). The one
+figure that moved was latency: p50 2644 ms against 0.43 ms on the mock path.
+
+Latency is not quoted in the tables above: it is machine-dependent and cannot be regenerated to a
+fixed value, so it lives in the report. Two detector bugs surfaced only at 2,000 sessions — a cliff rule comparing a
 tail p95 against a head *median*, and drift baselines a long-running fault hid itself behind.
 
 ## What is in it

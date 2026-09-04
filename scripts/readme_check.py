@@ -83,6 +83,12 @@ def build_checks() -> tuple[list[Check], list[str]]:
     skipped: list[str] = []
 
     conv = _load("conversation-eval.json")
+    if conv and conv.get("model", "mock") != "mock":
+        skipped.append(
+            f"reports/conversation-eval.json holds a {conv['model']} run, not the mock run "
+            "the README quotes; regenerate with `make eval`"
+        )
+        conv = None
     if conv:
         checks.append(Check("conversations", "reports/conversation-eval.json",
                             f"{conv['conversations']}", rf"\b{conv['conversations']} conversations\b"))
@@ -93,7 +99,9 @@ def build_checks() -> tuple[list[Check], list[str]]:
             rate = f"{entry['rate'] * 100:.1f}%"
             checks.append(Check(f"rubric {dimension}", "reports/conversation-eval.json",
                                 rate, rf"`{dimension}` \| {re.escape(rate)}"))
-        for guard, rows in conv["mutation"].items():
+        # Real-model runs set mutation to None deliberately. This is the third place that
+        # assumption broke something -- render(), the exit-code path, and here.
+        for guard, rows in (conv.get("mutation") or {}).items():
             for row in rows:
                 before, after = f"{row['before']*100:.1f}%", f"{row['after']*100:.1f}%"
                 checks.append(Check(f"mutation {guard}", "reports/conversation-eval.json",

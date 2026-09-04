@@ -46,6 +46,10 @@ class JudgeScore:
     citation_quality: float
     faithful: bool
     rationale: str
+    # False when the model returned something unparseable. Such a turn carries no
+    # judgement, and scoring it as a confident 0.0 -- which an earlier version did --
+    # puts a crash into the calibration statistic as though it were an opinion.
+    valid: bool = True
 
 
 def _content(text: str) -> set[str]:
@@ -132,7 +136,9 @@ class LLMJudge:
                 rationale=str(payload.get("rationale", ""))[:200],
             )
         except Exception as exc:
-            return JudgeScore(0.0, 0.0, False, f"judge parse failure: {type(exc).__name__}")
+            return JudgeScore(
+                0.0, 0.0, False, f"judge parse failure: {type(exc).__name__}", valid=False
+            )
 
 
 def build_judge(mode: str):

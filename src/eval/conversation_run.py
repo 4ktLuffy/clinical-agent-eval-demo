@@ -177,17 +177,23 @@ def render(report: dict) -> str:
             f"| `{dimension}` | {entry['passed']} | {entry['total']} | "
             f"{entry['rate'] * 100:.1f}% | [{lo * 100:.1f}, {hi * 100:.1f}] |"
         )
-    lines += ["", "## Per-guard mutation", "",
-              "Each row removes one guard and re-runs the whole set. The dimension that guard",
-              "protects must get worse, or the guard is not doing the work the rubric credits.",
-              "", "| Guard removed | Dimension | Before | After | Dropped |",
-              "|---|---|---:|---:|:--:|"]
-    for guard, rows in report["mutation"].items():
-        for row in rows:
-            lines.append(
-                f"| `{guard}` | `{row['dimension']}` | {row['before'] * 100:.1f}% | "
-                f"{row['after'] * 100:.1f}% | {'yes' if row['dropped'] else 'NO'} |"
-            )
+    if report["mutation"] is None:
+        lines += ["", "## Per-guard mutation", "",
+                  "Skipped for this real-model run -- mutation is a property of the guardrail, not",
+                  "of the model, and re-running it in real mode would cost 7x the calls for an",
+                  "answer the mock path already gives."]
+    else:
+        lines += ["", "## Per-guard mutation", "",
+                  "Each row removes one guard and re-runs the whole set. The dimension that guard",
+                  "protects must get worse, or the guard is not doing the work the rubric credits.",
+                  "", "| Guard removed | Dimension | Before | After | Dropped |",
+                  "|---|---|---:|---:|:--:|"]
+        for guard, rows in report["mutation"].items():
+            for row in rows:
+                lines.append(
+                    f"| `{guard}` | `{row['dimension']}` | {row['before'] * 100:.1f}% | "
+                    f"{row['after'] * 100:.1f}% | {'yes' if row['dropped'] else 'NO'} |"
+                )
     if report.get("budget"):
         b = report["budget"]
         lines += ["", "## Model calls", "",
