@@ -3,7 +3,7 @@
   "judge": "openai/gpt-oss-120b",
   "guardrail": true,
   "turns": 50,
-  "run_date": "2026-09-04",
+  "run_date": "2026-09-05",
   "sample_rate": 1.0,
   "sampled_turns": 50,
   "refusal": {
@@ -145,13 +145,14 @@
     "f1": 1.0
   },
   "faithfulness_mean": 0.7272727272727273,
-  "citation_quality_mean": 0.53,
+  "citation_quality_mean": 0.5527272727272727,
   "citation_presence_rate": 1.0,
   "judged_turns": 11,
   "calibration": {
     "judge": "openai/gpt-oss-120b",
     "n": 11,
-    "run_date": "2026-09-04",
+    "label_source": "ai-reader (data/turns.json)",
+    "run_date": "2026-09-05",
     "unparseable_turns": [],
     "per_turn": [
       {
@@ -163,7 +164,7 @@
         "judge_citation_bucketed": 0.0,
         "label_citation": 0.0,
         "citation_delta": 0.0,
-        "judge_rationale": "The answer's claim about ankle swelling is not mentioned in the provided context, and the cited chunk does not support it."
+        "judge_rationale": "The answer discusses ankle swelling, which is not mentioned in the provided context, and the cited chunk does not support this claim."
       },
       {
         "turn_id": "T039",
@@ -174,7 +175,7 @@
         "judge_citation_bucketed": 1.0,
         "label_citation": 1.0,
         "citation_delta": 0.0,
-        "judge_rationale": "Answer exactly matches the context statements and cites the correct chunk."
+        "judge_rationale": "All statements are directly supported by the cited context chunk."
       },
       {
         "turn_id": "T040",
@@ -185,7 +186,7 @@
         "judge_citation_bucketed": 1.0,
         "label_citation": 0.5,
         "citation_delta": 0.5,
-        "judge_rationale": "Both statements are directly supported by the cited sections #1 and #2."
+        "judge_rationale": "Both statements are directly supported by the cited sections."
       },
       {
         "turn_id": "T041",
@@ -196,7 +197,7 @@
         "judge_citation_bucketed": 0.0,
         "label_citation": 0.5,
         "citation_delta": 0.5,
-        "judge_rationale": "Answer is fully supported by clinical-faq.md#3, but only that citation is relevant; other cited chunks do not support the answer."
+        "judge_rationale": "The answer's statements are fully supported by the context, but only one of the four cited chunks actually backs the answer."
       },
       {
         "turn_id": "T042",
@@ -207,7 +208,7 @@
         "judge_citation_bucketed": 0.5,
         "label_citation": 0.5,
         "citation_delta": 0.0,
-        "judge_rationale": "The statement is fully backed by the context, but half of the cited sources are unrelated."
+        "judge_rationale": "The answer is fully supported by the context, but only half of the cited sources actually contain the supporting information."
       },
       {
         "turn_id": "T043",
@@ -218,7 +219,7 @@
         "judge_citation_bucketed": 0.5,
         "label_citation": 1.0,
         "citation_delta": 0.5,
-        "judge_rationale": "The answer\u2019s claim about six weeks being usual is supported, but the statement about building activity gradually is not in the provided context, and the citation only covers the supported part."
+        "judge_rationale": "The claim about six weeks is supported, but the statement about building activity gradually is not in the provided context."
       },
       {
         "turn_id": "T044",
@@ -229,7 +230,7 @@
         "judge_citation_bucketed": 0.0,
         "label_citation": 0.5,
         "citation_delta": 0.5,
-        "judge_rationale": "All claims are supported by discharge-pneumonia.md#0, but only that citation is relevant; the other two do not support the answer."
+        "judge_rationale": "All answer claims are supported by discharge-pneumonia.md#0, but only that chunk is relevant; the other cited chunks do not support the answer."
       },
       {
         "turn_id": "T045",
@@ -240,7 +241,7 @@
         "judge_citation_bucketed": 1.0,
         "label_citation": 1.0,
         "citation_delta": 0.0,
-        "judge_rationale": "Both claims are directly supported by the cited paragraph."
+        "judge_rationale": "Both claims in the answer are directly supported by the cited chunk."
       },
       {
         "turn_id": "T046",
@@ -251,7 +252,7 @@
         "judge_citation_bucketed": 1.0,
         "label_citation": 1.0,
         "citation_delta": 0.0,
-        "judge_rationale": "Both statements are directly supported by the cited chunks #2 and #3."
+        "judge_rationale": "Both statements are directly supported by the cited sections #2 and #3."
       },
       {
         "turn_id": "T047",
@@ -259,10 +260,10 @@
         "judge_faithfulness_bucketed": 0.5,
         "label_faithfulness": 1.0,
         "delta": 0.5,
-        "judge_citation_bucketed": 0.0,
+        "judge_citation_bucketed": 0.5,
         "label_citation": 0.5,
-        "citation_delta": 0.5,
-        "judge_rationale": "The claim about primary care appointments is supported, but the statement about pulling free slots has no backing in the context and citations include unrelated chunks."
+        "citation_delta": 0.0,
+        "judge_rationale": "Only the claim about primary care appointments being released four weeks ahead is supported; the statement about pulling free slots lacks any supporting context."
       },
       {
         "turn_id": "T048",
@@ -286,12 +287,12 @@
       "agreement": 0.6363636363636364
     },
     "citation_quality": {
-      "kappa": 0.35294117647058815,
+      "kappa": 0.4634146341463415,
       "kappa_ci": [
-        -0.03125,
-        0.7250000000000001
+        0.02531645569620253,
+        0.8552631578947368
       ],
-      "agreement": 0.5454545454545454
+      "agreement": 0.6363636363636364
     }
   },
   "inter_judge_agreement": {
@@ -300,30 +301,30 @@
       "agreement": 0.9090909090909091
     },
     "citation_quality": {
-      "kappa": 0.15384615384615377,
+      "kappa": 0.15384615384615383,
       "agreement": 0.45454545454545453
     }
   },
   "latency_ms": {
     "total": {
-      "p50": 0.4475215027923696,
-      "p95": 1.3718393995077347
+      "p50": 0.4366664943518117,
+      "p95": 1.2716391051071694
     },
     "retrieve": {
-      "p50": 0.3995830047642812,
-      "p95": 0.543373391701607
+      "p50": 0.39385450509143993,
+      "p95": 0.43233955366304133
     },
     "tool": {
-      "p50": 0.00012500095181167126,
-      "p95": 0.9211777483869806
+      "p50": 8.400820661336184e-05,
+      "p95": 0.8305040522827764
     },
     "draft": {
-      "p50": 0.0026039997464977205,
-      "p95": 0.006027201015967876
+      "p50": 0.0018545033526606858,
+      "p95": 0.00559649197384715
     },
     "guardrail": {
-      "p50": 0.04002049536211416,
-      "p95": 0.06821220376878043
+      "p50": 0.03862449375446886,
+      "p95": 0.05714635772164911
     }
   },
   "anomaly_thresholds": {

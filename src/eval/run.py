@@ -55,6 +55,36 @@ HEADER = (
 )
 
 
+def load_labels(path: Path) -> dict[str, tuple[float | None, float | None]]:
+    """Hand labels for the open-ended turns, as `turn_id,faithfulness,citation_quality`.
+
+    A blank cell is None, not zero: an unfilled sheet must make kappa refuse to compute
+    rather than quietly score the judge against a column of zeros.
+    """
+    import csv
+
+    out: dict[str, tuple[float | None, float | None]] = {}
+    # Comment lines are stripped before parsing: csv.DictReader takes its header from the
+    # first line it is given, so a leading comment would become the fieldnames and every
+    # lookup would silently return None -- an unreadable sheet that looks like a blank one.
+    lines = [ln for ln in path.read_text(encoding="utf-8").splitlines()
+             if ln.strip() and not ln.lstrip().startswith("#")]
+    reader = csv.DictReader(lines)
+    if reader.fieldnames is None or "turn_id" not in reader.fieldnames:
+        raise ValueError(f"{path} has no turn_id column; found {reader.fieldnames}")
+    for row in reader:
+        turn_id = (row.get("turn_id") or "").strip()
+        if not turn_id:
+            continue
+
+        def cell(name: str, _row=row) -> float | None:
+            raw = (_row.get(name) or "").strip()
+            return float(raw) if raw else None
+
+        out[turn_id] = (cell("faithfulness"), cell("citation_quality"))
+    return out
+
+
 def evaluate(
     turns: list[dict],
     mode: str,
@@ -62,6 +92,7 @@ def evaluate(
     out_dir: Path,
     sample_rate: float,
     judge_mode: str | None = None,
+    labels_path: Path | None = None,
 ) -> dict[str, Any]:
     scripts = {t["turn_id"]: t["mock_draft"] for t in turns}
     corpus = Corpus.load(ROOT / "data" / "corpus")
@@ -101,6 +132,7 @@ def evaluate(
         [t["labels"]["operational_escalation"] for t in turns],
     )
 
+    hand_labels = load_labels(labels_path) if labels_path else None
     judged, judge_scores, rule_scores, label_faith, label_cite = [], [], [], [], []
     for result, turn in zip(results, turns):
         # Judge only the open-ended, non-safety output: turns the guardrail left alone,
@@ -115,8 +147,13 @@ def evaluate(
         rule_scores.append(
             rule_judge.score(result.draft, result.context, list(result.citations), result.chunk_texts)
         )
-        label_faith.append(turn["labels"]["faithfulness_label"])
-        label_cite.append(turn["labels"]["citation_quality_label"])
+        if hand_labels is not None:
+            hand = hand_labels.get(turn["turn_id"], (None, None))
+            label_faith.append(hand[0])
+            label_cite.append(hand[1])
+        else:
+            label_faith.append(turn["labels"]["faithfulness_label"])
+            label_cite.append(turn["labels"]["citation_quality_label"])
 
     mean = lambda xs: sum(xs) / len(xs) if xs else 0.0
     faithfulness = mean([s.faithfulness for s in judge_scores])
@@ -169,6 +206,7 @@ def evaluate(
         calibration = {
             "judge": judge.name,
             "n": len(judged),
+            "label_source": str(labels_path) if labels_path else "ai-reader (data/turns.json)",
             "run_date": date.today().isoformat(),
             "unparseable_turns": unparseable,
             "per_turn": disagreements,
@@ -388,6 +426,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--sample-rate", type=float, default=1.0)
     parser.add_argument("--turns", type=Path, default=ROOT / "data" / "turns.json")
     parser.add_argument("--out", type=Path, default=ROOT / "reports")
+    parser.add_argument("--labels", type=Path, default=None,
+                        help="CSV of hand labels (turn_id,faithfulness,citation_quality) "
+                             "to compute kappa against instead of the AI-reader labels")
     args = parser.parse_args(argv)
 
     turns = json.loads(args.turns.read_text(encoding="utf-8"))
@@ -396,6 +437,7 @@ def main(argv: list[str] | None = None) -> int:
         mode=args.model,
         guardrail=not args.no_guardrail,
         judge_mode=args.judge,
+        labels_path=args.labels,
         out_dir=args.out,
         sample_rate=args.sample_rate,
     )

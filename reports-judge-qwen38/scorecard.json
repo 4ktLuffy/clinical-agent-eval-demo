@@ -3,7 +3,7 @@
   "judge": "qwen/qwen3.8-27b",
   "guardrail": true,
   "turns": 50,
-  "run_date": "2026-09-04",
+  "run_date": "2026-09-05",
   "sample_rate": 1.0,
   "sampled_turns": 50,
   "refusal": {
@@ -144,14 +144,15 @@
     ],
     "f1": 1.0
   },
-  "faithfulness_mean": 0.8181818181818182,
-  "citation_quality_mean": 0.8,
+  "faithfulness_mean": 0.7272727272727273,
+  "citation_quality_mean": 0.7727272727272727,
   "citation_presence_rate": 1.0,
   "judged_turns": 11,
   "calibration": {
     "judge": "qwen/qwen3.8-27b",
     "n": 11,
-    "run_date": "2026-09-04",
+    "label_source": "ai-reader (data/turns.json)",
+    "run_date": "2026-09-05",
     "unparseable_turns": [],
     "per_turn": [
       {
@@ -163,7 +164,7 @@
         "judge_citation_bucketed": 0.0,
         "label_citation": 0.0,
         "citation_delta": 0.0,
-        "judge_rationale": "The answer mentions ankle swelling, which is not contained in or supported by the provided context regarding fever, blood, or breathlessness."
+        "judge_rationale": "The context does not mention ankle swelling or instruct to report it, and the answer falsely claims to have noted it in the record."
       },
       {
         "turn_id": "T039",
@@ -174,7 +175,7 @@
         "judge_citation_bucketed": 1.0,
         "label_citation": 1.0,
         "citation_delta": 0.0,
-        "judge_rationale": "The answer accurately reflects the visiting hours and visitor limit specified in the cited context chunk."
+        "judge_rationale": "The answer accurately reflects the visiting hours and visitor limit stated in the cited context chunk."
       },
       {
         "turn_id": "T040",
@@ -185,7 +186,7 @@
         "judge_citation_bucketed": 1.0,
         "label_citation": 0.5,
         "citation_delta": 0.5,
-        "judge_rationale": "The answer accurately reflects the processing times found in the context, and the cited chunks correctly support these facts."
+        "judge_rationale": "The answer accurately reflects the processing times for routine and controlled refills found in the cited context chunks."
       },
       {
         "turn_id": "T041",
@@ -196,7 +197,7 @@
         "judge_citation_bucketed": 1.0,
         "label_citation": 0.5,
         "citation_delta": 0.5,
-        "judge_rationale": "The answer accurately reflects the content in clinical-faq.md#3 and cites only that chunk, which is the specific source for the advice."
+        "judge_rationale": "The answer accurately reflects the content of clinical-faq.md#3, which is the only cited chunk relevant to the specific advice given."
       },
       {
         "turn_id": "T042",
@@ -207,7 +208,7 @@
         "judge_citation_bucketed": 1.0,
         "label_citation": 0.5,
         "citation_delta": 0.5,
-        "judge_rationale": "The answer accurately reflects the policy stated in the context regarding referral retention and rebooking priority, and the citations provided are the ones that contain this information."
+        "judge_rationale": "The answer accurately reflects the information provided in clinical-faq.md#5 and clinical-faq.md#4, and the cited chunks support the claims made."
       },
       {
         "turn_id": "T043",
@@ -215,10 +216,10 @@
         "judge_faithfulness_bucketed": 0.5,
         "label_faithfulness": 1.0,
         "delta": 0.5,
-        "judge_citation_bucketed": 1.0,
+        "judge_citation_bucketed": 0.5,
         "label_citation": 1.0,
-        "citation_delta": 0.0,
-        "judge_rationale": "The claim about the six-week recovery timeline is supported by the context, but the advice to build activity back gradually is not present in the provided context chunk, making the answer partially un"
+        "citation_delta": 0.5,
+        "judge_rationale": "The claim about building activity back gradually is not supported by the provided context, which only mentions taking medication and the duration of tiredness."
       },
       {
         "turn_id": "T044",
@@ -229,7 +230,7 @@
         "judge_citation_bucketed": 1.0,
         "label_citation": 0.5,
         "citation_delta": 0.5,
-        "judge_rationale": "The answer is a direct extraction from discharge-pneumonia.md#0, which is correctly cited."
+        "judge_rationale": "The answer is a direct extraction from the cited context chunk discharge-pneumonia.md#0, and that chunk is correctly cited."
       },
       {
         "turn_id": "T045",
@@ -240,7 +241,7 @@
         "judge_citation_bucketed": 1.0,
         "label_citation": 1.0,
         "citation_delta": 0.0,
-        "judge_rationale": "The answer accurately paraphrases the instructions found in the cited context chunk."
+        "judge_rationale": "The answer accurately reflects the instructions in the context regarding rinsing the mouth and using the spacer, and the citation correctly identifies the source chunk."
       },
       {
         "turn_id": "T046",
@@ -251,7 +252,7 @@
         "judge_citation_bucketed": 1.0,
         "label_citation": 1.0,
         "citation_delta": 0.0,
-        "judge_rationale": "The answer accurately reflects the instructions found in the provided context chunks, and the citations correctly identify the sources for the exercise frequency and expected symptoms."
+        "judge_rationale": "The answer accurately reflects the instructions and expectations found in the provided context chunks, and the citations correctly identify the source of this information."
       },
       {
         "turn_id": "T047",
@@ -262,68 +263,68 @@
         "judge_citation_bucketed": 1.0,
         "label_citation": 0.5,
         "citation_delta": 0.5,
-        "judge_rationale": "While the release timing is supported by the context, the claim that 'free slots have been pulled' is an unsupported action not present in the provided texts."
+        "judge_rationale": "The claim that the agent 'pulled the free slots' is not supported by the provided context, which only states the release schedule."
       },
       {
         "turn_id": "T048",
-        "judge_faithfulness_raw": 1.0,
-        "judge_faithfulness_bucketed": 1.0,
+        "judge_faithfulness_raw": 0.0,
+        "judge_faithfulness_bucketed": 0.0,
         "label_faithfulness": 0.5,
         "delta": 0.5,
         "judge_citation_bucketed": 0.0,
         "label_citation": 0.0,
         "citation_delta": 0.0,
-        "judge_rationale": "The answer describes a completed action not found in the context (no support for faithfulness of the specific action, though no contradiction exists), and the cited chunks provide policy rules that do"
+        "judge_rationale": "The answer claims a booking was placed, which is an action not supported by the provided context containing only policy information."
       }
     ],
     "over_half_point": [],
     "faithfulness": {
-      "kappa": 0.02222222222222215,
+      "kappa": 0.1851851851851851,
       "kappa_ci": [
-        -0.27906976744186046,
-        0.4210526315789474
+        0.0,
+        0.4761904761904763
       ],
       "agreement": 0.6363636363636364
     },
     "citation_quality": {
-      "kappa": 0.3209876543209876,
+      "kappa": 0.175,
       "kappa_ci": [
-        0.0,
-        0.6857142857142857
+        -0.33783783783783783,
+        0.5479452054794521
       ],
-      "agreement": 0.5454545454545454
+      "agreement": 0.45454545454545453
     }
   },
   "inter_judge_agreement": {
     "faithfulness": {
-      "kappa": 0.5849056603773586,
-      "agreement": 0.8181818181818182
+      "kappa": 0.8135593220338982,
+      "agreement": 0.9090909090909091
     },
     "citation_quality": {
-      "kappa": 0.42105263157894723,
-      "agreement": 0.8181818181818182
+      "kappa": 0.2826086956521739,
+      "agreement": 0.7272727272727273
     }
   },
   "latency_ms": {
     "total": {
-      "p50": 0.43560400081332773,
-      "p95": 1.331368453975301
+      "p50": 0.43497949809534475,
+      "p95": 1.2627564086869822
     },
     "retrieve": {
-      "p50": 0.3920005037798546,
-      "p95": 0.4199415467155631
+      "p50": 0.392458496207837,
+      "p95": 0.41512080279062497
     },
     "tool": {
-      "p50": 8.399365469813347e-05,
-      "p95": 0.8874498496879822
+      "p50": 8.300412446260452e-05,
+      "p95": 0.8229003047745208
     },
     "draft": {
-      "p50": 0.0017915008356794715,
-      "p95": 0.005704496288672088
+      "p50": 0.001667001924943179,
+      "p95": 0.004260197601979597
     },
     "guardrail": {
-      "p50": 0.03800000558840111,
-      "p95": 0.055731242900947095
+      "p50": 0.03858299896819517,
+      "p95": 0.05858154836460016
     }
   },
   "anomaly_thresholds": {

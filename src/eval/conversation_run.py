@@ -17,7 +17,7 @@ from clinical_agent.budget import BudgetExhausted, CallBudget, RateLimited
 from clinical_agent.guardrail import REFUSAL_CATEGORIES, classify
 from clinical_agent.rag import RETRIEVAL_THRESHOLD, Corpus
 from eval.rubric import DIMENSIONS, aggregate, score_turn
-from eval.stats import wilson
+from eval.stats import scored, wilson
 
 ROOT = Path(__file__).resolve().parents[2]
 GUARDS = tuple(REFUSAL_CATEGORIES) + ("clinical_escalation", "injection")
@@ -70,7 +70,8 @@ def stratified_subset(conversations: list[dict], target: int, seed: int = 202609
 
 def run_set(conversations: list[dict], corpus: Corpus,
             disabled: frozenset[str] = frozenset(),
-            enabled: bool = True, client=None) -> tuple[list, list[float]]:
+            enabled: bool = True, client=None,
+            axes: list | None = None) -> tuple[list, list[float]]:
     """Returns per-turn scores and per-turn latencies in milliseconds.
 
     With `client` set, the draft comes from a real model instead of the scripted
@@ -116,6 +117,21 @@ def run_set(conversations: list[dict], corpus: Corpus,
             leaked = any(pid in answer for pid in foreign)
             scores.append(score_turn(turn, decision, answer, citations, used_corpus,
                                      leaked, injected))
+            if axes is not None:
+                # The conversation set labels out_of_scope / asks_diagnosis /
+                # asks_prescription rather than a single should_refuse, so the expectation
+                # is their disjunction -- the same mapping rubric.py already scores
+                # in_scope, no_diagnosis and no_prescription against. It carries no
+                # operational-escalation label at all, so that axis is not derivable here.
+                expect = turn["expect"]
+                axes.append({
+                    "turn_id": turn["turn_id"],
+                    "exp_refuse": bool(expect["out_of_scope"] or expect["asks_diagnosis"]
+                                       or expect["asks_prescription"]),
+                    "pred_refuse": bool(decision.refused),
+                    "exp_clinical": bool(expect["needs_escalation"]),
+                    "pred_clinical": bool(decision.clinical_escalation),
+                })
             latencies.append((time.perf_counter() - started) * 1000)
     return scores, latencies
 
@@ -227,6 +243,9 @@ def main(argv: list[str] | None = None) -> int:
                              "0 (default) runs the whole set.")
     parser.add_argument("--subset-seed", type=int, default=20260904)
     parser.add_argument("--model", choices=("mock", "real"), default="mock")
+    parser.add_argument("--no-guardrail", action="store_true",
+                        help="run with the guardrail off, so the mutation delta can be "
+                             "measured on real drafts rather than scripted ones")
     parser.add_argument("--max-calls", type=int, default=2000,
                         help="hard ceiling on model calls in one run")
     args = parser.parse_args(argv)
@@ -249,11 +268,14 @@ def main(argv: list[str] | None = None) -> int:
         print(f"real model: {client.name}  cap {args.max_calls} calls", flush=True)
 
     try:
-        scores, latencies = run_set(conversations, corpus, client=client)
+        axes: list = []
+        scores, latencies = run_set(conversations, corpus, client=client,
+                                    enabled=not args.no_guardrail, axes=axes)
     except (RateLimited, BudgetExhausted) as stop:
         # Report what completed rather than losing the run. Not retried by design.
         partial = str(stop)
         print(f"STOPPED: {partial}", file=sys.stderr)
+        axes = []
         scores, latencies = run_set(conversations[:0], corpus)
         if budget is None or budget.calls == 0:
             raise
@@ -274,6 +296,17 @@ def main(argv: list[str] | None = None) -> int:
         "subset_strata": strata or None,
         "run_date": date.today().isoformat(),
         "rubric": rubric,
+        "guardrail": not args.no_guardrail,
+        # Refusal and clinical escalation as precision/recall with Wilson intervals.
+        # Operational escalation is absent: the conversation set carries no label for it,
+        # and a row derived from no label would be a fabricated one.
+        "axes": {
+            "refusal": scored([a["pred_refuse"] for a in axes],
+                              [a["exp_refuse"] for a in axes]),
+            "clinical_escalation": scored([a["pred_clinical"] for a in axes],
+                                          [a["exp_clinical"] for a in axes]),
+            "operational_escalation": None,
+        } if axes else None,
         "model": client.name if client else "mock",
         "budget": budget.as_dict() if budget else None,
         "partial": partial,

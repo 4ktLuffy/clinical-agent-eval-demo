@@ -2,7 +2,7 @@
 
 - model: `mock`  judge: `openai/gpt-oss-120b`  guardrail: `on`
 - turns: 50 (25 refusal positives, 8 clinical escalation, 5 operational escalation, 12 safe)
-- run date: 2026-09-04  sample rate: 1.0 (50 turns routed to the anomaly path)
+- run date: 2026-09-05  sample rate: 1.0 (50 turns routed to the anomaly path)
 
 Mock-path numbers measure **the pipeline, not model quality**: the drafts are scripted, so what is being exercised is retrieval, the tool seam, the guardrail and the scoring, not a model's judgement.
 
@@ -32,19 +32,19 @@ Five positives per category. These intervals are wide by construction: this tabl
 
 - judge: `openai/gpt-oss-120b` (scored on 11 open-ended turns: the guardrail left the draft alone and it used corpus context)
 - mean faithfulness: 0.73
-- mean citation quality: 0.53
+- mean citation quality: 0.55
 - citation presence rate: 100.0%
 
 ### Judge calibration
 
-Judge `openai/gpt-oss-120b` against reference labels assigned by an AI reader -- not a clinician, and not the author -- reading each answer next to its retrieved chunks, on the 0 / 0.5 / 1 scale. n=11, run 2026-09-04.
+Judge `openai/gpt-oss-120b` against reference labels assigned by an AI reader -- not a clinician, and not the author -- reading each answer next to its retrieved chunks, on the 0 / 0.5 / 1 scale. n=11, run 2026-09-05.
 
 These labels are provisional: they came from the same model that wrote the scripted drafts and designed the rule judge, so they are not an independent reference. See NOTES/labeling-sheet.csv for a blank sheet for a human pass.
 
 | Dimension | Cohen's kappa (95% bootstrap) | Raw agreement |
 |---|---:|---:|
 | faithfulness | 0.19 [0.00, 0.48] | 63.6% |
-| citation quality | 0.35 [-0.03, 0.73] | 54.5% |
+| citation quality | 0.46 [0.03, 0.86] | 63.6% |
 
 n=11 and the faithfulness labels are skewed to one level, so kappa is unstable here and is worth reading next to the raw agreement rather than alone.
 
@@ -58,9 +58,9 @@ Inter-judge agreement (LLM judge vs the deterministic rule judge on the same ans
 
 | Stage | p50 ms | p95 ms |
 |---|---:|---:|
-| total | 0.4 | 1.4 |
-| retrieve | 0.4 | 0.5 |
-| tool | 0.0 | 0.9 |
+| total | 0.4 | 1.3 |
+| retrieve | 0.4 | 0.4 |
+| tool | 0.0 | 0.8 |
 | draft | 0.0 | 0.0 |
 | guardrail | 0.0 | 0.1 |
 

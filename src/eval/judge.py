@@ -119,6 +119,11 @@ class LLMJudge:
                 # look like a judging failure rather than a budget we set too low.
                 response = self._client.chat.completions.create(
                     model=self._model,
+                    # temperature=0 removes our own sampling as a source of drift. It does
+                    # not make the provider deterministic: batching and routing still move
+                    # the result, so a row is only claimed reproducible if a repeat run
+                    # actually reproduces it.
+                    temperature=0,
                     max_tokens=int(os.environ.get("CLINICAL_JUDGE_MAX_TOKENS", "1200")),
                     messages=[{"role": "user", "content": prompt}],
                 )
@@ -126,6 +131,7 @@ class LLMJudge:
             else:
                 message = self._client.messages.create(
                     model=self._model,
+                    temperature=0,
                     max_tokens=int(os.environ.get("CLINICAL_JUDGE_MAX_TOKENS", "1200")),
                     messages=[{"role": "user", "content": prompt}],
                 )

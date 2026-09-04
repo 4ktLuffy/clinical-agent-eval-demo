@@ -27,10 +27,15 @@ Real models have now been run, on a 180-turn stratified subset:
 
 - `openai/gpt-oss-20b` via Groq, 180 calls, free tier, $0. Rubric identical to mock -- see the
   section below, which is the reason that row is not quoted as a quality result.
+- `openai/gpt-oss-120b` via Groq as the agent on the same 180-turn subset, guardrail on and
+  again with `--no-guardrail`, 180 calls each. Refusal and clinical-escalation P/R came out
+  identical to the mock path cell for cell; with the guardrail off both collapse to zero.
+  Operational escalation is not reported on this subset, because the conversation set carries
+  no label for it -- the 50-turn `data/turns.json` does, and the two label schemas differ.
 - `openai/gpt-oss-120b` via Groq as the judge, and `qwen/qwen3.8-27b` via Groq as the
-  independent second reader, both over the same mock drafts and the same 11 open-ended turns.
-  Earlier local 7B runs (`qwen2.5:7b`, `granite4:7b-a1b-h`) have been superseded and are not
-  quoted here.
+  independent second reader, both at temperature=0 over the same mock drafts and the same 11
+  open-ended turns. Earlier local 7B runs (`qwen2.5:7b`, `granite4:7b-a1b-h`) have been
+  superseded and are not quoted here.
 
 The first real run found a crash in the reporting path that no test covered: `render()` called
 `.items()` on the `mutation: None` that real mode deliberately sets. Fixed. Nobody had rendered
@@ -76,19 +81,34 @@ The one number that did move is latency: p50 2,644 ms against 0.54 ms on the moc
 4. **The dataset counts.** They trace to `reports/fhir-check.json`, produced by the documented
    `make synthea && make load`. That path is now verified from a fresh clone, but it has been
    run on one machine.
-5. **Judge calibration.** On n=11 with labels skewed to one level, `openai/gpt-oss-120b`
-   reached kappa +0.19 on faithfulness (95% bootstrap [+0.00, +0.48]) and +0.35 on citation
-   quality ([-0.03, +0.73]); `qwen/qwen3.8-27b` reached +0.02 ([-0.28, +0.42]) and +0.32
-   ([+0.00, +0.69]). **Every one of those intervals touches or crosses zero**, so none of
-   them establishes better-than-chance agreement. Raw agreement of 55% to 64% looks
-   respectable only because a judge that answers "faithful" every time scores well against a
-   skewed label set. n=11 is far too small for these intervals to narrow. Labels were
-   assigned by an AI reader, not a clinician; `NOTES/labeling-sheet.csv` is the blank sheet
-   for a human pass. This is not calibration in the sense the word normally carries.
+5. **Judge calibration.** On n=11 at temperature=0, `openai/gpt-oss-120b` reached kappa
+   +0.19 on faithfulness (95% bootstrap [+0.00, +0.48]) and +0.46 on citation quality
+   ([+0.03, +0.86]); `qwen/qwen3.8-27b` reached +0.19 ([+0.00, +0.48]) and +0.18
+   ([-0.34, +0.55]). **At n=11 no calibration claim is possible in either direction.** The
+   intervals are wide enough to contain both chance and substantial agreement, so they
+   neither establish the judges nor rule them out. Holding the faithfulness point estimate
+   fixed, the interval clears zero at roughly n=22 -- and that is a floor, computed by
+   `scripts/kappa_power.py` replicating the observed agreement pattern, which assumes extra
+   turns look exactly like these. Real turns bring variety, so the true n is higher.
+   `gpt-oss-120b` is additionally **provider-nondeterministic**: three identical
+   temperature=0 runs moved 2 of 11 turns and shifted citation kappa from +0.463 to +0.353,
+   enough to change whether that interval clears zero. `qwen3.8-27b` reproduced exactly.
+   Labels were assigned by an AI reader, not a clinician. `data/labels_open_ended.csv` is
+   the blank sheet for a human pass; `--labels` computes kappa against it once filled, and
+   refuses to compute while it is blank rather than scoring against empty cells.
 
 ## Defects found in this repository's own tooling
 
 Worth stating, because they are the argument for the tooling rather than against it.
+
+- **The hand-label loader read a commented sheet as an empty one.** `csv.DictReader` takes
+  its header from the first line it is handed, so the sheet's leading `#` comments became
+  the fieldnames and every `turn_id` lookup returned `None`. The loader then reported zero
+  labels, which is indistinguishable from a correctly-parsed blank sheet -- and the blank
+  sheet is the expected state, so the bug would have sat there until someone filled the
+  sheet in and quietly got no kappa at all. Found by running a filled control sheet rather
+  than trusting that the blank one behaved. Comments are now stripped before parsing, a
+  missing `turn_id` column raises, and `tests/test_labels_csv.py` covers both.
 
 - **The judge's token budget silently discarded its hardest turns.** `max_tokens=300` was
   sized for a non-reasoning model. `openai/gpt-oss-120b` spends 236-298 tokens reasoning

@@ -64,12 +64,24 @@ largely model-insensitive, because five of seven dimensions are decided by the g
 the patient's turn rather than the model's answer. See [`LIMITATIONS.md`](LIMITATIONS.md). The one
 figure that moved was latency: p50 2644 ms against 0.43 ms on the mock path.
 
-**Judge calibration, same 11 open-ended turns, same mock drafts.** `openai/gpt-oss-120b` via
-Groq: faithfulness kappa **+0.19** (95% bootstrap [+0.00, +0.48]), citation **+0.35**
-([-0.03, +0.73]). Independent second reader `qwen/qwen3.8-27b` via Groq: **+0.02**
-([-0.28, +0.42]) and **+0.32** ([+0.00, +0.69]). **Every interval touches or crosses zero**, so
-no judge here is demonstrably better than chance at n=11. Reported because it is the honest
-result, not because it is a good one.
+**Real agent, 180-turn stratified subset.** `openai/gpt-oss-120b` via Groq, 180 calls, $0.
+Refusal precision 1.000 (95% Wilson [0.918, 1.000]), recall 0.827 ([0.703, 0.906]); clinical
+escalation precision 1.000 ([0.806, 1.000]), recall 0.889 ([0.672, 0.969]). **Identical to the
+mock path cell for cell**, because refusal is decided by the guardrail reading the patient's
+turn, not the model's answer. With `--no-guardrail` both axes fall to 0.000 precision and
+0.000 recall — the mutation delta, measured on real drafts. Operational escalation is not
+reported: the conversation set carries no label for it.
+
+**Judge calibration, 11 open-ended turns, temperature=0.** `openai/gpt-oss-120b`: faithfulness
+kappa **+0.19** (95% bootstrap [+0.00, +0.48]), citation **+0.46** ([+0.03, +0.86]).
+`qwen/qwen3.8-27b` as independent second reader: **+0.19** ([+0.00, +0.48]) and **+0.18**
+([-0.34, +0.55]). **At n=11 no calibration claim is possible in either direction** — the
+intervals are too wide to separate these judges from chance or to rule out real agreement;
+holding the faithfulness point estimate fixed, the interval would not clear zero until about
+n=22, and that is an optimistic floor. The `gpt-oss-120b` row is
+**provider-nondeterministic**: three identical temperature=0 runs gave kappa +0.185/+0.185/+0.214
+on faithfulness and +0.463/+0.353/+0.375 on citation, moving 2 of 11 turns. `qwen3.8-27b`
+reproduced exactly across all three.
 
 Latency is not quoted in the tables above: it is machine-dependent and cannot be regenerated to a
 fixed value, so it lives in the report. Two detector bugs surfaced only at 2,000 sessions — a cliff rule comparing a
