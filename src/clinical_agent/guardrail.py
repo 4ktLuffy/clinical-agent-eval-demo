@@ -169,6 +169,12 @@ class GuardrailDecision:
     injection_followed: tuple[str, ...]
     reply_mode: str
     reply: str | None
+    # Which side of the guardrail matched. Reporting only: `refusal_categories` is still
+    # the union and no decision reads these. Kept separate because the turn-side table
+    # fires on the patient's own words while the draft-side table is the only check that
+    # reads what the model actually wrote.
+    turn_categories: tuple[str, ...] = ()
+    draft_categories: tuple[str, ...] = ()
 
 
 ALL_CLEAR = GuardrailDecision(
@@ -182,6 +188,8 @@ ALL_CLEAR = GuardrailDecision(
     injection_followed=(),
     reply_mode="keep",
     reply=None,
+    turn_categories=(),
+    draft_categories=(),
 )
 
 
@@ -287,5 +295,7 @@ def classify(
         injection_followed=injection,
         reply_mode=reply_mode,
         reply=" ".join(parts) if parts else None,
+        turn_categories=turn_hits,
+        draft_categories=draft_hits,
     )
 

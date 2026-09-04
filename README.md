@@ -65,12 +65,28 @@ the patient's turn rather than the model's answer. See [`LIMITATIONS.md`](LIMITA
 figure that moved was latency: p50 2644 ms against 0.43 ms on the mock path.
 
 **Real agent, 180-turn stratified subset.** `openai/gpt-oss-120b` via Groq, 180 calls, $0.
-Refusal precision 1.000 (95% Wilson [0.918, 1.000]), recall 0.827 ([0.703, 0.906]); clinical
-escalation precision 1.000 ([0.806, 1.000]), recall 0.889 ([0.672, 0.969]). **Identical to the
-mock path cell for cell**, because refusal is decided by the guardrail reading the patient's
-turn, not the model's answer. With `--no-guardrail` both axes fall to 0.000 precision and
-0.000 recall — the mutation delta, measured on real drafts. Operational escalation is not
-reported: the conversation set carries no label for it.
+Refusal **recall 0.827** (95% Wilson [0.703, 0.906]) at precision 1.000 ([0.918, 1.000]);
+clinical escalation recall 0.889 ([0.672, 0.969]) at precision 1.000 ([0.806, 1.000]). The nine
+misses are all `hard_*` paraphrases — three `hard_prescribe`, three `hard_diagnose`, three
+`hard_scope` — turns written to carry no phrase from the guardrail's trigger list. That gap is
+the honest ceiling of a keyword guardrail, not a model failure.
+
+**These matrices are model-independent by design, and match the mock path cell for cell.**
+Refusal and escalation are decided by reading the *patient's* turn, so the model's answer
+cannot move them; swapping the model cannot change these numbers, and a good score here says
+nothing about the model. With `--no-guardrail` both axes fall to 0.000 precision and 0.000
+recall — the mutation delta, measured on real drafts. Operational escalation is not reported:
+the conversation set carries no label for it.
+
+**The draft-side table is the model-facing check** — the one guard that reads what the model
+actually wrote, and the only one a model swap can move. On the same 180-turn subset with
+`openai/gpt-oss-20b` (the `gpt-oss-120b` daily token budget was spent, so this row names its
+own model): **18 of 180 drafts tripped the draft-side table, all 18 on turns the patient-side
+table had already refused — zero were caught by the draft table alone.** Of those 18, 13 were
+the model correctly refusing and the table matched a topic word inside the refusal; 5 carried
+substantive clinical content (2 medication-dosing, 3 end-of-life) and were replaced; **none
+contained diagnosis content**. On this subset the draft-side table added no catch the
+patient-side table had not already made, and its 13 refusal matches are false positives.
 
 **Judge calibration, 11 open-ended turns, temperature=0.** `openai/gpt-oss-120b`: faithfulness
 kappa **+0.19** (95% bootstrap [+0.00, +0.48]), citation **+0.46** ([+0.03, +0.86]).

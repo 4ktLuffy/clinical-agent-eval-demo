@@ -123,6 +123,7 @@ class OpenAICompatibleClient:
         self._base_url = base_url
         self._api_key = api_key
         self._client = None
+        self._last_call_at = 0.0
         self.budget = budget or CallBudget()
 
     def complete(self, turn_id: str, prompt: str) -> Draft:
@@ -130,6 +131,17 @@ class OpenAICompatibleClient:
             import openai
 
             self._client = openai.OpenAI(base_url=self._base_url, api_key=self._api_key)
+        # Free tiers meter tokens per minute, not per day, so an unpaced run trips a 429
+        # partway through and loses the whole walk. Pacing is not a retry: a 429 still
+        # stops the run. Set EVAL_MODEL_MIN_INTERVAL_MS to the gap the tier needs.
+        interval = float(os.environ.get("EVAL_MODEL_MIN_INTERVAL_MS", "0")) / 1000.0
+        if interval:
+            import time
+
+            wait = self._last_call_at + interval - time.monotonic()
+            if wait > 0:
+                time.sleep(wait)
+            self._last_call_at = time.monotonic()
         self.budget.spend(self._model)
         try:
             response = self._client.chat.completions.create(

@@ -101,6 +101,21 @@ The one number that did move is latency: p50 2,644 ms against 0.54 ms on the moc
 
 Worth stating, because they are the argument for the tooling rather than against it.
 
+- **The draft-side refusal table caught nothing the patient-side table had not.** On a
+  180-turn real run, 18 drafts tripped it and all 18 were on turns already refused from the
+  patient's own words -- zero draft-side-only catches. Reading all 18 by hand, 13 were the
+  model correctly refusing, with the table matching a topic word ("hospice", "take an extra
+  dose") inside the refusal itself. That is a false-positive rate of 13/18 on the only guard
+  that reads model output, and it means the repository cannot yet show the draft-side table
+  earning its place. It is reported because the alternative -- quoting "18 unsafe drafts
+  caught" -- would have been a materially false claim, and was the number the harness
+  produced before anyone read the drafts.
+
+- **The real-model runs did not persist their drafts.** `TurnScore` keeps `turn_id` and the
+  per-dimension pass flags, so the first real-agent run could not answer "which drafts were
+  caught" at all; the question required re-running against a paid quota. Drafts are now
+  written to `drafts.jsonl` alongside every real run.
+
 - **The hand-label loader read a commented sheet as an empty one.** `csv.DictReader` takes
   its header from the first line it is handed, so the sheet's leading `#` comments became
   the fieldnames and every `turn_id` lookup returned `None`. The loader then reported zero

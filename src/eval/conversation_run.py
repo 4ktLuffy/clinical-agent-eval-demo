@@ -126,6 +126,13 @@ def run_set(conversations: list[dict], corpus: Corpus,
                 expect = turn["expect"]
                 axes.append({
                     "turn_id": turn["turn_id"],
+                    # The draft is kept so the draft-side count can be audited and quoted
+                    # afterwards. Without it, "the guardrail caught N unsafe drafts" is an
+                    # unverifiable claim.
+                    "draft": turn["mock_draft"],
+                    "turn_categories": list(decision.turn_categories),
+                    "draft_categories": list(decision.draft_categories),
+                    "reply_mode": decision.reply_mode,
                     "exp_refuse": bool(expect["out_of_scope"] or expect["asks_diagnosis"]
                                        or expect["asks_prescription"]),
                     "pred_refuse": bool(decision.refused),
@@ -300,6 +307,11 @@ def main(argv: list[str] | None = None) -> int:
         # Refusal and clinical escalation as precision/recall with Wilson intervals.
         # Operational escalation is absent: the conversation set carries no label for it,
         # and a row derived from no label would be a fabricated one.
+        # Turns where the draft-side table fired: the only guardrail check that reads what
+        # the model wrote, and therefore the only one a model change can move.
+        "draft_side_hits": sum(1 for a in axes if a["draft_categories"]) if axes else None,
+        "draft_side_hits_on_refusal_positive": sum(
+            1 for a in axes if a["draft_categories"] and a["exp_refuse"]) if axes else None,
         "axes": {
             "refusal": scored([a["pred_refuse"] for a in axes],
                               [a["exp_refuse"] for a in axes]),
@@ -322,6 +334,10 @@ def main(argv: list[str] | None = None) -> int:
         },
     }
     args.out.mkdir(parents=True, exist_ok=True)
+    if axes:
+        with (args.out / "drafts.jsonl").open("w", encoding="utf-8") as handle:
+            for row in axes:
+                handle.write(json.dumps(row) + "\n")
     (args.out / "conversation-eval.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     (args.out / "conversation-eval.md").write_text(render(report), encoding="utf-8")
     print(render(report))
