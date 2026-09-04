@@ -16,13 +16,24 @@ import urllib.request
 
 TIMEOUT_S = 60
 
-# resource type -> minimum count the deployment needs before it is allowed to take traffic
-EXPECTED = {
-    "Patient": 150,
-    "Encounter": 500,
-    "MedicationRequest": 100,
-    "Condition": 200,
-    "Observation": 500,
+# resource type -> minimum count the deployment needs before it is allowed to take traffic.
+# Two profiles: the full Synthea load the README documents, and the small committed fixture
+# that CI and `make fixture-load` use. Without the second, `make verify` on a fixture stack
+# fails for the wrong reason -- the data is fine, it is just deliberately small.
+PROFILES = {
+    "full": {
+        "Patient": 150,
+        "Encounter": 500,
+        "MedicationRequest": 100,
+        "Condition": 200,
+        "Observation": 500,
+    },
+    "fixture": {
+        "Patient": 10,
+        "Encounter": 50,
+        "MedicationRequest": 50,
+        "Condition": 50,
+    },
 }
 
 
@@ -48,7 +59,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--fhir-url", default="http://localhost:8080/fhir")
     parser.add_argument("--json", action="store_true", help="emit machine-readable output")
     parser.add_argument("--out", type=Path, default=None,
-                        help="also write the result here, as the artifact the README cites")
+                        help="write the result here, as the artifact the README cites. "
+                             "Only written when the check passes and the profile is 'full', "
+                             "so a fixture-sized run cannot overwrite the reference.")
+    parser.add_argument("--profile", choices=sorted(PROFILES), default="full",
+                        help="which minimums to require (default: full)")
     args = parser.parse_args(argv)
 
     try:
@@ -58,7 +73,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     results, failures = {}, []
-    for resource, minimum in EXPECTED.items():
+    expected = PROFILES[args.profile]
+    for resource, minimum in expected.items():
         try:
             found = count(args.fhir_url, resource)
         except Exception as exc:  # noqa: BLE001
@@ -68,9 +84,9 @@ def main(argv: list[str] | None = None) -> int:
         if 0 <= found < minimum:
             failures.append(f"{resource}: {found} < {minimum}")
 
-    payload = {"fhir_url": args.fhir_url, "server": server, "results": results,
-               "failures": failures}
-    if args.out:
+    payload = {"fhir_url": args.fhir_url, "server": server, "profile": args.profile,
+               "results": results, "failures": failures}
+    if args.out and not failures and args.profile == "full":
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
         print(f"wrote {args.out}")
@@ -84,8 +100,11 @@ def main(argv: list[str] | None = None) -> int:
 
     if failures:
         print("fhir-check FAILED: " + "; ".join(failures), file=sys.stderr)
+        if args.profile == "full":
+            print("  (a small dataset? try: make fhir-check FHIR_PROFILE=fixture)",
+                  file=sys.stderr)
         return 1
-    print("fhir-check passed")
+    print(f"fhir-check passed ({args.profile} profile)")
     return 0
 
 

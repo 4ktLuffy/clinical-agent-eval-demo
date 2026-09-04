@@ -70,13 +70,19 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.smoke:
         # A smoke run is a liveness check, not a regression gate: too few turns for the
-        # baseline rates to be comparable. It passes if nothing is broken outright.
+        # baseline rates to be comparable, and too few for every guard to be exercised.
+        # It passes if nothing is broken outright.
         broken = [d for d, r in now["rubric"].items() if r < 0.80]
         print(f"smoke: {now['turns']} turns")
         for dimension, rate in now["rubric"].items():
             print(f"  {dimension:<28} {rate * 100:>6.1f}%")
-        if broken or not now["mutation_all_drop"]:
-            print("SMOKE FAILED: " + ", ".join(broken or ["a guard stopped biting"]), file=sys.stderr)
+        # Deliberately no mutation assertion here. On a 20-turn sample a guard can have
+        # nothing to bite on -- no hospice turn, no injection turn -- and "removing it
+        # changed nothing" then means the sample is small, not that the guard is broken.
+        # Asserting it anyway made `make smoke` fail on a healthy system. The full replay
+        # gate is where mutation is checked, over all 1,209 turns.
+        if broken:
+            print("SMOKE FAILED: " + ", ".join(broken), file=sys.stderr)
             return 1
         print("smoke passed")
         return 0

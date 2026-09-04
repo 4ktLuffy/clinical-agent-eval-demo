@@ -169,6 +169,7 @@ make fhir-up && make fixture-load           # live FHIR in ~30s, 10 patients, no
 make fhir-up && make synthea && make load   # the full 213-patient set (188 MB download)
 make fhir-check                             # pre-traffic dataset assertion
 make verify                                 # lint, tests, fhir-check, smoke, replay
+make verify FHIR_PROFILE=fixture            # same, against the 10-patient fixture
 make readme-check                           # every number below regenerated and diffed
 make eval                                   # full rubric + per-guard mutation
 make loadtest                               # 2,000 sessions + detector proof

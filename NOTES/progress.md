@@ -549,3 +549,38 @@ slightly different set: 214 patients rather than 213, 12,088 encounters rather t
 it. `readme-check: 30 regenerated numbers, 0 mismatched`.
 
 Fixes this pass: **11**, each with a negative control.
+
+
+---
+
+# Cleanup pass, and three more defects
+
+Housekeeping first: removed ~1.9 GB of my own verification clones (`/tmp/vc2..4`,
+`/tmp/verify-clone`, `~/vc5`, three scratch dirs), tore down five leftover HAPI stacks, and
+removed the orphaned `docker_fhir-pgdata` volume left by the pre-fix compose project. The
+machine is back to one stack on :8080 with the fixture loaded, which is what the README's
+quick path produces.
+
+Running `make verify` as a user would then found three more things:
+
+12. **`make fhir-check` overwrote the committed artifact with fixture-sized counts.** This is
+    the worst of the three: `reports/fhir-check.json` is what the README's dataset numbers
+    trace to, and a routine `make verify` against the 10-patient fixture silently replaced
+    214 patients with 10. Restored from git, and the write is now gated -- the artifact is
+    only written when the check **passes** and the profile is `full`, so a small run cannot
+    clobber the reference.
+13. **`make verify` failed on the fixture stack for the wrong reason.** `fhir-check`'s
+    minimums are sized for the full Synthea load, so the quick path the README now
+    recommends failed against its own data. Added a `fixture` profile and
+    `make verify FHIR_PROFILE=fixture`; the full profile now also prints a hint pointing at it.
+14. **`make smoke` asserted that every guard bites on a 23-turn sample.** On that few turns a
+    guard can have nothing to bite on -- no hospice turn, no injection turn -- and "removing
+    it changed nothing" means the sample is small, not that the guard is broken. It failed on
+    a healthy system. Smoke is a liveness check and now says so in code; mutation is asserted
+    by the full replay gate over all 1,209 turns, where every guard does have work.
+
+`make verify FHIR_PROFILE=fixture` now exits 0. Negative controls: the fixture run leaves
+`reports/fhir-check.json` byte-identical; the full profile against fixture data fails with the
+hint; a smoke run with a genuinely broken dimension still exits 1.
+
+Fixes this pass: **14**, each with a negative control.
