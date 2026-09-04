@@ -26,7 +26,7 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-README = ROOT / "README.md"
+DOCS = (ROOT / "README.md", ROOT / "LIMITATIONS.md")
 FHIR_URL = "http://localhost:8080/fhir"
 
 
@@ -36,7 +36,9 @@ class Check:
 
 
 def _readme() -> str:
-    return re.sub(r"\s+", " ", README.read_text(encoding="utf-8"))
+    """README plus LIMITATIONS. Both are documentation whose numbers must be true, and
+    moving a claim from one to the other must not silently drop it from the check."""
+    return re.sub(r"\s+", " ", "\n".join(d.read_text(encoding="utf-8") for d in DOCS))
 
 
 def _load(name: str) -> dict | None:
