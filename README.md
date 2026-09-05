@@ -58,7 +58,7 @@ recall at 0.674 → 0.886 precision. Detail and mutation rows in
 - **Indirect prompt injection.** Retrieved text is wrapped in a data marker; the answer is checked for a payload it could only carry by obeying an embedded instruction. On a held-out set it recognises 4.2% of them — see [`LIMITATIONS.md`](LIMITATIONS.md).
 - **Replay gate.** `make replay` blocks a deploy if any dimension falls a point below baseline or any guard stops biting. `make readme-check` regenerates every number here from committed artifacts; `make number-audit` fails if any number is neither regenerated nor marked with the command that reproduces it.
 - **Live canary.** [![canary](https://github.com/4ktLuffy/clinical-agent-eval-demo/actions/workflows/canary.yml/badge.svg)](https://github.com/4ktLuffy/clinical-agent-eval-demo/actions/workflows/canary.yml) replays 20 fixed turns daily against the live provider, diffs refusal and escalation against a committed baseline, fails on any change or on latency outside the rules, commits nothing, uploads the diff. It needs a repo secret; without one the job is skipped, not silently green.
-- **Runbook.** [`RUNBOOK.md`](RUNBOOK.md) — deploy, pre-traffic gates, rollback, per-detector on-call response.
+- **Runbook.** [`RUNBOOK.md`](RUNBOOK.md) — deploy, pre-traffic gates, rollback, on-call response per detector.
 
 ## Running it
 
@@ -91,10 +91,7 @@ export EVAL_MODEL_BASE_URL=https://api.groq.com/openai/v1  # EVAL_MODEL_API_KEY=
 make eval ARGS="--model real --turns-subset 180 --semantic local"
 ```
 
-(manual: python scripts/model_sweep.py --resume) **Five open models, same turns, same
-policy, temperature 0, $0:** the out-of-scope counter reports 19 for `qwen3.8-27b` of which
-a hand read confirms **none**, and 14 for `allam-2-7b` of which **all** are real. It
-measures whether a model says topic words. Full table in [`LIMITATIONS.md`](LIMITATIONS.md).
+(manual: python scripts/model_sweep.py --resume) **Five open models, same turns, same policy, temperature 0, $0:** the out-of-scope counter reports 19 for `qwen3.8-27b` of which a hand read confirms **none**, and 14 for `allam-2-7b` of which **all** are real. It measures whether a model says topic words. Full table in [`LIMITATIONS.md`](LIMITATIONS.md).
 
 ## Use it on your own agent
 
@@ -114,8 +111,7 @@ rubric, whose replay gate blocks a deploy on regression.
 
 ## Mapping to the day-90 FDE outcome (manual: python scripts/verify_quotes.py)
 
-(manual: python scripts/verify_quotes.py) Hippocratic AI has raised $444M and reports 250M+ patient interactions across 300+ live use
-cases (PR Newswire, August 2026). Built from public material; not affiliated with them.
+(manual: python scripts/verify_quotes.py) Hippocratic AI has raised $444M and reports 250M+ patient interactions across 300+ live use cases (PR Newswire, August 2026). Built from public material; not affiliated with them.
 
 (manual: python scripts/verify_quotes.py) The [Forward Deployed Engineer posting](https://jobs.ashbyhq.com/Hippocratic%20AI/378e1797-b92c-4fce-98d2-03481e214bb5)
 says that by day 90 you will have "designed and implemented a RAG pipeline grounded in
