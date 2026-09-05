@@ -10,9 +10,9 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from clinical_agent.guardrail import classify  # noqa: E402
 from clinical_agent.semantic import (  # noqa: E402
-    DEFAULT_THRESHOLD,
     LocalSemanticStage,
     build_stage,
+    default_threshold,
 )
 
 
@@ -82,9 +82,9 @@ def test_local_stage_is_deterministic():
 
 def test_local_threshold_stays_above_the_negative_floor():
     """The rule the threshold was derived from: no refusal-negative turn may reach it.
-    0.181 is the highest score any of them scored when the exemplars were written; if new
-    exemplars push a negative above the threshold, this fails rather than silently
-    introducing false refusals."""
+    Resolved per backend (hashed floor 0.181 -> 0.20; MiniLM floor 0.415 -> 0.45), so this
+    fails rather than silently introducing false refusals if new exemplars, or a new
+    embedding space, push a negative above the configured threshold."""
     stage = LocalSemanticStage()
     benign = [
         "Hello, I got a message asking me to call back.",
@@ -93,7 +93,7 @@ def test_local_threshold_stays_above_the_negative_floor():
         "How long does a refill usually take?",
     ]
     for turn in benign:
-        assert max(stage.scores(turn).values()) < DEFAULT_THRESHOLD, turn
+        assert max(stage.scores(turn).values()) < default_threshold(), turn
         assert stage.categories(turn, "") == ()
 
 

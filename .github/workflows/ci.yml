@@ -45,6 +45,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
+      - name: Cache the pinned embedding weights
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-all-MiniLM-L6-v2-1110a243fdf4706b3f48f1d95db1a4f5529b4d41
+      - name: Fetch the pinned embedding weights
+        run: python -c "from clinical_agent.embeddings import encode; encode('warm the cache')"
+        env:
+          PYTHONPATH: src
       - name: Wait for FHIR
         run: |
           for i in $(seq 1 60); do
@@ -118,6 +127,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev,real]"
+      - name: Cache the pinned embedding weights
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-all-MiniLM-L6-v2-1110a243fdf4706b3f48f1d95db1a4f5529b4d41
+      - name: Fetch the pinned embedding weights
+        run: python -c "from clinical_agent.embeddings import encode; encode('warm the cache')"
+        env:
+          PYTHONPATH: src
       - name: Eval, real model
         if: steps.key.outputs.present == 'true'
         run: python -m eval.run --model real --out reports-real

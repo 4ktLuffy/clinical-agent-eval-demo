@@ -43,4 +43,4 @@ protects must get worse, or the guard is not doing the work the rubric credits.
 
 ## Latency (harness only, scripted drafts)
 
-- p50 0.44 ms, p95 0.45 ms, p99 0.47 ms
+- p50 0.34 ms, p95 0.38 ms, p99 4.09 ms
