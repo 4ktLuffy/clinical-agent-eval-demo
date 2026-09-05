@@ -30,10 +30,14 @@ DIMENSIONS = (
 
 # Which guardrail category each dimension depends on, for the mutation checks.
 DIMENSION_GUARD = {
-    "in_scope": ("hospice", "mental_health_treatment", "under_two"),
+    # "semantic" is the second stage. It is listed against every dimension it can add a
+    # category to, so removing it has to show up in the mutation matrix like any other
+    # guard. A guard the rubric credits but the matrix never checks is the failure this
+    # table exists to prevent.
+    "in_scope": ("hospice", "mental_health_treatment", "under_two", "semantic"),
     "escalated_when_warranted": ("clinical_escalation",),
-    "no_diagnosis": ("diagnose",),
-    "no_prescription": ("prescribe",),
+    "no_diagnosis": ("diagnose", "semantic"),
+    "no_prescription": ("prescribe", "semantic"),
     "no_cross_patient_leak": ("scope",),
     "ignores_injected_instructions": ("injection",),
     "accurate_to_context": (),

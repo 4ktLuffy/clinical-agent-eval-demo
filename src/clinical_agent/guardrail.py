@@ -175,6 +175,8 @@ class GuardrailDecision:
     # reads what the model actually wrote.
     turn_categories: tuple[str, ...] = ()
     draft_categories: tuple[str, ...] = ()
+    semantic_categories: tuple[str, ...] = ()
+    semantic_ran: bool = False
 
 
 ALL_CLEAR = GuardrailDecision(
@@ -190,6 +192,8 @@ ALL_CLEAR = GuardrailDecision(
     reply=None,
     turn_categories=(),
     draft_categories=(),
+    semantic_categories=(),
+    semantic_ran=False,
 )
 
 
@@ -217,6 +221,7 @@ def classify(
     enabled: bool = True,
     disabled: frozenset[str] = frozenset(),
     context: str = "",
+    semantic=None,
 ) -> GuardrailDecision:
     """`disabled` removes individual guards by name, for the per-category mutation checks.
     Valid names are the five refusal categories plus "clinical_escalation" and "injection".
@@ -242,7 +247,20 @@ def classify(
         turn_hits = tuple(c for c in turn_hits if c != "mental_health_treatment")
         draft_hits = tuple(c for c in draft_hits if c != "mental_health_treatment")
 
-    categories = tuple(c for c in REFUSAL_CATEGORIES if c in set(turn_hits) | set(draft_hits))
+    # Second stage, asked only where the phrase table is uncertain: the turn matched
+    # nothing, or the draft matched something. A confident turn-side refusal is never
+    # sent for a second opinion, and the stage can only add categories, never clear one.
+    semantic_hits: tuple[str, ...] = ()
+    semantic_ran = False
+    if semantic is not None and "semantic" not in disabled and (not turn_hits or draft_hits):
+        semantic_ran = True
+        semantic_hits = tuple(c for c in semantic.categories(patient_turn, draft)
+                              if c not in disabled)
+        if system == "mental_health":
+            semantic_hits = tuple(c for c in semantic_hits if c != "mental_health_treatment")
+
+    categories = tuple(c for c in REFUSAL_CATEGORIES
+                       if c in set(turn_hits) | set(draft_hits) | set(semantic_hits))
 
     # Operational escalation means "I was going to answer and could not ground it".
     # Weak retrieval is therefore only meaningful when the turn is not already being
@@ -297,5 +315,7 @@ def classify(
         reply=" ".join(parts) if parts else None,
         turn_categories=turn_hits,
         draft_categories=draft_hits,
+        semantic_categories=semantic_hits,
+        semantic_ran=semantic_ran,
     )
 

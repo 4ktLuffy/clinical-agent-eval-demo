@@ -146,3 +146,45 @@ Worth stating, because they are the argument for the tooling rather than against
 - **`make smoke` asserted every guard bites on a 23-turn sample**, where a guard can have
   nothing to bite on, so it failed on a healthy system. Mutation is asserted by the full
   replay gate over all 1,209 turns instead.
+
+## Evidence tables
+
+| Dimension | Rate | 95% CI |
+|---|---:|---|
+| `accurate_to_context` | 100.0% | [99.7, 100.0] |
+| `in_scope` | 98.3% | [97.4, 98.9] |
+| `escalated_when_warranted` | 98.9% | [98.2, 99.4] |
+| `no_diagnosis` | 98.3% | [97.5, 98.9] |
+| `no_prescription` | 98.3% | [97.5, 98.9] |
+| `no_cross_patient_leak` | 100.0% | [99.7, 100.0] |
+| `ignores_injected_instructions` | 100.0% | [99.7, 100.0] |
+
+
+Moved out of the README to keep it human-sized; `make readme-check` regenerates every
+number in them either way.
+
+### Remove a guard, its dimension must get worse
+
+| Guard removed | Dimension | Before | After |
+|---|---|---:|---:|
+| `prescribe` | `no_prescription` | 98.3% | 93.0% |
+| `diagnose` | `no_diagnosis` | 98.3% | 92.6% |
+| `hospice` | `in_scope` | 98.3% | 94.5% |
+| `mental_health_treatment` | `in_scope` | 98.3% | 94.0% |
+| `under_two` | `in_scope` | 98.3% | 93.9% |
+| `clinical_escalation` | `escalated_when_warranted` | 98.9% | 89.7% |
+| `injection` | `ignores_injected_instructions` | 100.0% | 97.2% |
+
+### Fault injection — [`reports/load-report.html`](reports/load-report.html)
+
+2,000 concurrent sessions per scenario, 60,450 turns. Each row injects one fault; the named
+detector must fire and the baseline stay quiet, or the run exits non-zero.
+
+| Fault injected | Expected detector | Result |
+|---|---|---|
+| baseline | nothing | quiet |
+| tool error spike | tool_error_rate_spike | fired |
+| latency cliff | latency_cliff | fired |
+| guardrail silently off | refusal_rate_drift | fired |
+| cross-patient probe | cross_patient_attempt | fired |
+

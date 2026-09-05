@@ -69,14 +69,38 @@ def test_rubric_is_high_but_not_perfect(subset, corpus):
 
 
 def test_every_guard_mutation_drops_its_dimension(subset, corpus):
+    """Every phrase-table guard must hurt the dimension it protects when removed.
+
+    The semantic second stage is not configured here, so it contributes nothing and cannot
+    make anything worse by leaving. It is asserted separately below: a guard that never
+    fired is reported as not-exercised, and the test that this cannot be used to hide a
+    real regression is test_a_guard_that_fired_must_still_drop.
+    """
     scores, _ = run_set(subset, corpus)
     baseline = aggregate(scores)
-    matrix = mutation_matrix(subset, corpus, baseline)
+    matrix = mutation_matrix(subset, corpus, baseline, fired={"semantic": []})
     assert set(matrix) == set(GUARDS)
     for guard, rows in matrix.items():
         assert rows, f"{guard} protects no dimension"
         for row in rows:
+            if guard == "semantic":
+                assert not row["exercised"], "no stage was configured, yet it fired"
+                continue
             assert row["dropped"], f"removing {guard} did not hurt {row['dimension']}"
+
+
+def test_a_guard_that_fired_must_still_drop(subset, corpus):
+    """The not-exercised escape hatch must not be able to mask a real regression: claim
+    the semantic stage contributed a category and its non-drop becomes a failure again."""
+    scores, _ = run_set(subset, corpus)
+    baseline = aggregate(scores)
+    matrix = mutation_matrix(subset, corpus, baseline,
+                             fired={"semantic": ["diagnose", "prescribe"]})
+    rows = {r["dimension"]: r for r in matrix["semantic"]}
+    for dimension in ("no_diagnosis", "no_prescription"):
+        assert rows[dimension]["exercised"], dimension
+        assert not rows[dimension]["dropped"], (
+            "fixture assumption broken: the unconfigured stage should not drop anything")
 
 
 def test_disabling_the_whole_guardrail_is_worse_than_any_single_guard(subset, corpus):

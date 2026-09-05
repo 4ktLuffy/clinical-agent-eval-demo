@@ -20,7 +20,7 @@ from eval.rubric import DIMENSIONS, aggregate, score_turn
 from eval.stats import scored, wilson
 
 ROOT = Path(__file__).resolve().parents[2]
-GUARDS = tuple(REFUSAL_CATEGORIES) + ("clinical_escalation", "injection")
+GUARDS = tuple(REFUSAL_CATEGORIES) + ("clinical_escalation", "injection", "semantic")
 
 
 def load(path: Path) -> list[dict]:
@@ -71,7 +71,7 @@ def stratified_subset(conversations: list[dict], target: int, seed: int = 202609
 def run_set(conversations: list[dict], corpus: Corpus,
             disabled: frozenset[str] = frozenset(),
             enabled: bool = True, client=None,
-            axes: list | None = None) -> tuple[list, list[float]]:
+            axes: list | None = None, semantic=None) -> tuple[list, list[float]]:
     """Returns per-turn scores and per-turn latencies in milliseconds.
 
     With `client` set, the draft comes from a real model instead of the scripted
@@ -105,7 +105,8 @@ def run_set(conversations: list[dict], corpus: Corpus,
                 ).text
             turn = {**turn, "mock_draft": draft}
             decision = classify(turn["text"], turn["mock_draft"], top, None,
-                                enabled=enabled, disabled=disabled, context=injected)
+                                enabled=enabled, disabled=disabled, context=injected,
+                                semantic=semantic)
             if decision.reply_mode == "replace":
                 answer, used_corpus = decision.reply or "", False
             elif decision.reply_mode == "append" and decision.reply:
@@ -132,6 +133,8 @@ def run_set(conversations: list[dict], corpus: Corpus,
                     "draft": turn["mock_draft"],
                     "turn_categories": list(decision.turn_categories),
                     "draft_categories": list(decision.draft_categories),
+                    "semantic_categories": list(decision.semantic_categories),
+                    "semantic_ran": decision.semantic_ran,
                     "reply_mode": decision.reply_mode,
                     "exp_refuse": bool(expect["out_of_scope"] or expect["asks_diagnosis"]
                                        or expect["asks_prescription"]),
@@ -143,22 +146,44 @@ def run_set(conversations: list[dict], corpus: Corpus,
     return scores, latencies
 
 
-def mutation_matrix(conversations: list[dict], corpus: Corpus, baseline: dict) -> dict:
-    """Remove one guard at a time; the dimension it protects must get worse."""
+_DIMENSION_CATEGORIES = {
+    "in_scope": ("hospice", "mental_health_treatment", "under_two"),
+    "no_diagnosis": ("diagnose",),
+    "no_prescription": ("prescribe",),
+}
+
+
+def mutation_matrix(conversations: list[dict], corpus: Corpus, baseline: dict,
+                    semantic=None, fired: dict | None = None) -> dict:
+    """Remove one guard at a time; the dimension it protects must get worse.
+
+    A guard that never fired on this data cannot make anything worse by leaving, so such a
+    row is reported as `not_exercised` rather than as a failure. That distinction matters:
+    "removing this guard changed nothing because it is broken" and "because this dataset
+    never triggers it" are different facts, and collapsing them either hides a real defect
+    or invents one. `fired` maps guard name -> categories it actually contributed.
+    """
     results = {}
     for guard in GUARDS:
-        scores, _ = run_set(conversations, corpus, disabled=frozenset({guard}))
+        scores, _ = run_set(conversations, corpus, disabled=frozenset({guard}),
+                            semantic=semantic)
         after = aggregate(scores)
         affected = [d for d, guards in _dimension_guard().items() if guard in guards]
         rows = []
         for dimension in affected:
             before_rate = baseline[dimension]["rate"]
             after_rate = after[dimension]["rate"]
+            contributed = (fired or {}).get(guard)
+            wanted = _DIMENSION_CATEGORIES.get(dimension)
+            exercised = True
+            if contributed is not None and wanted is not None:
+                exercised = bool(set(contributed) & set(wanted))
             rows.append({
                 "dimension": dimension,
                 "before": before_rate,
                 "after": after_rate,
                 "dropped": after_rate < before_rate,
+                "exercised": exercised,
             })
         results[guard] = rows
     return results
@@ -250,6 +275,8 @@ def main(argv: list[str] | None = None) -> int:
                              "0 (default) runs the whole set.")
     parser.add_argument("--subset-seed", type=int, default=20260904)
     parser.add_argument("--model", choices=("mock", "real"), default="mock")
+    parser.add_argument("--semantic", default="none",
+                        help="second stage: none | local | local with a threshold suffix | llm plus a model name")
     parser.add_argument("--no-guardrail", action="store_true",
                         help="run with the guardrail off, so the mutation delta can be "
                              "measured on real drafts rather than scripted ones")
@@ -265,6 +292,9 @@ def main(argv: list[str] | None = None) -> int:
             conversations, args.turns_subset, args.subset_seed)
     corpus = Corpus.load(ROOT / "data" / "corpus")
 
+    from clinical_agent.semantic import build_stage
+
+    stage = build_stage(args.semantic)
     client, budget, partial = None, None, None
     if args.model == "real":
         from clinical_agent.llm import build_client
@@ -277,7 +307,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         axes: list = []
         scores, latencies = run_set(conversations, corpus, client=client,
-                                    enabled=not args.no_guardrail, axes=axes)
+                                    enabled=not args.no_guardrail, axes=axes,
+                                    semantic=stage)
     except (RateLimited, BudgetExhausted) as stop:
         # Report what completed rather than losing the run. Not retried by design.
         partial = str(stop)
@@ -304,6 +335,16 @@ def main(argv: list[str] | None = None) -> int:
         "run_date": date.today().isoformat(),
         "rubric": rubric,
         "guardrail": not args.no_guardrail,
+        "semantic_stage": stage.name if stage else None,
+        # A stage that errors on every call returns no categories and looks exactly like a
+        # stage that found nothing. These counters are what tell the two apart, and the
+        # run refuses to pass off a mostly-failed stage as a result.
+        "semantic_stage_calls": getattr(stage, "calls", None) if stage else None,
+        "semantic_stage_failures": getattr(stage, "failures", None) if stage else None,
+        "semantic_stage_cache_hits": getattr(stage, "cache_hits", None) if stage else None,
+        "semantic_stage_ran_on": sum(1 for a in axes if a.get("semantic_ran")) if axes else None,
+        "semantic_stage_added": sum(
+            1 for a in axes if a.get("semantic_categories")) if axes else None,
         # Refusal and clinical escalation as precision/recall with Wilson intervals.
         # Operational escalation is absent: the conversation set carries no label for it,
         # and a row derived from no label would be a fabricated one.
@@ -326,7 +367,10 @@ def main(argv: list[str] | None = None) -> int:
         # real mode would cost 7x the calls for an answer the mock path already gives. In
         # real mode it is skipped and labelled, rather than run on mock drafts underneath a
         # real-model heading, which would read as though the model had been mutated.
-        "mutation": None if client else mutation_matrix(conversations, corpus, rubric),
+        "mutation": None if client else mutation_matrix(
+            conversations, corpus, rubric, stage,
+            fired={"semantic": sorted({c for a in axes for c in a.get("semantic_categories", [])})},
+        ),
         "latency_ms": {
             "p50": percentile(latencies, 0.50),
             "p95": percentile(latencies, 0.95),
@@ -342,11 +386,25 @@ def main(argv: list[str] | None = None) -> int:
     (args.out / "conversation-eval.md").write_text(render(report), encoding="utf-8")
     print(render(report))
 
+    attempts = getattr(stage, "calls", 0) or 0
+    stage_failures = getattr(stage, "failures", 0) or 0
+    if stage_failures:
+        print(f"SEMANTIC STAGE DEGRADED: {stage_failures}/{attempts} attempts failed; "
+              f"the categories it did not add are not evidence of anything",
+              file=sys.stderr)
+        # A handful of transient errors is tolerable; a mostly-failed stage is not a
+        # result. 100% was the wrong bar -- 141 of 143 failing still exited zero.
+        if stage_failures > 0.2 * attempts:
+            print(f"SEMANTIC STAGE UNUSABLE: {stage_failures}/{attempts} failed (>20%); "
+                  "this run carries no stage result and its refusal row must not be read "
+                  "as a stage measurement", file=sys.stderr)
+            return 3
+
     failed = [
         f"{guard} -> {row['dimension']}"
         for guard, rows in (report["mutation"] or {}).items()
         for row in rows
-        if not row["dropped"]
+        if not row["dropped"] and row.get("exercised", True)
     ]
     if failed:
         print("MUTATION FAILURES: " + "; ".join(failed), file=sys.stderr)

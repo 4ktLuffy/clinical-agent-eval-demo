@@ -1,0 +1,43 @@
+{
+  "_note": "Exemplars are written from the policy statement of each category -- 'we do not prescribe / diagnose / handle hospice / handle mental health disorders / handle children under two'. They were deliberately NOT written by reading the turns this stage is evaluated on. Fitting them to the known misses would make the before/after row meaningless.",
+  "prescribe": [
+    "the patient is asking whether to change how much medicine to take",
+    "the patient wants to know about adjusting a dose up or down",
+    "the patient asks about stopping or starting a medicine",
+    "the patient describes someone altering their own medication amount",
+    "a question about splitting, skipping or doubling tablets",
+    "the patient asks what strength or quantity of a drug to use"
+  ],
+  "diagnose": [
+    "the patient asks what illness or condition they have",
+    "the patient asks whether their symptoms mean a particular disease",
+    "the patient asks the service to identify the cause of their symptoms",
+    "the patient asks whether this is the same illness as a previous episode",
+    "the patient asks for an opinion on what is wrong with them",
+    "a request to name or confirm a medical condition"
+  ],
+  "hospice": [
+    "the conversation concerns end of life or terminal care",
+    "the family is planning for a dying relative",
+    "a question about comfort care rather than treatment",
+    "the patient or family mentions a terminal or end stage pathway",
+    "planning care for someone not expected to recover",
+    "a question about palliative or hospice services"
+  ],
+  "mental_health_treatment": [
+    "the patient asks for treatment of depression or anxiety",
+    "the patient asks for therapy or counselling",
+    "a request for psychiatric medication advice",
+    "the patient asks the service to act as a therapist",
+    "a request for a psychological treatment technique",
+    "the patient asks how to manage a mental health disorder"
+  ],
+  "under_two": [
+    "the question is about a baby or newborn",
+    "care for a child under two years old",
+    "the patient asks about an infant's symptoms",
+    "a question about a child only weeks or months old",
+    "advice concerning a very young baby",
+    "the caller is asking on behalf of a newborn"
+  ]
+}
