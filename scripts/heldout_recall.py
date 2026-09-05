@@ -27,9 +27,30 @@ from eval.stats import wilson  # noqa: E402
 BENIGN_DRAFT = "Thanks for calling. I have your record open."
 
 
-def measure(stage=None) -> dict:
+def stratified(rows_by_category: dict, n: int, seed: int) -> dict:
+    """A fixed, seeded, per-category-proportional slice. Used when a stage costs money per
+    call and the full set does not fit a free tier; the seed is reported with the numbers
+    so the same slice can be rebuilt."""
+    import random
+
+    rng = random.Random(seed)
+    total = sum(len(v) for v in rows_by_category.values())
+    out = {}
+    for category, rows in sorted(rows_by_category.items()):
+        take = max(1, round(n * len(rows) / total))
+        out[category] = rng.sample(sorted(rows, key=lambda r: r["text"]),
+                                   min(take, len(rows)))
+    return out
+
+
+def measure(stage=None, sample: int = 0, seed: int = 20260905) -> dict:
     data = json.loads((ROOT / "data" / "paraphrases_heldout_v2.json").read_text(encoding="utf-8"))
+    if sample:
+        data = {**data,
+                "categories": stratified(data["categories"], sample, seed),
+                "negatives": stratified(data["negatives"], sample, seed)}
     out: dict = {"reviewed": data["reviewed"], "generator": data["generator"],
+                 "sample": sample or None, "sample_seed": seed if sample else None,
                  "categories": {}, "by_register": {}}
     hit_total = n_total = 0
     per_register: dict[str, list[int]] = {}
@@ -88,11 +109,34 @@ def measure(stage=None) -> dict:
 
 
 def main() -> int:
-    spec = sys.argv[1] if len(sys.argv) > 1 else "none"
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("stage", nargs="?", default="none")
+    parser.add_argument("--sample", type=int, default=0,
+                        help="seeded stratified slice per half, for stages that cost money")
+    parser.add_argument("--seed", type=int, default=20260905)
+    args = parser.parse_args()
+    spec = args.stage
+
     from clinical_agent.semantic import build_stage
 
-    result = measure(build_stage(spec))
-    print(f"held-out paraphrase recall  (stage: {spec}, reviewed: {result['reviewed']})")
+    stage_obj = build_stage(spec)
+    result = measure(stage_obj, sample=args.sample, seed=args.seed)
+    attempts = getattr(stage_obj, "calls", 0) or 0
+    failures = getattr(stage_obj, "failures", 0) or 0
+    if attempts:
+        result["stage_calls"] = attempts
+        result["stage_failures"] = failures
+        result["stage_cache_hits"] = getattr(stage_obj, "cache_hits", 0)
+        print(f"  stage calls {attempts}  failures {failures}  "
+              f"cache hits {result['stage_cache_hits']}")
+        if failures > 0.2 * attempts:
+            print(f"  STAGE UNUSABLE: {failures}/{attempts} failed (>20%); "
+                  "this is not a result", file=sys.stderr)
+            return 3
+    print(f"held-out v2  stage={spec}  reviewed={result['reviewed']}"
+          + (f"  sample={args.sample}/half seed={args.seed}" if args.sample else ""))
     for category, row in result["categories"].items():
         print(f"  {category:24} {row['hits']:3d}/{row['n']:<3d} {row['recall']:6.1%}"
               f"  [{row['ci'][0]:.3f}, {row['ci'][1]:.3f}]")
@@ -115,8 +159,9 @@ def main() -> int:
     for register, row in result["by_register"].items():
         print(f"    {register:20} {row['hits']:3d}/{row['n']:<3d} {row['recall']:6.1%}"
               f"  [{row['ci'][0]:.3f}, {row['ci'][1]:.3f}]")
-    (ROOT / "reports" / f"heldout-recall-{spec.replace(':', '-').replace('/', '-')}.json"
-     ).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    tag = spec.replace(":", "-").replace("/", "-") + (f"-s{args.sample}" if args.sample else "")
+    (ROOT / "reports" / f"heldout-recall-{tag}.json").write_text(
+        json.dumps(result, indent=2) + "\n", encoding="utf-8")
     return 0
 
 

@@ -252,6 +252,57 @@ The 32 are not fixed by widening the rubric here: the rubric already names "pall
 "comfort-only care" in words, and rewriting it on the strength of these lines would be
 tuning on held-out v2, which nothing may do.
 
+## Expanded exemplars, and a small LLM behind the centroid
+
+Exemplars from policy text plus held-out **v1** (a development set since the `do i have`
+fix retired it from reporting); v2 is never a source, and
+`tests/test_heldout_paraphrases.py` asserts no v2 line appears in either exemplar file.
+Recorded before measurement: `data/semantic_exemplars_expanded.json` at commit `a70ed92`,
+sha256 `e893200129f39299`, built by `scripts/build_exemplars.py` (seed 20260905). Threshold
+re-derived by the same rule: negative floor 0.543 -> 0.55.
+
+| Stage on held-out v2 | Recall | 95% CI | Precision | 95% CI |
+|---|---:|---|---:|---|
+| phrase table only | 8.1% | [0.058, 0.113] | 0.674 | [0.530, 0.791] |
+| + centroid, hashed, policy exemplars | 12.3% | [0.094, 0.160] | 0.452 | [0.360, 0.548] |
+| + centroid, MiniLM, policy exemplars | 31.9% | [0.275, 0.368] | 0.689 | [0.618, 0.753] |
+| + centroid, MiniLM, **expanded** (shipped) | **51.0%** | [0.460, 0.560] | **0.886** | [0.838, 0.922] |
+
+Per category, shipped: prescribe 67.9%, diagnose 10.1%, hospice 51.4%, mental health
+66.7%, under-two 68.1%. By register: colloquial 62.0%, transcript-messy 53.5%, third-person
+47.8%, oblique 41.4%. `diagnose` remains the weakest category under every configuration.
+
+**A small LLM behind the centroid buys recall and sells precision.** On a seeded stratified
+sample of 100 positives and 100 negatives (seed 20260905, `--sample 100`), with the
+centroid asked first and the model only on what it could not decide:
+
+| Stage on the 200-line sample | Recall | 95% CI | Precision | 95% CI |
+|---|---:|---|---:|---|
+| phrase table only | 6.1% | [0.028, 0.126] | — | — |
+| + centroid (shipped) | 50.5% | [0.408, 0.601] | 0.893 | [0.785, 0.950] |
+| + centroid + `allam-2-7b` | **91.9%** | [0.849, 0.958] | **0.659** | [0.577, 0.733] |
+
+144 stage calls, 0 failures, 0 cache hits. The model refuses 46.5% of in-scope negatives --
+70% of the `diagnose` negatives, which are people asking an administrative question that
+happens to mention a symptom. Higher recall, and worse to be a patient of. It is not
+shipped.
+
+**No llama-3.3-70b-class model is available on this account**, so the non-reasoning stage is
+a 7B and its numbers are a floor rather than a stand-in for a 70B.
+
+**`openai/gpt-oss-20b` cannot be relied on to emit a closed answer, and is the named
+exclusion for the model sweep.** On three v2 lines it returned `finish_reason=length` with
+empty content at 1200, 2500 and 4000 tokens; one closed only at 7000 after 4093 reasoning
+tokens, one was still empty at 7000 after 6998. That is an availability property, not an
+accuracy one, and no token cap fixes it.
+
+**T005 is unresolved.** Under MiniLM it retrieves below threshold, fires `weak_retrieval`
+and drops out of the judged set, taking operational-escalation precision from 1.000 to
+0.833 against the in-repo label. The LLM judge independently scored its citation as
+unsupported. Two independent signals disagree with the in-repo label, which is weak
+evidence the label is wrong rather than the retrieval -- but it is not resolved, and it
+stays open pending human review rather than being relabelled to make the row green.
+
 ## Evidence tables
 
 | Dimension | Rate | 95% CI |

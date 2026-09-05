@@ -30,10 +30,11 @@ EXEMPLARS_EXPANDED = ROOT / "data" / "semantic_exemplars_expanded.json"
 
 
 def exemplar_file() -> Path:
-    """CLINICAL_EXEMPLARS=expanded adds development-set phrasings (held-out v1) to the
-    policy-written ones. v2 is never a source; a test asserts no v2 line appears in either
+    """Expanded by default: policy phrasings plus held-out v1 development-set phrasings,
+    which take v2 recall 31.9%% -> 51.0%% at precision 0.689 -> 0.886. CLINICAL_EXEMPLARS=policy
+    restores the policy-only set so the before/after stays reproducible. v2 is never a source; a test asserts no v2 line appears in either
     file."""
-    if os.environ.get("CLINICAL_EXEMPLARS", "policy").strip().lower() == "expanded":
+    if os.environ.get("CLINICAL_EXEMPLARS", "expanded").strip().lower() == "expanded":
         return EXEMPLARS_EXPANDED
     return EXEMPLARS
 
@@ -179,11 +180,46 @@ class LLMSemanticStage:
             return ()
 
 
+class ChainedStage:
+    """Local centroid first, LLM only when the centroid found nothing.
+
+    The LLM is the expensive half, so it is asked only about turns the free stage could not
+    decide. Categories from both are unioned: neither can clear what the other found."""
+
+    def __init__(self, first, second) -> None:
+        self.first, self.second = first, second
+        self.name = f"{first.name}+{second.name}"
+
+    @property
+    def calls(self) -> int:
+        return getattr(self.second, "calls", 0)
+
+    @property
+    def failures(self) -> int:
+        return getattr(self.second, "failures", 0)
+
+    @property
+    def cache_hits(self) -> int:
+        return getattr(self.second, "cache_hits", 0)
+
+    def categories(self, turn: str, draft: str) -> tuple[str, ...]:
+        found = self.first.categories(turn, draft)
+        if found:
+            return found
+        return self.second.categories(turn, draft)
+
+
 def build_stage(spec: str | None):
-    """`spec` is "none", "local", "local" with a threshold suffix, or "llm" plus a
-    model name -- for example llm:openai/gpt-oss-120b."""
+    """`spec` is "none", "local", "local" with a threshold suffix, "llm" plus a model name,
+    or "local+llm" plus a model name to run the centroid first and the model only on what
+    it could not decide."""
     if not spec or spec == "none":
         return None
+    # Checked before the bare "local" prefix, which would otherwise swallow it and return
+    # a plain centroid -- silently, with numbers identical to the local-only row.
+    if spec.startswith("local+llm:"):
+        return ChainedStage(LocalSemanticStage(),
+                            LLMSemanticStage(spec[len("local+llm:"):]))
     if spec.startswith("local"):
         _, _, threshold = spec.partition("@")
         return LocalSemanticStage(float(threshold) if threshold else None)

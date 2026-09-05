@@ -117,3 +117,4 @@ def test_do_i_have_does_not_swallow_do_i_have_to():
                                        "do i have to bring the letter with me?"):
         decision = classify(asking_about_an_obligation, "ok", 0.9, None)
         assert "diagnose" not in decision.refusal_categories, asking_about_an_obligation
+
