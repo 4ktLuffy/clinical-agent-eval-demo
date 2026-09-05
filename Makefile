@@ -6,7 +6,7 @@ PATIENTS ?= 200
 SEED ?= 20260902
 PY ?= .venv/bin/python
 
-.PHONY: fhir-up fhir-down fhir-check synthea synthea-jar load clean-fhir readme-check fixture-load ci-fixture conversations eval smoke replay loadtest verify
+.PHONY: scorecard fhir-up fhir-down fhir-check synthea synthea-jar load clean-fhir readme-check fixture-load ci-fixture conversations eval smoke replay loadtest verify
 
 fhir-up:  ## Bring up HAPI FHIR + Postgres and wait for the capability statement
 	$(COMPOSE) up -d
@@ -85,6 +85,10 @@ ci-fixture:  ## Rebuild data/ci-fixture/bundle.json from a full Synthea run
 
 conversations:  ## Regenerate the conversation set from whatever is loaded in FHIR
 	PYTHONPATH=src $(PY) scripts/generate_conversations.py --fhir-url $(FHIR_URL) --count 200
+
+scorecard:  ## Score any agent under any policy: make scorecard ADAPTER=openai:MODEL POLICY=path
+	CLINICAL_POLICY=$(or $(POLICY),data/policy.yaml) PYTHONPATH=src $(PY) -m eval.conversation_run \
+	  --adapter $(or $(ADAPTER),mock) --semantic $(or $(SEMANTIC),local) --out $(or $(OUT),reports)
 
 eval:  ## Full rubric run with per-guard mutation. ARGS passes flags through, e.g.
        ## ARGS="--model real --turns-subset 180"

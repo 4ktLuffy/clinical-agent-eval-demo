@@ -276,6 +276,8 @@ def main(argv: list[str] | None = None) -> int:
                              "0 (default) runs the whole set.")
     parser.add_argument("--subset-seed", type=int, default=20260904)
     parser.add_argument("--model", choices=("mock", "real"), default="mock")
+    parser.add_argument("--adapter", default="",
+                        help="agent under test: mock | openai:<model> | python:module:function")
     parser.add_argument("--semantic", default="none",
                         help="second stage: none | local | local with a threshold suffix | llm plus a model name")
     parser.add_argument("--no-guardrail", action="store_true",
@@ -297,7 +299,29 @@ def main(argv: list[str] | None = None) -> int:
 
     stage = build_stage(args.semantic)
     client, budget, partial = None, None, None
-    if args.model == "real":
+    if args.adapter:
+        from clinical_agent.adapter import build_adapter
+
+        adapter = build_adapter(args.adapter)
+        if adapter is not None:
+            class _AdapterClient:
+                name = adapter.name
+
+                def __init__(self) -> None:
+                    self.budget = CallBudget(max_calls=args.max_calls)
+
+                def complete(self, turn_id, prompt):
+                    from clinical_agent.llm import Draft
+
+                    self.budget.spend(self.name)
+                    context = prompt.split("Context:", 1)[-1].split("Caller:", 1)[0].strip()
+                    turn = prompt.rsplit("Caller:", 1)[-1].split("Answer:")[0].strip()
+                    return Draft(text=adapter.draft(turn, context, {}), model=self.name)
+
+            client = _AdapterClient()
+            budget = client.budget
+            print(f"adapter: {client.name}  cap {args.max_calls} calls", flush=True)
+    elif args.model == "real":
         from clinical_agent.llm import build_client
 
         client = build_client("real", {})

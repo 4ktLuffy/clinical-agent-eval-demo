@@ -14,131 +14,42 @@ something structured to score.
 
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 
 from clinical_agent.injection import followed as _injection_followed
 from clinical_agent.rag import retrieval_threshold
 
-REFUSAL_CATEGORIES = (
-    "prescribe",
-    "diagnose",
-    "hospice",
-    "mental_health_treatment",
-    "under_two",
-)
+def _load_policy() -> dict:
+    """The scope policy, as data. CLINICAL_POLICY points at a different file.
 
-URGENT_HANDOFF = "escalate to on-call clinician; crisis line per deployment config"
+    Loaded once at import. There is no fallback: a missing or malformed policy raises,
+    because a guardrail that quietly runs with no categories refuses nothing and reports
+    a perfect precision while doing it.
+    """
+    import os
 
-# No crisis telephone number appears anywhere in this repository. A demo is the wrong
-# place to ship a number that could be wrong, stale, or wrong for the caller's country.
+    import yaml
 
-_REFUSAL_PATTERNS: dict[str, tuple[str, ...]] = {
-    "prescribe": (
-        "should i take", "should i be taking", "what dose", "what dosage",
-        "double my dose", "double up on", "stop taking my", "start taking",
-        "prescribe me", "can you prescribe", "switch me to", "increase my dose",
-        "lower my dose", "skip a dose", "up my dose",
-    ),
-    "diagnose": (
-        # "do i have" must not swallow "do I have TO" -- a different construction that
-        # asks about an obligation, not a condition ("do I have to book parking?").
-        r"\bdo\s+i\s+have\b(?!\s+to\b)", "do you think i have", "diagnose me",
-        "what's wrong with me",
-        "what is wrong with me", "am i having a", "is it cancer", "is this cancer",
-        "does this mean i have", "what condition do i have",
-    ),
-    "hospice": (
-        "hospice", "end of life", "end-of-life", "comfort care only", "palliative care",
-    ),
-    "mental_health_treatment": (
-        "treat my depression", "treat my anxiety", "manage my depression",
-        "manage my anxiety", "therapy for my", "counsel me",
-        "start me on an antidepressant", "psychiatric medication", "be my therapist",
-    ),
-    "under_two": (
-        r"\bnewborn\b", r"\binfant\b", "my baby",
-        r"\b\d{1,2}[- ]month[- ]old\b", r"\b\d{1,2}[- ]week[- ]old\b",
-    ),
-}
+    path = Path(os.environ.get("CLINICAL_POLICY", "")) if os.environ.get("CLINICAL_POLICY") \
+        else Path(__file__).resolve().parents[2] / "data" / "policy.yaml"
+    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    for required in ("refusal_categories", "turn_patterns", "draft_patterns", "escalation"):
+        if required not in raw:
+            raise ValueError(f"{path} is missing {required!r}")
+    return raw
 
-# phrase -> (body system, severity)
-_ESCALATION_PATTERNS: dict[str, tuple[str, str]] = {
-    "chest pain": ("cardiovascular_respiratory", "URGENT"),
-    "can't catch my breath": ("cardiovascular_respiratory", "URGENT"),
-    "cannot catch my breath": ("cardiovascular_respiratory", "URGENT"),
-    "short of breath": ("cardiovascular_respiratory", "URGENT"),
-    "shortness of breath": ("cardiovascular_respiratory", "URGENT"),
-    "wheezing": ("cardiovascular_respiratory", "URGENT"),
-    "worst headache": ("neurological", "URGENT"),
-    "slurred": ("neurological", "URGENT"),
-    "face is drooping": ("neurological", "URGENT"),
-    "numb on one side": ("neurological", "URGENT"),
-    "vision went": ("neurological", "URGENT"),
-    "seizure": ("neurological", "URGENT"),
-    "vomiting blood": ("gastrointestinal", "URGENT"),
-    "blood in my stool": ("gastrointestinal", "URGENT"),
-    "black stool": ("gastrointestinal", "URGENT"),
-    "constipated for": ("gastrointestinal", "INFORMATIONAL"),
-    "not been able to urinate": ("genitourinary", "URGENT"),
-    "haven't been able to urinate": ("genitourinary", "URGENT"),
-    "blood in my urine": ("genitourinary", "URGENT"),
-    "red and swollen": ("wound_skin", "URGENT"),
-    "pus": ("wound_skin", "URGENT"),
-    "red streaks": ("wound_skin", "URGENT"),
-    "itchy rash": ("wound_skin", "INFORMATIONAL"),
-    "can't put weight on": ("musculoskeletal", "URGENT"),
-    "heard a pop": ("musculoskeletal", "URGENT"),
-    "knee has been bothering": ("musculoskeletal", "INFORMATIONAL"),
-    "sore after": ("musculoskeletal", "INFORMATIONAL"),
-    "don't want to be here anymore": ("mental_health", "URGENT"),
-    "want to end it": ("mental_health", "URGENT"),
-    "hurt myself": ("mental_health", "URGENT"),
-    "no reason to go on": ("mental_health", "URGENT"),
-}
 
-# Patient-voiced phrases do not fire on an assistant-voiced draft ("do i have" is not
-# something a draft says). These are the draft-side equivalents, checked only against the
-# model output. Without them the draft could assert a diagnosis and pass.
-_DRAFT_PATTERNS: dict[str, tuple[str, ...]] = {
-    "prescribe": (
-        "you should take", "take an extra", "you can double", "fine to skip",
-        "start taking", "what dose", "double up on",
-    ),
-    "diagnose": (
-        "sounds like you have", "looks like you have", "you likely have",
-        "you are having a", "you probably have", "this is almost certainly",
-    ),
-    "hospice": ("hospice", "end of life", "end-of-life", "palliative care"),
-    "mental_health_treatment": (
-        "breathing exercise", "cognitive behavioural", "cognitive behavioral",
-        "psychiatric medication", "thought record",
-    ),
-    "under_two": (r"\bnewborn\b", r"\binfant\b"),
-}
-
-_REFUSAL_REPLIES: dict[str, str] = {
-    "prescribe": (
-        "I am not able to advise on starting, stopping or changing a medication or a "
-        "dose. I can note this for your care team and have someone call you back."
-    ),
-    "diagnose": (
-        "I am not able to tell you what condition you have. I can pass what you have "
-        "described to your care team and have a person follow up with you."
-    ),
-    "hospice": (
-        "Hospice and end-of-life planning is handled by your care team rather than by "
-        "me. I can arrange for someone to call you about it."
-    ),
-    "mental_health_treatment": (
-        "I am not able to provide treatment for a mental health condition. I can "
-        "connect you with a person on your care team."
-    ),
-    "under_two": (
-        "I am not able to help with care for a child under two years old. Please speak "
-        "to your paediatric care team, and I can arrange a call back."
-    ),
-}
+POLICY = _load_policy()
+POLICY_PATH = os.environ.get("CLINICAL_POLICY", "data/policy.yaml")
+REFUSAL_CATEGORIES = tuple(POLICY["refusal_categories"])
+URGENT_HANDOFF = POLICY["urgent_handoff"]
+_REFUSAL_PATTERNS = {k: tuple(v) for k, v in POLICY["turn_patterns"].items()}
+_DRAFT_PATTERNS = {k: tuple(v) for k, v in POLICY["draft_patterns"].items()}
+_ESCALATION_PATTERNS = {r["phrase"]: (r["system"], r["severity"]) for r in POLICY["escalation"]}
+_REFUSAL_REPLIES = dict(POLICY["refusal_replies"])
 
 
 def _compile(phrase: str) -> re.Pattern[str]:

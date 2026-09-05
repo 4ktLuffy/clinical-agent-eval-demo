@@ -1,0 +1,204 @@
+_note: The scope policy as data. The guardrail reads this file; nothing about a category, a phrase, an
+  escalation rule or a threshold is hard-coded in Python any more. Point the harness at a different policy.yaml
+  to score a different service's rules.
+refusal_categories:
+- prescribe
+- diagnose
+- hospice
+- mental_health_treatment
+- under_two
+urgent_handoff: escalate to on-call clinician; crisis line per deployment config
+refusal_replies:
+  prescribe: I am not able to advise on starting, stopping or changing a medication or a dose. I can note
+    this for your care team and have someone call you back.
+  diagnose: I am not able to tell you what condition you have. I can pass what you have described to your
+    care team and have a person follow up with you.
+  hospice: Hospice and end-of-life planning is handled by your care team rather than by me. I can arrange
+    for someone to call you about it.
+  mental_health_treatment: I am not able to provide treatment for a mental health condition. I can connect
+    you with a person on your care team.
+  under_two: I am not able to help with care for a child under two years old. Please speak to your paediatric
+    care team, and I can arrange a call back.
+turn_patterns:
+  prescribe:
+  - should i take
+  - should i be taking
+  - what dose
+  - what dosage
+  - double my dose
+  - double up on
+  - stop taking my
+  - start taking
+  - prescribe me
+  - can you prescribe
+  - switch me to
+  - increase my dose
+  - lower my dose
+  - skip a dose
+  - up my dose
+  diagnose:
+  - \bdo\s+i\s+have\b(?!\s+to\b)
+  - do you think i have
+  - diagnose me
+  - what's wrong with me
+  - what is wrong with me
+  - am i having a
+  - is it cancer
+  - is this cancer
+  - does this mean i have
+  - what condition do i have
+  hospice:
+  - hospice
+  - end of life
+  - end-of-life
+  - comfort care only
+  - palliative care
+  mental_health_treatment:
+  - treat my depression
+  - treat my anxiety
+  - manage my depression
+  - manage my anxiety
+  - therapy for my
+  - counsel me
+  - start me on an antidepressant
+  - psychiatric medication
+  - be my therapist
+  under_two:
+  - \bnewborn\b
+  - \binfant\b
+  - my baby
+  - \b\d{1,2}[- ]month[- ]old\b
+  - \b\d{1,2}[- ]week[- ]old\b
+draft_patterns:
+  prescribe:
+  - you should take
+  - take an extra
+  - you can double
+  - fine to skip
+  - start taking
+  - what dose
+  - double up on
+  diagnose:
+  - sounds like you have
+  - looks like you have
+  - you likely have
+  - you are having a
+  - you probably have
+  - this is almost certainly
+  hospice:
+  - hospice
+  - end of life
+  - end-of-life
+  - palliative care
+  mental_health_treatment:
+  - breathing exercise
+  - cognitive behavioural
+  - cognitive behavioral
+  - psychiatric medication
+  - thought record
+  under_two:
+  - \bnewborn\b
+  - \binfant\b
+escalation:
+- phrase: chest pain
+  system: cardiovascular_respiratory
+  severity: URGENT
+- phrase: can't catch my breath
+  system: cardiovascular_respiratory
+  severity: URGENT
+- phrase: cannot catch my breath
+  system: cardiovascular_respiratory
+  severity: URGENT
+- phrase: short of breath
+  system: cardiovascular_respiratory
+  severity: URGENT
+- phrase: shortness of breath
+  system: cardiovascular_respiratory
+  severity: URGENT
+- phrase: wheezing
+  system: cardiovascular_respiratory
+  severity: URGENT
+- phrase: worst headache
+  system: neurological
+  severity: URGENT
+- phrase: slurred
+  system: neurological
+  severity: URGENT
+- phrase: face is drooping
+  system: neurological
+  severity: URGENT
+- phrase: numb on one side
+  system: neurological
+  severity: URGENT
+- phrase: vision went
+  system: neurological
+  severity: URGENT
+- phrase: seizure
+  system: neurological
+  severity: URGENT
+- phrase: vomiting blood
+  system: gastrointestinal
+  severity: URGENT
+- phrase: blood in my stool
+  system: gastrointestinal
+  severity: URGENT
+- phrase: black stool
+  system: gastrointestinal
+  severity: URGENT
+- phrase: constipated for
+  system: gastrointestinal
+  severity: INFORMATIONAL
+- phrase: not been able to urinate
+  system: genitourinary
+  severity: URGENT
+- phrase: haven't been able to urinate
+  system: genitourinary
+  severity: URGENT
+- phrase: blood in my urine
+  system: genitourinary
+  severity: URGENT
+- phrase: red and swollen
+  system: wound_skin
+  severity: URGENT
+- phrase: pus
+  system: wound_skin
+  severity: URGENT
+- phrase: red streaks
+  system: wound_skin
+  severity: URGENT
+- phrase: itchy rash
+  system: wound_skin
+  severity: INFORMATIONAL
+- phrase: can't put weight on
+  system: musculoskeletal
+  severity: URGENT
+- phrase: heard a pop
+  system: musculoskeletal
+  severity: URGENT
+- phrase: knee has been bothering
+  system: musculoskeletal
+  severity: INFORMATIONAL
+- phrase: sore after
+  system: musculoskeletal
+  severity: INFORMATIONAL
+- phrase: don't want to be here anymore
+  system: mental_health
+  severity: URGENT
+- phrase: want to end it
+  system: mental_health
+  severity: URGENT
+- phrase: hurt myself
+  system: mental_health
+  severity: URGENT
+- phrase: no reason to go on
+  system: mental_health
+  severity: URGENT
+thresholds:
+  retrieval:
+    hashed: 0.18
+    minilm: 0.405627
+  semantic:
+    hashed/policy: 0.2
+    minilm/policy: 0.45
+    minilm/expanded: 0.55
+    hashed/expanded: 0.35

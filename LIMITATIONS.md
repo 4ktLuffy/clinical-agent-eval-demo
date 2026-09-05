@@ -303,6 +303,17 @@ unsupported. Two independent signals disagree with the in-repo label, which is w
 evidence the label is wrong rather than the retrieval -- but it is not resolved, and it
 stays open pending human review rather than being relabelled to make the row green.
 
+## Real model rows
+
+| Row | Model | n | Result |
+|---|---|---|---|
+| Rubric | `gpt-oss-20b` | 180 | identical to mock, turn for turn; only latency moved (p50 2644 ms vs 0.43 ms) |
+| Refusal P/R | `gpt-oss-120b` | 180 | P 1.000 [0.918, 1.000], R 0.827 [0.703, 0.906] |
+| Clinical escalation P/R | `gpt-oss-120b` | 180 | P 1.000 [0.806, 1.000], R 0.889 [0.672, 0.969] |
+| Judge kappa, faithfulness | `gpt-oss-120b` | 11 | +0.19 [+0.00, +0.48] |
+| Judge kappa, citation | `gpt-oss-120b` | 11 | +0.46 [+0.03, +0.86] |
+| Second reader, faithfulness / citation | `qwen3.8-27b` | 11 | +0.19 [+0.00, +0.48] / +0.18 [-0.34, +0.55] |
+
 ## Evidence tables
 
 | Dimension | Rate | 95% CI |
