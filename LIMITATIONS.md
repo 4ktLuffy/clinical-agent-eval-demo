@@ -81,21 +81,14 @@ The one number that did move is latency: p50 2,644 ms against 0.54 ms on the moc
 4. **The dataset counts.** They trace to `reports/fhir-check.json`, produced by the documented
    `make synthea && make load`. That path is now verified from a fresh clone, but it has been
    run on one machine.
-5. **Judge calibration.** On n=11 at temperature=0, `openai/gpt-oss-120b` reached kappa
-   +0.19 on faithfulness (95% bootstrap [+0.00, +0.48]) and +0.46 on citation quality
-   ([+0.03, +0.86]); `qwen/qwen3.8-27b` reached +0.19 ([+0.00, +0.48]) and +0.18
-   ([-0.34, +0.55]). **At n=11 no calibration claim is possible in either direction.** The
-   intervals are wide enough to contain both chance and substantial agreement, so they
-   neither establish the judges nor rule them out. Holding the faithfulness point estimate
-   fixed, the interval clears zero at roughly n=22 -- and that is a floor, computed by
-   `scripts/kappa_power.py` replicating the observed agreement pattern, which assumes extra
-   turns look exactly like these. Real turns bring variety, so the true n is higher.
-   `gpt-oss-120b` is additionally **provider-nondeterministic**: three identical
-   temperature=0 runs moved 2 of 11 turns and shifted citation kappa from +0.463 to +0.353,
-   enough to change whether that interval clears zero. `qwen3.8-27b` reproduced exactly.
-   Labels were assigned by an AI reader, not a clinician. `data/labels_open_ended.csv` is
-   the blank sheet for a human pass; `--labels` computes kappa against it once filled, and
-   refuses to compute while it is blank rather than scoring against empty cells.
+5. **Judge calibration.** The open-ended set was expanded from 11 turns to 22 -- the n
+   `scripts/kappa_power.py` gave for the faithfulness interval to clear zero at the observed
+   point estimate. Recomputing the power at the real n=22 says **n>=88**, four times the
+   original answer. That is the optimism the script warns about made concrete: replicating
+   an 11-turn agreement pattern assumes the next 11 turns look exactly like it, and they do
+   not. `data/labels_open_ended.csv` ships blank at 22 rows with the cited chunks inline;
+   until it is filled, every kappa here is against AI-reader labels and no calibration claim
+   is possible in either direction. Labelling rules in `data/LABELLING.md`.
 
 ## Defects found in this repository's own tooling
 

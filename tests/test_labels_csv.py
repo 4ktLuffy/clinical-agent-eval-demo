@@ -17,7 +17,10 @@ def test_shipped_sheet_parses_every_row_and_is_unfilled():
     and that the loader can actually see its rows -- a loader that returned nothing would
     otherwise pass the 'blank' half of this test while being completely broken."""
     labels = load_labels(ROOT / "data" / "labels_open_ended.csv")
-    assert len(labels) == 11, f"expected 11 open-ended turns, parsed {len(labels)}"
+    # 22 is the n scripts/kappa_power.py gives for the faithfulness interval to clear zero
+    # at the observed point estimate. Pinned so the sheet cannot quietly shrink back below
+    # the size the power calculation asked for.
+    assert len(labels) == 22, f"expected 22 open-ended turns, parsed {len(labels)}"
     assert all(v == (None, None) for v in labels.values()), "sheet should ship unfilled"
 
 

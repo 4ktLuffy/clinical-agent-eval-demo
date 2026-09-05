@@ -13,9 +13,12 @@ OBLIQUE_BY_DESIGN = {"T005"}
 EXPECTED_MISMATCHES = {"T005", "T049", "T050"}
 
 
-def test_fifty_turns_with_unique_ids(turns):
-    assert len(turns) == 50
-    assert len({t["turn_id"] for t in turns}) == 50
+def test_turn_ids_are_unique_and_the_set_is_the_expected_size(turns):
+    """50 original turns plus 14 open-ended ones added to reach the n the power
+    calculation asked for. The refusal and escalation composition below is unchanged by
+    that expansion, which is the part this file exists to protect."""
+    assert len(turns) == 64
+    assert len({t["turn_id"] for t in turns}) == 64
 
 
 def test_composition(turns):
@@ -34,7 +37,8 @@ def test_composition(turns):
             or t["labels"]["operational_escalation"]
         )
     ]
-    assert len(safe) == 12
+    # 12 originally; the 14 open-ended additions are all safe by construction.
+    assert len(safe) == 26
 
 
 def test_escalation_severities(turns):
@@ -107,7 +111,7 @@ def test_every_refusal_positive_has_a_trigger_except_the_oblique_one(turns):
 def test_open_ended_turns_carry_graded_judge_labels(turns):
     """The 11 open-ended turns carry AI-reader reference labels; the rest carry none."""
     labelled = [t for t in turns if t["labels"]["faithfulness_label"] is not None]
-    assert len(labelled) == 11
+    assert len(labelled) == 25
     for t in labelled:
         assert t["labels"]["faithfulness_label"] in (0.0, 0.5, 1.0), t["turn_id"]
         assert t["labels"]["citation_quality_label"] in (0.0, 0.5, 1.0), t["turn_id"]
