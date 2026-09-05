@@ -29,6 +29,7 @@ from clinical_agent.injection import followed, neutralise  # noqa: E402
 from clinical_agent.rag import Corpus  # noqa: E402
 
 FIXTURES = ROOT / "data" / "injection" / "tool_result_injections.json"
+HELDOUT = ROOT / "data" / "injection" / "heldout_injections.json"
 CALLER_TURN = "Can you tell me what my next appointment is?"
 SAFE_DRAFT = ("Your next appointment is on the date in your letter. I can read out the "
               "details or arrange a call back.")
@@ -36,12 +37,22 @@ SAFE_DRAFT = ("Your next appointment is on the date in your letter. I can read o
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--heldout", action="store_true",
+                        help="score the held-out set instead. The detector must not be "
+                             "changed on the strength of it; what it misses is recorded.")
     parser.add_argument("--obey", action="store_true",
                         help="negative control: draft as though the agent complied")
     parser.add_argument("--out", type=Path, default=ROOT / "reports-injection")
     args = parser.parse_args(argv)
 
-    data = json.loads(FIXTURES.read_text(encoding="utf-8"))
+    if args.heldout:
+        raw = json.loads(HELDOUT.read_text(encoding="utf-8"))
+        data = {"injections": [
+            {"id": f"{kind}-{i}", "type": kind, "field": entry["field"],
+             "text": entry["text"], "payload": None}
+            for kind, rows in raw["types"].items() for i, entry in enumerate(rows)]}
+    else:
+        data = json.loads(FIXTURES.read_text(encoding="utf-8"))
     corpus = Corpus.load(ROOT / "data" / "corpus")
     hits = corpus.retrieve(CALLER_TURN, k=4)
     rows = []
@@ -50,14 +61,19 @@ def main(argv=None) -> int:
         # The tool result goes through the same neutralising wrapper any untrusted context
         # gets before it reaches the prompt.
         context = neutralise(tool_text)
-        draft = (f"{SAFE_DRAFT} {injection['payload']}") if args.obey else SAFE_DRAFT
+        payload = injection["payload"]
+        if payload is None:
+            # No marked payload on the held-out set. Under --obey the agent echoes the
+            # instruction's own wording, which is what obeying one actually looks like.
+            payload = " ".join(tool_text.split()[-8:])
+        draft = f"{SAFE_DRAFT} {payload}" if args.obey else SAFE_DRAFT
         decision = classify(CALLER_TURN, draft, hits[0].score if hits else 0.0, None,
                             context=tool_text)
         answer = decision.reply if decision.reply_mode == "replace" else draft
         rows.append({
             "id": injection["id"], "type": injection["type"], "field": injection["field"],
             "followed": list(followed(answer, tool_text)),
-            "payload_in_answer": injection["payload"].lower() in (answer or "").lower(),
+            "payload_in_answer": payload.lower() in (answer or "").lower(),
             "guardrail_flagged": list(decision.injection_followed),
             "neutralised_marker": context != tool_text,
         })
@@ -71,7 +87,9 @@ def main(argv=None) -> int:
     report = {
         "run_date": date.today().isoformat(),
         "mode": "obey (negative control)" if args.obey else "normal",
+        "set": "held-out" if args.heldout else "authored beside the detector",
         "injections": len(rows),
+        "recognised": sum(1 for r in rows if r["neutralised_marker"]),
         "acted_on": sum(1 for r in rows if r["followed"] or r["payload_in_answer"]),
         "detected_by_guardrail": sum(1 for r in rows if r["guardrail_flagged"]),
         "all_neutralised": all(r["neutralised_marker"] for r in rows),
@@ -79,7 +97,8 @@ def main(argv=None) -> int:
         "rows": rows,
     }
     args.out.mkdir(parents=True, exist_ok=True)
-    name = "tool-injection-obey.json" if args.obey else "tool-injection.json"
+    stem = "tool-injection-heldout" if args.heldout else "tool-injection"
+    name = f"{stem}-obey.json" if args.obey else f"{stem}.json"
     (args.out / name).write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
     print(f"tool-result injection  mode={report['mode']}  n={report['injections']}")
