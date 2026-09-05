@@ -357,6 +357,29 @@ threshold would fire on any shared phrase and is not a fix.
 5-of-6 recognition is a statement about these six lines and not a capability claim. The
 honest number from this item is the first one: zero of six, before anyone looked.
 
+## Booking, verified against the server
+
+`list_slots` -> `book_slot` -> re-read the Appointment by id and check it is booked and
+references the slot. A 201 and a retrievable resource are different claims; only the second
+is worth telling a patient.
+
+| | count |
+|---|---:|
+| attempted | 5 |
+| confirmed by re-read | 5 |
+| rejected by the server on a double booking | 5 |
+| escalated after one retry | 1 |
+
+Double booking is refused by HAPI, not by us. The slot is claimed with a conditional update
+carrying the version read before booking (`If-Match`); a second booker holds a stale version
+and the server answers **409**. There is an in-process freshness check too, but the probe
+deliberately bypasses it with the stale ETag -- the first version of this probe passed 5/5
+on that pre-check alone and proved nothing about the server, which is the failure this test
+now makes impossible.
+
+Tool failure: the call, then exactly one retry, then an operational escalation carrying the
+error text (`URLError: Connection refused`) rather than a bare flag.
+
 ## Evidence tables
 
 | Dimension | Rate | 95% CI |

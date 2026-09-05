@@ -78,7 +78,9 @@ class PatientScopedFhir:
             )
         )
 
-    def _request(self, method: str, path: str, body: dict | None = None) -> dict:
+    def _request(self, method: str, path: str, body: dict | None = None,
+                 headers: dict[str, str] | None = None,
+                 want_headers: bool = False):
         url = f"{self.base_url}/{path.lstrip('/')}"
         data = json.dumps(body).encode("utf-8") if body is not None else None
         request = urllib.request.Request(
@@ -88,11 +90,14 @@ class PatientScopedFhir:
             headers={
                 "Accept": "application/fhir+json",
                 **({"Content-Type": "application/fhir+json"} if data else {}),
+                **(headers or {}),
             },
         )
         with urllib.request.urlopen(request, timeout=TIMEOUT_S) as response:
             raw = response.read()
-        return json.loads(raw) if raw else {}
+            response_headers = dict(response.headers)
+        payload = json.loads(raw) if raw else {}
+        return (payload, response_headers) if want_headers else payload
 
     def _search(self, resource_type: str, params: dict[str, str], operation: str) -> FhirResult:
         # The patient filter is injected here, not supplied by the caller.
@@ -164,6 +169,91 @@ class PatientScopedFhir:
             return FhirResult(False, None, f"{type(exc).__name__}: {exc}")
         self._record("create", "Appointment", created.get("id"), "ok")
         return FhirResult(True, {"appointment": self.redactor.scrub(created)}, None)
+
+    def list_slots(self, limit: int = 5) -> FhirResult:
+        """Free slots, straight from the server. Not patient-scoped: a slot belongs to a
+        schedule, not to a patient, and the scope check happens when one is booked."""
+        try:
+            payload = self._request("GET", f"Slot?status=free&_count={int(limit)}")
+        except Exception as exc:  # noqa: BLE001
+            self._record("search", "Slot", None, "error", type(exc).__name__)
+            return FhirResult(False, None, f"{type(exc).__name__}: {exc}")
+        slots = [entry["resource"] for entry in payload.get("entry", [])]
+        self._record("search", "Slot", None, "ok")
+        return FhirResult(True, {"slots": [{"id": s.get("id"), "start": s.get("start"),
+                                            "end": s.get("end")} for s in slots]}, None)
+
+    def book_slot(self, slot_id: str, reason: str = "Follow-up",
+                  known_etag: str | None = None) -> FhirResult:
+        """Take a slot, then prove the write landed by reading it back.
+
+        Double-booking is refused by the SERVER, not by this code: the slot is claimed with
+        a conditional update carrying the version we read (If-Match). A second booker holds
+        a stale version and HAPI answers 409/412. An in-process lock would pass a test here
+        and fail the moment a second replica existed.
+
+        The Appointment is then re-read by id. A create that returned 201 and a resource
+        that is actually retrievable are different claims, and only the second one is worth
+        telling a patient.
+        """
+        try:
+            slot, headers = self._request("GET", f"Slot/{urllib.parse.quote(str(slot_id))}",
+                                          want_headers=True)
+        except Exception as exc:  # noqa: BLE001
+            self._record("read", "Slot", slot_id, "error", type(exc).__name__)
+            return FhirResult(False, None, f"{type(exc).__name__}: {exc}")
+        # Defence in depth, not the guarantee. `known_etag` skips it so a caller can
+        # exercise the real race: two bookers holding the same version, where the SERVER
+        # has to be the one that says no. Without that path this pre-check would be the
+        # only thing refusing a double booking, and it would fail the moment a second
+        # replica existed.
+        if known_etag is None and slot.get("status") != "free":
+            self._record("read", "Slot", slot_id, "refused", "slot not free")
+            return FhirResult(False, None, "slot is not free")
+
+        etag = known_etag or headers.get("ETag") or f'W/"{slot.get("meta", {}).get("versionId", "1")}"'
+        try:
+            self._request("PUT", f"Slot/{urllib.parse.quote(str(slot_id))}",
+                          {**slot, "status": "busy"}, headers={"If-Match": etag})
+        except urllib.error.HTTPError as exc:
+            if exc.code in (409, 412):
+                self._record("update", "Slot", slot_id, "refused", f"HTTP {exc.code}")
+                return FhirResult(False, None, f"slot already taken (server said {exc.code})")
+            self._record("update", "Slot", slot_id, "error", f"HTTP {exc.code}")
+            return FhirResult(False, None, f"HTTPError: {exc.code}")
+        except Exception as exc:  # noqa: BLE001
+            self._record("update", "Slot", slot_id, "error", type(exc).__name__)
+            return FhirResult(False, None, f"{type(exc).__name__}: {exc}")
+
+        appointment = {
+            "resourceType": "Appointment", "status": "booked", "description": reason,
+            "start": slot.get("start"), "end": slot.get("end"),
+            "slot": [{"reference": f"Slot/{slot_id}"}],
+            "participant": [{"actor": {"reference": f"Patient/{self.patient_id}"},
+                             "status": "accepted"}],
+        }
+        try:
+            created = self._request("POST", "Appointment", appointment)
+        except Exception as exc:  # noqa: BLE001
+            self._record("create", "Appointment", None, "error", type(exc).__name__)
+            return FhirResult(False, None, f"{type(exc).__name__}: {exc}")
+
+        appointment_id = created.get("id")
+        try:
+            confirmed = self._request("GET", f"Appointment/{urllib.parse.quote(str(appointment_id))}")
+        except Exception as exc:  # noqa: BLE001
+            self._record("read", "Appointment", appointment_id, "error", type(exc).__name__)
+            return FhirResult(False, None, f"created but unconfirmed: {type(exc).__name__}")
+
+        references = {ref.get("reference") for ref in confirmed.get("slot", [])}
+        landed = (confirmed.get("id") == appointment_id
+                  and confirmed.get("status") == "booked"
+                  and f"Slot/{slot_id}" in references)
+        self._record("read", "Appointment", appointment_id, "ok" if landed else "mismatch")
+        if not landed:
+            return FhirResult(False, None, "the appointment did not read back as booked")
+        return FhirResult(True, {"appointment": self.redactor.scrub(confirmed),
+                                 "confirmed_by_read_back": True}, None)
 
     def cancel_appointment(self, appointment_id: str) -> FhirResult:
         """The only method taking a resource id, so it is the only one that can be aimed

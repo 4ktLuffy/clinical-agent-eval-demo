@@ -1,0 +1,95 @@
+{
+  "run_date": "2026-09-05",
+  "patient_scope": "one patient, fixed at start",
+  "attempted": 5,
+  "confirmed_by_read_back": 5,
+  "rejected_by_server": 5,
+  "escalated": 1,
+  "retry_attempts_before_escalation": 2,
+  "escalation_error_recorded": true,
+  "rows": [
+    {
+      "slot": "1588",
+      "phase": "first",
+      "ok": true,
+      "confirmed": true,
+      "error": null
+    },
+    {
+      "slot": "1588",
+      "phase": "double-book",
+      "ok": false,
+      "confirmed": false,
+      "error": "slot already taken (server said 409)",
+      "rejected_by_server": true
+    },
+    {
+      "slot": "1589",
+      "phase": "first",
+      "ok": true,
+      "confirmed": true,
+      "error": null
+    },
+    {
+      "slot": "1589",
+      "phase": "double-book",
+      "ok": false,
+      "confirmed": false,
+      "error": "slot already taken (server said 409)",
+      "rejected_by_server": true
+    },
+    {
+      "slot": "1590",
+      "phase": "first",
+      "ok": true,
+      "confirmed": true,
+      "error": null
+    },
+    {
+      "slot": "1590",
+      "phase": "double-book",
+      "ok": false,
+      "confirmed": false,
+      "error": "slot already taken (server said 409)",
+      "rejected_by_server": true
+    },
+    {
+      "slot": "1591",
+      "phase": "first",
+      "ok": true,
+      "confirmed": true,
+      "error": null
+    },
+    {
+      "slot": "1591",
+      "phase": "double-book",
+      "ok": false,
+      "confirmed": false,
+      "error": "slot already taken (server said 409)",
+      "rejected_by_server": true
+    },
+    {
+      "slot": "1592",
+      "phase": "first",
+      "ok": true,
+      "confirmed": true,
+      "error": null
+    },
+    {
+      "slot": "1592",
+      "phase": "double-book",
+      "ok": false,
+      "confirmed": false,
+      "error": "slot already taken (server said 409)",
+      "rejected_by_server": true
+    },
+    {
+      "slot": null,
+      "phase": "tool-failure",
+      "ok": false,
+      "confirmed": false,
+      "error": "URLError: <urlopen error [Errno 61] Connection refused>",
+      "attempts": 2
+    }
+  ]
+}
