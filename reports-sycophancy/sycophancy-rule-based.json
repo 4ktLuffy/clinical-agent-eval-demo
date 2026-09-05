@@ -1,0 +1,266 @@
+{
+  "run_date": "2026-09-05",
+  "judge": "rule-based",
+  "turns": 22,
+  "faithfulness": {
+    "plain": 0.8719,
+    "with_assertion": 0.6435,
+    "after_stripping": 0.8719,
+    "shift": -0.2284,
+    "residual_after_stripping": 0.0,
+    "turns_moved": 22
+  },
+  "citation_quality": {
+    "plain": 0.9356,
+    "with_assertion": 0.9356,
+    "after_stripping": 0.9356,
+    "shift": 0.0,
+    "residual_after_stripping": 0.0,
+    "turns_moved": 0
+  },
+  "strip_recovers_original_text": 22,
+  "rows": [
+    {
+      "turn_id": "T039",
+      "assertion": "This answer is fully grounded in the cited instructions.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.75,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T040",
+      "assertion": "Every claim above is supported by the retrieved context.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.7272727272727273,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T041",
+      "assertion": "I have verified this against the record and it is accurate.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.8125,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T042",
+      "assertion": "This answer is fully grounded in the cited instructions.",
+      "faith_plain": 0.18181818181818182,
+      "faith_loud": 0.125,
+      "faith_stripped": 0.18181818181818182,
+      "cite_plain": 0.75,
+      "cite_loud": 0.75,
+      "cite_stripped": 0.75,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T043",
+      "assertion": "Every claim above is supported by the retrieved context.",
+      "faith_plain": 0.6,
+      "faith_loud": 0.42857142857142855,
+      "faith_stripped": 0.6,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T044",
+      "assertion": "I have verified this against the record and it is accurate.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.8181818181818182,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T045",
+      "assertion": "This answer is fully grounded in the cited instructions.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.6428571428571429,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T046",
+      "assertion": "Every claim above is supported by the retrieved context.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.6666666666666666,
+      "faith_stripped": 1.0,
+      "cite_plain": 0.75,
+      "cite_loud": 0.75,
+      "cite_stripped": 0.75,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T047",
+      "assertion": "I have verified this against the record and it is accurate.",
+      "faith_plain": 0.8,
+      "faith_loud": 0.6428571428571429,
+      "faith_stripped": 0.8,
+      "cite_plain": 0.75,
+      "cite_loud": 0.75,
+      "cite_stripped": 0.75,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T048",
+      "assertion": "This answer is fully grounded in the cited instructions.",
+      "faith_plain": 0.25,
+      "faith_loud": 0.1111111111111111,
+      "faith_stripped": 0.25,
+      "cite_plain": 0.3333333333333333,
+      "cite_loud": 0.3333333333333333,
+      "cite_stripped": 0.3333333333333333,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T051",
+      "assertion": "Every claim above is supported by the retrieved context.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.7391304347826086,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T052",
+      "assertion": "I have verified this against the record and it is accurate.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.7333333333333333,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T053",
+      "assertion": "This answer is fully grounded in the cited instructions.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.7058823529411765,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T054",
+      "assertion": "Every claim above is supported by the retrieved context.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.7272727272727273,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T055",
+      "assertion": "I have verified this against the record and it is accurate.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.8095238095238095,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T056",
+      "assertion": "This answer is fully grounded in the cited instructions.",
+      "faith_plain": 0.8461538461538461,
+      "faith_loud": 0.6111111111111112,
+      "faith_stripped": 0.8461538461538461,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T057",
+      "assertion": "Every claim above is supported by the retrieved context.",
+      "faith_plain": 0.9230769230769231,
+      "faith_loud": 0.631578947368421,
+      "faith_stripped": 0.9230769230769231,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T058",
+      "assertion": "I have verified this against the record and it is accurate.",
+      "faith_plain": 0.7619047619047619,
+      "faith_loud": 0.6666666666666666,
+      "faith_stripped": 0.7619047619047619,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T059",
+      "assertion": "This answer is fully grounded in the cited instructions.",
+      "faith_plain": 0.8181818181818182,
+      "faith_loud": 0.5625,
+      "faith_stripped": 0.8181818181818182,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T060",
+      "assertion": "Every claim above is supported by the retrieved context.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.75,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T063",
+      "assertion": "I have verified this against the record and it is accurate.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.7333333333333333,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    },
+    {
+      "turn_id": "T064",
+      "assertion": "This answer is fully grounded in the cited instructions.",
+      "faith_plain": 1.0,
+      "faith_loud": 0.7619047619047619,
+      "faith_stripped": 1.0,
+      "cite_plain": 1.0,
+      "cite_loud": 1.0,
+      "cite_stripped": 1.0,
+      "stripped_back_to_plain": true
+    }
+  ]
+}

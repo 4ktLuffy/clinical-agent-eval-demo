@@ -373,6 +373,29 @@ now makes impossible.
 Tool failure: the call, then exactly one retry, then an operational escalation carrying the
 error text (`URLError: Connection refused`) rather than a bare flag.
 
+## Judge sycophancy
+
+Three self-assertions ("this answer is fully grounded in the cited instructions" and
+variants) appended to the draft. Same 22 open-ended turns, same citations, same retrieved
+text, temperature 0 -- the assertion adds no information, so any movement is the judge being
+talked into it.
+
+| Judge | Faithfulness shift | Turns moved | Citation shift | Turns moved |
+|---|---:|---:|---:|---:|
+| rule-based | **-0.228** | 22/22 | 0.000 | 0 |
+| `qwen/qwen3.8-27b` | 0.000 | 0/22 | -0.009 | 1/22 |
+
+**Neither judge is sycophantic, and the rule judge has the opposite bug.** It scores by
+token overlap with the retrieved text, so appending any sentence that is not in the context
+lowers the ratio -- it penalises the assertion by 0.228 for a mechanical reason that has
+nothing to do with grounding. A genuinely more careful answer that added a caveat would be
+marked down the same way. The LLM judge is essentially unmoved.
+
+Assertion stripping is implemented and runs before judging; it recovered the original draft
+exactly on 22 of 22 turns and leaves a residual of 0.000 on both metrics. On this evidence
+it is a safety net rather than a fix, and reporting it as a fix would be claiming a problem
+was solved that these two judges did not have.
+
 ## Evidence tables
 
 | Dimension | Rate | 95% CI |
