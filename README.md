@@ -55,9 +55,9 @@ recall at 0.674 → 0.886 precision. Detail and mutation rows in
 - **Patient-scoped MCP.** Six tools over stdio. The patient id is fixed at process start and is **not a parameter of any tool**, so no call can name another patient.
 - **PHI redaction.** Typed FHIR elements become per-session tokens at the tool boundary; identifier shapes in free text are scrubbed again at the logger, and the PHI lint scans every generated report.
 - **Hash-chained audit.** Every FHIR access appends a line carrying the previous hash; edits, reorders and deletions are detectable and `verify_chain` names them.
-- **Indirect prompt injection.** Retrieved text is wrapped in a data marker; the answer is checked for a payload it could only carry by obeying an embedded instruction.
-- **Replay gate.** `make replay` blocks a deploy if any dimension falls a point below baseline or any guard stops biting. `make readme-check` regenerates every number here from committed artifacts, and `make number-audit` fails if any number is neither regenerated nor marked with the command that reproduces it.
-- **Live canary.** [![canary](https://github.com/4ktLuffy/clinical-agent-eval-demo/actions/workflows/canary.yml/badge.svg)](https://github.com/4ktLuffy/clinical-agent-eval-demo/actions/workflows/canary.yml) replays 20 fixed turns against the live provider daily, diffs refusal and escalation against a committed baseline, fails on any change or on latency outside the anomaly rules, commits nothing, uploads the diff.
+- **Indirect prompt injection.** Retrieved text is wrapped in a data marker; the answer is checked for a payload it could only carry by obeying an embedded instruction. On a held-out set it recognises 4.2% of them — see [`LIMITATIONS.md`](LIMITATIONS.md).
+- **Replay gate.** `make replay` blocks a deploy if any dimension falls a point below baseline or any guard stops biting. `make readme-check` regenerates every number here from committed artifacts; `make number-audit` fails if any number is neither regenerated nor marked with the command that reproduces it.
+- **Live canary.** [![canary](https://github.com/4ktLuffy/clinical-agent-eval-demo/actions/workflows/canary.yml/badge.svg)](https://github.com/4ktLuffy/clinical-agent-eval-demo/actions/workflows/canary.yml) replays 20 fixed turns daily against the live provider, diffs refusal and escalation against a committed baseline, fails on any change or on latency outside the rules, commits nothing, uploads the diff. It needs a repo secret; without one the job is skipped, not silently green.
 - **Runbook.** [`RUNBOOK.md`](RUNBOOK.md) — deploy, pre-traffic gates, rollback, per-detector on-call response.
 
 ## Running it
@@ -70,21 +70,20 @@ uv venv --python 3.12 && uv pip install -e ".[dev]"   # 3.14 also works
 mounts (`$HOME` on colima); it checks and says so.
 
 ```bash
-make fhir-up && make fixture-load           # live FHIR in ~30s, 10 patients, no download
-make verify FHIR_PROFILE=fixture            # lint, tests, fhir-check, smoke, replay
-make eval                                   # rubric + per-guard mutation
-make loadtest                               # 2,000 sessions + detector proof
-make readme-check                           # every number above, regenerated and diffed
+make fhir-up && make fixture-load    # live FHIR in ~30s, 10 patients, no download
+make verify FHIR_PROFILE=fixture     # lint, tests, fhir-check, smoke, replay
+make eval                            # rubric + per-guard mutation
+make loadtest                        # 2,000 sessions + detector proof
+make readme-check && make number-audit   # every number regenerated, or marked
 ```
 
 (manual: make synthea) `make synthea && make load` builds the full dataset (188 MB). FHIR
 tests skip with no endpoint; CI runs HAPI as a service, so zero skips.
 
 (manual: make eval ARGS="--model real") Real-model path: Anthropic or any OpenAI-compatible
-endpoint. `EVAL_MODEL` is `<provider>:<model>`; `CLINICAL_JUDGE_MODEL` gives the judge a
-different model; `--semantic local|llm:<model>` adds the second stage; `--turns-subset N`
-takes a stratified slice. A 429 stops the run, `EVAL_MODEL_MIN_INTERVAL_MS` paces token
-limits, `--max-calls` caps spend.
+endpoint. `EVAL_MODEL` is `<provider>:<model>`; `CLINICAL_JUDGE_MODEL` sets the judge;
+`--semantic local|llm:<model>` adds the second stage; `--turns-subset N` takes a stratified
+slice. A 429 stops the run, `EVAL_MODEL_MIN_INTERVAL_MS` paces it, `--max-calls` caps spend.
 
 ```bash
 export EVAL_MODEL=openai-compatible:openai/gpt-oss-120b
@@ -93,10 +92,9 @@ make eval ARGS="--model real --turns-subset 180 --semantic local"
 ```
 
 (manual: python scripts/model_sweep.py --resume) **Five open models, same turns, same
-policy, temperature 0, $0 on a free tier:** the out-of-scope counter reports 19 for
-`qwen3.8-27b` of which a hand read confirms **none**, and 14 for `allam-2-7b` of which
-**all** are real. It measures whether a model says topic words, not whether it gave
-out-of-scope advice. Full table in [`LIMITATIONS.md`](LIMITATIONS.md).
+policy, temperature 0, $0:** the out-of-scope counter reports 19 for `qwen3.8-27b` of which
+a hand read confirms **none**, and 14 for `allam-2-7b` of which **all** are real. It
+measures whether a model says topic words. Full table in [`LIMITATIONS.md`](LIMITATIONS.md).
 
 ## Use it on your own agent
 

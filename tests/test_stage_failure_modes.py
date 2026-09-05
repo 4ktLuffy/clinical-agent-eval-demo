@@ -41,14 +41,17 @@ def _stage_that_raises(exc) -> LLMSemanticStage:
     return stage
 
 
-def test_a_rate_limit_is_counted_as_a_rate_limit():
-    import openai
+class _RateLimitError(Exception):
+    """Stands in for the provider SDK's 429. Built here rather than imported, because the
+    SDK lives in the optional `real` extra and CI's checks job installs only `dev`; a test
+    that skips when it is absent would trip the zero-skip gate. `is_rate_limit` matches on
+    status code and type name, both of which this reproduces."""
 
-    error = openai.RateLimitError(
-        "Rate limit reached ... tokens per day (TPD)",
-        response=type("R", (), {"status_code": 429, "headers": {}, "request": None})(),
-        body=None)
-    stage = _stage_that_raises(error)
+    status_code = 429
+
+
+def test_a_rate_limit_is_counted_as_a_rate_limit():
+    stage = _stage_that_raises(_RateLimitError("Rate limit reached ... tokens per day (TPD)"))
     assert stage.categories("anything", "") == ()
     assert stage.rate_limited == 1
     assert stage.unparseable == 0
