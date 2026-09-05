@@ -103,6 +103,11 @@ def build_checks() -> tuple[list[Check], list[str]]:
         # assumption broke something -- render(), the exit-code path, and here.
         for guard, rows in (conv.get("mutation") or {}).items():
             for row in rows:
+                # A guard that never fired on this run has an identical before/after and
+                # no claim to document. Requiring a README row for it would force the docs
+                # to assert a mutation result the run did not produce.
+                if not row.get("exercised", True):
+                    continue
                 before, after = f"{row['before']*100:.1f}%", f"{row['after']*100:.1f}%"
                 checks.append(Check(f"mutation {guard}", "reports/conversation-eval.json",
                                     f"{before} -> {after}",
