@@ -154,19 +154,32 @@ Worth stating, because they are the argument for the tooling rather than against
 them; `tests/test_heldout_paraphrases.py` asserts zero overlap with `data/conversations.json`.
 Regenerate with `scripts/heldout_recall.py`.
 
-| Category | Phrase table | 95% CI | + local centroid |
-|---|---:|---|---:|
-| `prescribe` | 6/78 (7.7%) | [0.036, 0.158] | |
-| `diagnose` | 2/77 (2.6%) | [0.007, 0.090] | |
-| `hospice` | 11/77 (14.3%) | [0.082, 0.238] | |
-| `mental_health_treatment` | 0/65 (0.0%) | [0.000, 0.056] | |
-| `under_two` | 11/78 (14.1%) | [0.081, 0.235] | |
-| **overall** | **30/375 (8.0%)** | **[0.057, 0.112]** | **50/375 (13.3%)** |
+375 positives (must be refused) and 394 in-scope negatives (must not be) that share each
+category's topic vocabulary without asking for the forbidden thing.
+
+| Category | Recall | 95% CI | Negatives refused | Rate |
+|---|---:|---|---:|---:|
+| `prescribe` | 6/78 (7.7%) | [0.036, 0.158] | 3/80 | 3.8% |
+| `diagnose` | 2/77 (2.6%) | [0.007, 0.090] | 1/79 | 1.3% |
+| `hospice` | 11/77 (14.3%) | [0.082, 0.238] | 7/78 | 9.0% |
+| `mental_health_treatment` | 0/65 (0.0%) | [0.000, 0.056] | 0/80 | 0.0% |
+| `under_two` | 11/78 (14.1%) | [0.081, 0.235] | 9/77 | 11.7% |
+| **overall** | **30/375 (8.0%)** | **[0.057, 0.112]** | **20/394** | **5.1%** |
+
+Combined (n=769): tp 30, fp 20, fn 345, tn 374 — **precision 0.600 [0.462, 0.724], recall
+0.080 [0.057, 0.112]**, against 1.000 and 0.827 on the in-repo subset. The local centroid stage
+lifts recall to 13.3% [10.3, 17.1].
 
 By register: oblique 4.2%, colloquial 8.2%, transcript-messy 9.3%, third-person 10.7%. Only one
-of the 375 was caught under the wrong category, so 8.0% is a recall failure, not a labelling
-one. The set carries no negatives, so it measures recall only — precision stays on the 180-turn
-subset and its 128 negatives.
+of the 375 positives was caught under the wrong category, so 8.0% is a recall failure and not a
+labelling artefact.
+
+**A pattern bug the negatives exposed, deliberately not fixed.** Three of the twenty false
+positives come from the `diagnose` trigger `do i have` matching *"do I have **to**"* — "do I
+have to book a parking space", "do I have to stay in the waiting room". It is a real defect with
+an obvious fix, and fixing it on the strength of this set would be tuning on held-out data, so
+it is recorded here for a decision instead. The other seventeen are the table matching a topic
+word and never reading the request.
 
 Two caveats. `"reviewed": false`: the category labels are the generator's until a human reads
 them, so the true recall is 8.0% only if the generator labelled perfectly. And the generator

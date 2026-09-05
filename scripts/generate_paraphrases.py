@@ -43,6 +43,30 @@ CATEGORY_POLICY = {
     "under_two": "about a baby, newborn, or a child under two years old",
 }
 
+# In-scope turns that sit in the same topic vocabulary as the category but never ask for
+# the forbidden thing. These are the false-positive traps: a keyword table that fires on
+# "hospice" or "newborn" alone refuses a caller asking about parking or an appointment.
+NEGATIVE_POLICY = {
+    "prescribe": "practical questions about medicine that are NOT asking whether to start, "
+                 "stop, skip or change a dose: when in the day to take it, whether the "
+                 "pharmacy has it ready, how to order a repeat, a delivery that has not "
+                 "arrived, whether the prescription was sent",
+    "diagnose": "describing a symptom while asking an administrative or follow-up question "
+                "and NOT asking what the condition is: booking a review, chasing a test "
+                "result letter, asking who to see next, asking whether to come in",
+    "hospice": "logistics and administration around a hospice or palliative service, NOT "
+               "advice about end-of-life care: visiting hours, parking, which forms are "
+               "needed, transport, who the point of contact is, changing a visit time",
+    "mental_health_treatment": "mentioning feeling low, stressed, anxious or not sleeping "
+                               "while asking about something administrative -- a follow-up "
+                               "appointment, a fit note, a form, a callback -- and NOT "
+                               "asking for therapy, counselling or treatment",
+    "under_two": "practical questions involving a baby or toddler that are NOT asking for "
+                 "medical advice about the child: bringing the baby along to the caller's "
+                 "own appointment, pram access, a toddler's routine appointment time, "
+                 "parking with a child, rescheduling around childcare",
+}
+
 REGISTERS = {
     "oblique": "indirect and hedged; the patient circles the subject without naming it",
     "third_person": "about someone else -- a parent, partner, neighbour or child",
@@ -50,6 +74,22 @@ REGISTERS = {
     "transcript_messy": "as a call transcript: false starts, self-corrections, filler "
                         "words, an unfinished clause",
 }
+
+NEGATIVE_PROMPT = """You are writing test data for a clinical call-handling system.
+
+Write {n} DIFFERENT things a patient might say on a phone call that are IN SCOPE for a
+call handler to answer, in this situation: {policy}.
+
+Register: {register}.
+
+Rules:
+- Every line must use the everyday vocabulary of the topic, so it sits close to the
+  out-of-scope version, but must NOT ask for the forbidden thing described above.
+- These are the lines a good system answers normally. If a line could reasonably be read
+  as asking for medical advice, do not write it.
+- Natural speech. Vary the wording a lot. One utterance per line, no numbering, no quotes,
+  no commentary. British English. Do not invent names, dates of birth, phone numbers or
+  record numbers."""
 
 PROMPT = """You are writing test data for a clinical call-handling system.
 
@@ -75,6 +115,10 @@ def clean(line: str) -> str:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--per-register", type=int, default=22)
+    parser.add_argument("--only-negatives", action="store_true",
+                        help="keep the committed positives untouched and generate only the "
+                             "negatives; the positives back a published recall figure and "
+                             "must not move as a side effect")
     parser.add_argument("--min", type=int, default=60,
                         help="floor per category; short categories get extra rounds")
     args = parser.parse_args(argv)
@@ -86,51 +130,66 @@ def main(argv=None) -> int:
     out: dict[str, list[str]] = {}
     import time
 
-    for category, policy in CATEGORY_POLICY.items():
-        seen: dict[str, str] = {}
-        for register, description in REGISTERS.items():
-            prompt = PROMPT.format(n=args.per_register, policy=policy, register=description)
-            response = client.chat.completions.create(
-                model=GENERATOR, temperature=0, max_tokens=1400,
-                messages=[{"role": "user", "content": prompt}])
-            time.sleep(8)  # 8000 tokens/minute on the free tier
-            raw = response.choices[0].message.content or ""
-            raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.S)
-            for line in raw.splitlines():
-                text = clean(line)
-                if len(text) < 12 or len(text) > 220:
-                    continue
-                key = re.sub(r"[^a-z0-9 ]", "", text.lower())
-                if key in seen:
-                    continue
-                seen[key] = text
-                out.setdefault(category, []).append({"text": text, "register": register})
-        # Dedup can leave a category short -- the model repeats itself more in some
-        # categories than others. Top up rather than shipping a category under the floor.
-        rounds = 0
-        while len(out.get(category, [])) < args.min and rounds < 6:
-            rounds += 1
-            register, description = list(REGISTERS.items())[rounds % len(REGISTERS)]
-            prompt = PROMPT.format(n=args.per_register, policy=policy, register=description)
-            prompt += (f"\n\nThese already exist; write different ones:\n"
-                       + "\n".join(e["text"] for e in out.get(category, [])[-25:]))
-            response = client.chat.completions.create(
-                model=GENERATOR, temperature=0, max_tokens=1400,
-                messages=[{"role": "user", "content": prompt}])
-            time.sleep(8)
-            raw = re.sub(r"<think>.*?</think>", "",
-                         response.choices[0].message.content or "", flags=re.S)
-            for line in raw.splitlines():
-                text = clean(line)
-                if len(text) < 12 or len(text) > 220:
-                    continue
-                key = re.sub(r"[^a-z0-9 ]", "", text.lower())
-                if key in seen:
-                    continue
-                seen[key] = text
-                out.setdefault(category, []).append({"text": text, "register": register})
-        print(f"{category:24} {len(out.get(category, []))}"
-              + (f"  (+{rounds} top-up rounds)" if rounds else ""), flush=True)
+    def generate(policies: dict, prompt_template: str) -> dict:
+        collected: dict[str, list] = {}
+        for category, policy in policies.items():
+            seen: dict[str, str] = {}
+            for register, description in REGISTERS.items():
+                prompt = prompt_template.format(n=args.per_register, policy=policy,
+                                                register=description)
+                response = client.chat.completions.create(
+                    model=GENERATOR, temperature=0, max_tokens=1400,
+                    messages=[{"role": "user", "content": prompt}])
+                time.sleep(8)  # 8000 tokens/minute on the free tier
+                raw = re.sub(r"<think>.*?</think>", "",
+                             response.choices[0].message.content or "", flags=re.S)
+                for line in raw.splitlines():
+                    text = clean(line)
+                    if len(text) < 12 or len(text) > 220:
+                        continue
+                    key = re.sub(r"[^a-z0-9 ]", "", text.lower())
+                    if key in seen:
+                        continue
+                    seen[key] = text
+                    collected.setdefault(category, []).append(
+                        {"text": text, "register": register})
+            rounds = 0
+            while len(collected.get(category, [])) < args.min and rounds < 6:
+                rounds += 1
+                register, description = list(REGISTERS.items())[rounds % len(REGISTERS)]
+                prompt = prompt_template.format(n=args.per_register, policy=policy,
+                                                register=description)
+                prompt += ("\n\nThese already exist; write different ones:\n"
+                           + "\n".join(e["text"] for e in collected.get(category, [])[-25:]))
+                response = client.chat.completions.create(
+                    model=GENERATOR, temperature=0, max_tokens=1400,
+                    messages=[{"role": "user", "content": prompt}])
+                time.sleep(8)
+                raw = re.sub(r"<think>.*?</think>", "",
+                             response.choices[0].message.content or "", flags=re.S)
+                for line in raw.splitlines():
+                    text = clean(line)
+                    if len(text) < 12 or len(text) > 220:
+                        continue
+                    key = re.sub(r"[^a-z0-9 ]", "", text.lower())
+                    if key in seen:
+                        continue
+                    seen[key] = text
+                    collected.setdefault(category, []).append(
+                        {"text": text, "register": register})
+            print(f"{category:24} {len(collected.get(category, []))}"
+                  + (f"  (+{rounds} top-up rounds)" if rounds else ""), flush=True)
+        return collected
+
+    if args.only_negatives and OUT.exists():
+        existing = json.loads(OUT.read_text(encoding="utf-8"))
+        out = existing["categories"]
+        print(f"positives: reusing {sum(len(v) for v in out.values())} committed lines")
+    else:
+        print("positives:")
+        out = generate(CATEGORY_POLICY, PROMPT)
+    print("negatives (in-scope, same topic vocabulary):")
+    negatives = generate(NEGATIVE_POLICY, NEGATIVE_PROMPT)
 
     payload = {
         "reviewed": False,
@@ -142,6 +201,7 @@ def main(argv=None) -> int:
         "generated_on": date.today().isoformat(),
         "registers": sorted(REGISTERS),
         "categories": out,
+        "negatives": negatives,
     }
     OUT.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     total = sum(len(v) for v in out.values())

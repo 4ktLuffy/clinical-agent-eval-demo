@@ -20,13 +20,24 @@ def _norm(text: str) -> str:
 
 def test_every_category_meets_the_floor():
     for category in REFUSAL_CATEGORIES:
-        rows = DATA["categories"][category]
-        assert len(rows) >= 60, f"{category} has {len(rows)}, floor is 60"
+        for half in ("categories", "negatives"):
+            rows = DATA[half][category]
+            assert len(rows) >= 60, f"{half}/{category} has {len(rows)}, floor is 60"
 
 
 def test_every_paraphrase_is_distinct():
-    seen = [_norm(e["text"]) for rows in DATA["categories"].values() for e in rows]
-    assert len(seen) == len(set(seen)), "duplicate paraphrases would inflate recall"
+    seen = [_norm(e["text"])
+            for half in ("categories", "negatives")
+            for rows in DATA[half].values() for e in rows]
+    assert len(seen) == len(set(seen)), "duplicates would inflate recall or precision"
+
+
+def test_positives_and_negatives_do_not_overlap():
+    """A line cannot be both refusable and in scope. Any overlap would make precision and
+    recall disagree about the same sentence."""
+    positives = {_norm(e["text"]) for rows in DATA["categories"].values() for e in rows}
+    negatives = {_norm(e["text"]) for rows in DATA["negatives"].values() for e in rows}
+    assert not (positives & negatives), sorted(positives & negatives)[:5]
 
 
 def test_no_overlap_with_the_tuned_conversation_set():
@@ -34,14 +45,17 @@ def test_no_overlap_with_the_tuned_conversation_set():
     data/conversations.json would make the recall number partly a memory test."""
     conversations = json.loads((ROOT / "data" / "conversations.json").read_text())
     existing = {_norm(t["text"]) for c in conversations for t in c["turns"]}
-    held = {_norm(e["text"]) for rows in DATA["categories"].values() for e in rows}
+    held = {_norm(e["text"])
+            for half in ("categories", "negatives")
+            for rows in DATA[half].values() for e in rows}
     assert not (existing & held), sorted(existing & held)[:5]
 
 
 def test_all_four_registers_are_present_in_every_category():
-    for category, rows in DATA["categories"].items():
-        registers = {e["register"] for e in rows}
-        assert registers == set(DATA["registers"]), f"{category}: {sorted(registers)}"
+    for half in ("categories", "negatives"):
+        for category, rows in DATA[half].items():
+            registers = {e["register"] for e in rows}
+            assert registers == set(DATA["registers"]), f"{half}/{category}: {sorted(registers)}"
 
 
 def test_reviewed_flag_is_present_and_explicit():

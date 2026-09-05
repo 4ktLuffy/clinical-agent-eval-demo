@@ -1520,5 +1520,1593 @@
         "register": "transcript_messy"
       }
     ]
+  },
+  "negatives": {
+    "prescribe": [
+      {
+        "text": "I’m not sure if I should be taking that tablet in the morning or at night – could you help me sort that out?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you know when the pharmacist usually has the medicine ready for me?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you confirm whether my prescription has already been sent to the pharmacy?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m just trying to see if the repeat order is still on track.",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there any way to check whether my medication has arrived at my house?",
+        "register": "oblique"
+      },
+      {
+        "text": "I think I might have missed a note about the best time to take the pills – can you clarify?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you happen to know if the pharmacy has it in stock this week?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you tell me if my repeat is ready for collection?",
+        "register": "oblique"
+      },
+      {
+        "text": "I was wondering whether there’s a delay in the delivery of my prescription.",
+        "register": "oblique"
+      },
+      {
+        "text": "Is it possible to see whether my last prescription has been processed?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you know when the next batch of my medication will be available for pick‑up?",
+        "register": "oblique"
+      },
+      {
+        "text": "Can you let me know what time of day I should be taking my tablets?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m just double‑checking if my repeat order has gone through to the pharmacy.",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you find out whether the pharmacy has the medication scheduled to be dispatched?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there an update on whether my medication is still on the way?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you know if my prescription was received by the pharmacy yet?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you confirm if I should be taking my pill after breakfast or before dinner?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m trying to see whether my medication will be ready for me next week.",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you know if there’s any issue with the repeat I submitted?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you tell me whether my pharmacy has the medicine on hand at the moment?",
+        "register": "oblique"
+      },
+      {
+        "text": "What time should I take my tablets in the morning?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is my medication already at the pharmacy?",
+        "register": "colloquial"
+      },
+      {
+        "text": "How do I go about getting a refill for my prescription?",
+        "register": "colloquial"
+      },
+      {
+        "text": "It looks like my delivery hasn't shown up yet – can you check?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Did the doctor send my prescription over to the pharmacy?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Will I need to take this at night or just in the day?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do I need to empty the bottle before I can get a new one?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I pick it up from the pharmacy tomorrow?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My repeat isn't coming out of the pharmacy – what's going on?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a way to order the medication online?",
+        "register": "colloquial"
+      },
+      {
+        "text": "How long does it usually take for a new bottle to arrive?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Could you tell me if the pharmacy has run out of my medication?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Will I be able to use the same bottle for the new prescription?",
+        "register": "colloquial"
+      },
+      {
+        "text": "When should I be taking this to avoid stomach upset?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can you confirm that the pharmacy has my prescription in the system?",
+        "register": "colloquial"
+      },
+      {
+        "text": "What should I do if my prescription hasn't been processed yet?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Will I be able to get a delivery for my medication next week?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is my medication ready for collection at the pharmacy?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Should I keep taking it even if I miss a dose?",
+        "register": "colloquial"
+      },
+      {
+        "text": "When is the best time to take my medication during lunch?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Um, so I was wondering if I should take my medicine in the morning or in the evening, or...",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Can you tell me if the pharmacy has my prescription ready for pick‑up?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I just got my prescription sent, but I'm not sure whether it's actually been forwarded to the pharmacy.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My repeat order hasn't shown up yet – how long until the delivery arrives?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I need to reorder this medicine, but I’m not sure what the next step is – can you walk me through it?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a way to confirm that the pharmacy received my prescription?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I want to know when the pharmacist will have the medication ready for me to collect.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do I need to take this at a particular time of day?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Can you check whether my repeat has been processed?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "The delivery hasn't arrived yet, and I'm not sure if it’s been sent out.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I need to find out if my prescription was sent to the pharmacy – can you check that for me?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there an option for my medicine to be delivered to my home?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you let me know when the pharmacy will have my medicine available?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm not sure if the repeat prescription has been submitted – can you confirm that?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "When is the best time to take this medication during the day?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do I need to take this after my meal or before?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Has the pharmacy received my order for a repeat prescription?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I haven't received my medicine yet – do you know if the delivery is delayed?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Would it be possible to request a repeat online, or do I have to call?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I just want to double‑check that my prescription was actually sent to the pharmacy.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My neighbour's got a new prescription, can I find out if the pharmacy has it ready?",
+        "register": "third_person"
+      },
+      {
+        "text": "My daughter's due to start her meds tomorrow – do you know what time it’s best to give it?",
+        "register": "third_person"
+      },
+      {
+        "text": "Will the pharmacy send the repeat for my wife’s asthma inhaler on Friday?",
+        "register": "third_person"
+      },
+      {
+        "text": "My brother’s waiting for a refill, is it already dispatched?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can you tell me if the prescription for my son’s flu medication has been sent to the pharmacy?",
+        "register": "third_person"
+      },
+      {
+        "text": "My mother has a delivery scheduled for her painkillers – did it get posted yet?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a way to request a repeat for my partner’s antihistamine before the expiry?",
+        "register": "third_person"
+      },
+      {
+        "text": "Where’s the medication my niece ordered, it should have arrived by now?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is the pharmacy ready to hand over the medicine for my father’s blood pressure?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do I need to collect my child’s antibiotic from the pharmacy or will it be delivered?",
+        "register": "third_person"
+      },
+      {
+        "text": "Has the prescription for my sister’s diabetes insulin been sent out?",
+        "register": "third_person"
+      },
+      {
+        "text": "My friend is waiting for her migraine medicine – have they sent it to the pharmacy?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can I find out when my wife’s asthma inhaler is due for a refill?",
+        "register": "third_person"
+      },
+      {
+        "text": "Will the pharmacy be able to deliver the medication to my father’s home tomorrow?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do you have any update on the pharmacy’s preparation of my neighbour’s pain relievers?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is the repeat for my son’s antacid already arranged?",
+        "register": "third_person"
+      },
+      {
+        "text": "How can I order a new prescription for my mother’s eczema cream?",
+        "register": "third_person"
+      },
+      {
+        "text": "What time does the pharmacy normally hand over medication for my cousin’s pain meds?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can I check if the pharmacy has my partner’s blood sugar test strips ready?",
+        "register": "third_person"
+      },
+      {
+        "text": "My aunt has a delivery of her anti‑seizure medication – do you know if it’s been posted?",
+        "register": "third_person"
+      }
+    ],
+    "diagnose": [
+      {
+        "text": "I've noticed a dull ache in my shoulder and was wondering if I could book a review for next week.",
+        "register": "oblique"
+      },
+      {
+        "text": "There's been a bit of a throbbing in my head lately – could you tell me who I'd see next?",
+        "register": "oblique"
+      },
+      {
+        "text": "My chest feels a little tight sometimes, could I arrange a follow‑up appointment with the GP?",
+        "register": "oblique"
+      },
+      {
+        "text": "I've been having a persistent cough that hasn't improved, would it be possible to book a review?",
+        "register": "oblique"
+      },
+      {
+        "text": "There's a rash on my arm that hasn't gone away – could you set up a slot with a nurse?",
+        "register": "oblique"
+      },
+      {
+        "text": "I feel a strange tingling in my fingers, could you let me know if I need to see a specialist?",
+        "register": "oblique"
+      },
+      {
+        "text": "My back has been giving me a sharp pain for a few days – when can I book a check‑in?",
+        "register": "oblique"
+      },
+      {
+        "text": "I've noticed some swelling in my knee, can you tell me who I'd need to see next?",
+        "register": "oblique"
+      },
+      {
+        "text": "There's a ringing in my ears that won't stop, could I arrange a review with an ENT?",
+        "register": "oblique"
+      },
+      {
+        "text": "I keep feeling dizzy when I stand up, would it be possible to book a review in the next few days?",
+        "register": "oblique"
+      },
+      {
+        "text": "There's been a lingering sore throat for a week, could I set up an appointment with a GP?",
+        "register": "oblique"
+      },
+      {
+        "text": "My vision has been a bit blurred, would it be possible to book a follow‑up with an optician?",
+        "register": "oblique"
+      },
+      {
+        "text": "I've been experiencing shortness of breath on exertion, can I book a review with a respiratory doctor?",
+        "register": "oblique"
+      },
+      {
+        "text": "A swelling in my wrist has appeared, can you arrange a specialist appointment for me?",
+        "register": "oblique"
+      },
+      {
+        "text": "There is a persistent ear pain that started yesterday, could you tell me who I'd see next?",
+        "register": "oblique"
+      },
+      {
+        "text": "My stomach has been hurting in the lower right, could we arrange a review with the GP?",
+        "register": "oblique"
+      },
+      {
+        "text": "I've been having a mild fever and chills – could you let me know if I need to come in?",
+        "register": "oblique"
+      },
+      {
+        "text": "There's been a rash on my legs that hasn't improved, can I book a review with a nurse?",
+        "register": "oblique"
+      },
+      {
+        "text": "I was hoping to check the status of my blood test results – I've been feeling fatigued.",
+        "register": "oblique"
+      },
+      {
+        "text": "My skin has been breaking out again, could you tell me when I might be able to book a review?",
+        "register": "oblique"
+      },
+      {
+        "text": "My mum's been having a persistent cough for a week, can we schedule a review appointment for her?",
+        "register": "third_person"
+      },
+      {
+        "text": "My brother keeps complaining of dizziness, do we need to book him in for a check‑up?",
+        "register": "third_person"
+      },
+      {
+        "text": "The doctor mentioned a test letter for my wife, but she hasn't received it yet, could you follow up?",
+        "register": "third_person"
+      },
+      {
+        "text": "My son has a sore throat that's lasted three days, would it be possible to book a review next week?",
+        "register": "third_person"
+      },
+      {
+        "text": "I heard that my neighbour has had abdominal pain; does anyone know if he needs to come in today?",
+        "register": "third_person"
+      },
+      {
+        "text": "My dad's experiencing chest tightness, can you tell me who he should see next?",
+        "register": "third_person"
+      },
+      {
+        "text": "My aunt has a rash that hasn't faded, could we arrange a follow‑up appointment?",
+        "register": "third_person"
+      },
+      {
+        "text": "I think my sister has a blood‑pressure issue; can you check if her results are available?",
+        "register": "third_person"
+      },
+      {
+        "text": "My wife has been feeling nauseous; can we book a review for her tomorrow?",
+        "register": "third_person"
+      },
+      {
+        "text": "My brother's ear is red and he has a fever, should we bring him in for a check?",
+        "register": "third_person"
+      },
+      {
+        "text": "My neighbour's knee hurts after walking; is it possible to get a review booked?",
+        "register": "third_person"
+      },
+      {
+        "text": "My daughter's headaches have been getting worse, can we confirm if she needs to see a specialist?",
+        "register": "third_person"
+      },
+      {
+        "text": "My cousin has been having trouble sleeping, could you arrange a follow‑up?",
+        "register": "third_person"
+      },
+      {
+        "text": "My partner has a persistent cough, does anyone know if the test results have been sent?",
+        "register": "third_person"
+      },
+      {
+        "text": "My aunt has been short of breath, can you tell me who she should see next?",
+        "register": "third_person"
+      },
+      {
+        "text": "My father had a blood test, but I haven't received the letter; could you chase it?",
+        "register": "third_person"
+      },
+      {
+        "text": "My neighbour is experiencing blurred vision, would a review appointment be available?",
+        "register": "third_person"
+      },
+      {
+        "text": "My son is having back pain after a fall; can we book a review next Monday?",
+        "register": "third_person"
+      },
+      {
+        "text": "My wife had a routine scan, but there's no letter yet; could you check its status?",
+        "register": "third_person"
+      },
+      {
+        "text": "My brother has a sore leg after a bike accident, who should we book an appointment with?",
+        "register": "third_person"
+      },
+      {
+        "text": "My left knee's been hurting after I got up, can I book a review for tomorrow?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I've had this rash on my arm for a couple of days, do you think I should see a GP or wait?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My chest feels tight sometimes when I'm at work, should I book an appointment or just wait?",
+        "register": "colloquial"
+      },
+      {
+        "text": "There's a lump in my neck that hasn't gone away, can I book a follow‑up with the specialist?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My throat's been sore all morning, do you think I should come in or just wait for the results?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I keep getting headaches in the evening, do you mind if I book a review for next week?",
+        "register": "colloquial"
+      },
+      {
+        "text": "The pain in my back has been getting worse, should I wait for the test letter or book a review?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My ears keep ringing, do I need to see an ENT or can I just wait?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I'm feeling dizzy when I stand up, do I have to come in or can I book a follow‑up?",
+        "register": "colloquial"
+      },
+      {
+        "text": "There's a bump on my arm that’s not fading, should I book a review or wait for the letter?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My stomach's been upset all night, do you think I should book a review or just keep an eye on it?",
+        "register": "colloquial"
+      },
+      {
+        "text": "There's a bruise that hasn't faded after a couple of days, can I book a follow‑up appointment?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My foot has been throbbing all day, do I need to come in or can I wait?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I noticed a swelling in my cheek, should I book a review or just wait for the test results?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My eyes are itching, do you think I should see an optician or wait?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My shoulder feels stiff after I wake up, can I book a follow-up with the physiotherapist?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I have a persistent cough, should I book a review or just wait for the letters?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My skin is peeling on my legs, do I need to come in or can I wait for the test results?",
+        "register": "colloquial"
+      },
+      {
+        "text": "There's a tick mark on my back that won't go away, can I book a review or should I wait?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I've had a fever for two days, do I need to book an appointment or can I wait for the letter?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I've got a really bad headache, can I book a review for next Thursday?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My back's been hurting for two days, I was just wondering if I should go in this week?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I've been feeling a little dizzy lately, do you know when I can see a GP?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My chest feels tight, but I'm not asking for a diagnosis, just if I can book an appointment?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I have a rash on my arm, who do I see next?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m experiencing nausea since yesterday, could I possibly get a letter with the test results?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My throat’s sore, do you think I should book a review or just wait?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’ve got a cough that won't go away, can I ask if a letter will be sent?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "There’s a bit of swelling in my knee, do you know if I need to come in for a check?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My eyes are red and itchy, can I book a review before the end of the month?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I've noticed a strange lump, can you tell me who to see next?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My stomach keeps cramping, can I book a review for Friday?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I feel really exhausted, should I wait or book a review soon?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "The pain in my elbow has worsened, I was just wondering if a letter will be sent?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’ve had a fever for a couple of days, can I book an appointment now?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm feeling short of breath, do I need to come in for a review?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My skin has been dry and itchy, could I perhaps get a test result letter?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’ve been having headaches every morning, could I book a review for next week?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My knee aches after walking, do you know who to see next?",
+        "register": "transcript_messy"
+      }
+    ],
+    "hospice": [
+      {
+        "text": "I was just wondering what the best times are for family members to drop by.",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a particular parking spot that the centre recommends for visitors?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you tell me whether I need to fill out any paperwork before my next visit?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do we have to call ahead if we want to bring a small gift for the patient?",
+        "register": "oblique"
+      },
+      {
+        "text": "Who would be the most appropriate person to speak to about transport options?",
+        "register": "oblique"
+      },
+      {
+        "text": "Would it be possible to shift my appointment to a different hour later this week?",
+        "register": "oblique"
+      },
+      {
+        "text": "Are there any restrictions on the number of people that can be in the room at once?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is the reception staffed every hour, or do I need to plan around the opening times?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do I have to book a parking space in advance or will there be free spaces available?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a particular point of contact for arranging a bus from the hospital?",
+        "register": "oblique"
+      },
+      {
+        "text": "Will the visiting hours change during the public holidays?",
+        "register": "oblique"
+      },
+      {
+        "text": "Can I bring my own medications for the patient, or must I use the facility's supply?",
+        "register": "oblique"
+      },
+      {
+        "text": "Which forms need to be completed for a new family member to join the support circle?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a specific area where visitors can wait before being admitted?",
+        "register": "oblique"
+      },
+      {
+        "text": "If my schedule changes, how far in advance do I need to let you know?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you have a map of the parking layout for those who arrive by car?",
+        "register": "oblique"
+      },
+      {
+        "text": "Will the staff be available to escort me to the right wing when I arrive?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is it possible to get a short phone call before I head over, just to confirm everything is set?",
+        "register": "oblique"
+      },
+      {
+        "text": "Which office is responsible for handling the transport arrangements for the next visit?",
+        "register": "oblique"
+      },
+      {
+        "text": "I need to confirm the visiting hours for my dad who is in the hospice.",
+        "register": "third_person"
+      },
+      {
+        "text": "Could you let me know where the parking is for the hospice?",
+        "register": "third_person"
+      },
+      {
+        "text": "Which paperwork does my mother need to bring for the next appointment?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do we have to arrange transport for my sister's visit?",
+        "register": "third_person"
+      },
+      {
+        "text": "Who should I contact if I want to change my aunt’s visit time?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can you tell me the procedure for updating the patient’s contact details?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a special drop‑off point for family members?",
+        "register": "third_person"
+      },
+      {
+        "text": "How do we sign in when we arrive to visit my neighbour’s relative?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do we have to fill in any consent forms before coming in?",
+        "register": "third_person"
+      },
+      {
+        "text": "What is the best way to book a car‑pool for a visiting family member?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can I ask who will be the main contact for my brother’s care plans?",
+        "register": "third_person"
+      },
+      {
+        "text": "When can I bring my cousin to see her mother in the unit?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a designated parking spot for visitors with cars?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do you need a visitor badge for everyone coming to see my father?",
+        "register": "third_person"
+      },
+      {
+        "text": "How can I request a different visiting slot for my partner?",
+        "register": "third_person"
+      },
+      {
+        "text": "Will the hospice staff help us with the ambulance pick‑up for my aunt?",
+        "register": "third_person"
+      },
+      {
+        "text": "What documents do we need to bring for the patient’s discharge paperwork?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can you advise where to leave the keys when we visit the hospice?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a specific time window for bringing a family member for a check‑in?",
+        "register": "third_person"
+      },
+      {
+        "text": "Who do I speak to if I want to change the appointment date for my uncle?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can you let me know what the visiting hours are?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do we need to pay for parking or is it free?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Where should we park when we come to see the patient?",
+        "register": "colloquial"
+      },
+      {
+        "text": "What forms do we need to fill out before the visit?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Could I change my appointment to later in the afternoon?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Who is the point of contact for scheduling visits?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a shuttle that takes people to the hospice?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do we have to bring ID when we come to visit?",
+        "register": "colloquial"
+      },
+      {
+        "text": "How can I get a copy of the visitor sign‑in sheet?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can you tell me where the nearest parking lot is?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Will someone pick the patient up from the bus stop?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Are there any restrictions on bringing gifts for the patient?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Where can I find the map of the parking area?",
+        "register": "colloquial"
+      },
+      {
+        "text": "What should I do if I’m running late for a visit?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is it possible to switch my visit to a different day?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do I need to bring any specific documents with me?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Who should I call if I need to change the visiting time?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a form for visitors to sign in on arrival?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I get the contact details for the on‑call staff?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a specific place to drop off supplies for the patient?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Um, hi, could you tell me what the visiting hours are this week?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I… I mean, are we still getting the 10‑pm curfew or has that changed?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "So, I was wondering where I could actually park next to the hospice?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "You know, I think the parking is on the back street, but I’m not 100% sure.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do we need to fill out any paperwork before my aunt can come over?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Right, like, the forms—do I need to bring the original copy or is a photocopy fine?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "If I’m coming in tomorrow, can I drop the documents in the box or do I need to hand them to a staff member?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a specific point of contact I should speak to if I need to arrange a wheelchair?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Um, actually, could you tell me who the main nurse on duty is?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I was hoping to, uh, shift my visit to earlier, but I’m not sure if that’s possible.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you have a phone number I could call for transport services?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I think there's a bus, but I’d like to double‑check the timetable, you know.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Can I get a copy of the visitor sign‑in sheet for my records?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do the doors open automatically or is there a key I need?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a specific area where I can wait while my relative is being moved?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I need to change the time of my visit, but I’m not sure how to do that online.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a fax number for sending the consent forms?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you explain who I should call if my scheduled appointment gets cancelled?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I… I mean, I was thinking about… maybe we could arrange a different time for my mother?",
+        "register": "transcript_messy"
+      }
+    ],
+    "mental_health_treatment": [
+      {
+        "text": "I’ve been feeling a bit down lately and I was hoping you could confirm the time for my follow‑up.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve had trouble sleeping over the past few weeks and was wondering if you could send me a fit note.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m not feeling very rested and I’d like to ask if I can get a callback to discuss my paperwork.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been anxious and it’s made it hard to focus on the form I need to fill out.",
+        "register": "oblique"
+      },
+      {
+        "text": "My sleep’s been poor and I’m unsure whether I need to reschedule my appointment.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve had a low mood this week and I’m hoping you could let me know if I can get the form sent to me.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m feeling a little stressed and I’d love a quick confirmation on my next appointment date.",
+        "register": "oblique"
+      },
+      {
+        "text": "Sleep has been a real problem, and I need to know whether the fit note is ready.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been uneasy lately and would appreciate if you could forward me the details for the callback.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m not sleeping well and I was hoping you could arrange a new time for my follow‑up.",
+        "register": "oblique"
+      },
+      {
+        "text": "The last few nights have been restless, can you tell me what I need to do to get a fit note?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m feeling rather low and I was wondering if you could remind me of my upcoming appointment.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been worrying a lot and would like to know if I can get the paperwork mailed to me.",
+        "register": "oblique"
+      },
+      {
+        "text": "It’s been hard to stay awake, could you let me know when I should expect my callback?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been anxious about this and I’m not sure I can keep my current appointment.",
+        "register": "oblique"
+      },
+      {
+        "text": "Sleep is a problem for me, can you confirm whether a fit note will be issued?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been feeling a bit overwhelmed, would you mind sending me the form for the next appointment?",
+        "register": "oblique"
+      },
+      {
+        "text": "I can’t seem to rest well, could you remind me when my follow‑up is scheduled?",
+        "register": "oblique"
+      },
+      {
+        "text": "My sleep’s been interrupted and I was hoping to get a fit note sent to my address.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been feeling unsettled, can you let me know what my next appointment involves?",
+        "register": "oblique"
+      },
+      {
+        "text": "My daughter hasn't been sleeping well, and I need to arrange a follow‑up appointment for her – I'm feeling a bit stressed about it.",
+        "register": "third_person"
+      },
+      {
+        "text": "I'm worried about my mum's health and would like to request a fit note for her, but I'm not feeling well myself.",
+        "register": "third_person"
+      },
+      {
+        "text": "My neighbour's son is ill, could you tell me how to fill out the form for his medical record? I'm feeling anxious about the paperwork.",
+        "register": "third_person"
+      },
+      {
+        "text": "I need a callback regarding my partner's appointment, but I'm currently low on energy and can't focus on details.",
+        "register": "third_person"
+      },
+      {
+        "text": "Could you help me book a follow‑up for my dad? My anxiety is making it hard to remember the steps.",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m feeling stressed because my son keeps waking up at night – I’d like to arrange a fit note for him.",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m not sleeping, and I want to know the deadline to submit the paperwork for my neighbour's medical form.",
+        "register": "third_person"
+      },
+      {
+        "text": "I'm feeling low and need to confirm the date of the next appointment for my daughter.",
+        "register": "third_person"
+      },
+      {
+        "text": "Can you put me on the callback list for my partner’s follow‑up? I've been anxious about missing the deadline.",
+        "register": "third_person"
+      },
+      {
+        "text": "My mother is under a lot of pressure, and I'd like to know how to get a fit note for her – I'm not feeling too great.",
+        "register": "third_person"
+      },
+      {
+        "text": "I'm concerned about my son's recent headaches and need to request a follow‑up appointment; I'm feeling very anxious.",
+        "register": "third_person"
+      },
+      {
+        "text": "My wife has been out of touch, can you tell me how to fill out the form for her appointment? I'm having trouble sleeping.",
+        "register": "third_person"
+      },
+      {
+        "text": "I need a callback to discuss my neighbour's vaccination records, but I'm feeling low and can't get this done.",
+        "register": "third_person"
+      },
+      {
+        "text": "My child's fatigue has me worried – I want to book a follow‑up, but I'm feeling stressed.",
+        "register": "third_person"
+      },
+      {
+        "text": "Could you guide me through the fit note request for my father? I'm not sleeping at all right now.",
+        "register": "third_person"
+      },
+      {
+        "text": "I'm anxious about the paperwork for my partner’s appointment; can you help me with the form?",
+        "register": "third_person"
+      },
+      {
+        "text": "My sister’s medical record needs updating – I’d like to arrange a follow‑up, but I’m feeling low.",
+        "register": "third_person"
+      },
+      {
+        "text": "I'm feeling stressed because I can't remember the steps to request a callback for my child's check‑up.",
+        "register": "third_person"
+      },
+      {
+        "text": "Can you remind me how to book a follow‑up for my neighbour's test, while I'm feeling a bit anxious?",
+        "register": "third_person"
+      },
+      {
+        "text": "My mother is unwell, I want to get a fit note for her, and I'm not sleeping – can you tell me what to do next?",
+        "register": "third_person"
+      },
+      {
+        "text": "Hey, I'm feeling a bit low lately but I need to reschedule my follow‑up appointment.",
+        "register": "colloquial"
+      },
+      {
+        "text": "I'm not sleeping well this week – can you send me the paperwork for the fit note?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Been really stressed out, could you confirm my next booking time?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I've been anxious about everything, do you have the form I need to fill for a callback?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m feeling under the weather but want to check if my follow‑up is still on for next Tuesday.",
+        "register": "colloquial"
+      },
+      {
+        "text": "Juggling a lot, could you let me know how to get a replacement fit note?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Struggling with stress and I need to ask about the paperwork for my next appointment.",
+        "register": "colloquial"
+      },
+      {
+        "text": "Not sleeping, but I’d like to book a callback for my medication review.",
+        "register": "colloquial"
+      },
+      {
+        "text": "Feeling a little low, can you confirm the details of my upcoming appointment?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I'm stressed out but need to know if I can get a new fit note over the phone.",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’ve been up at night – can you remind me what the next follow‑up is?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Feeling a bit anxious, do you have the form I should send for my appointment?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I'm not sleeping, but I need to arrange a callback with a GP.",
+        "register": "colloquial"
+      },
+      {
+        "text": "Feeling low, could you tell me what the next step is for my follow‑up?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Anxious and not sleeping, can you send me the fit‑note template?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I'm stressed, could you confirm when my next appointment will be?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Not getting any rest and I need to know the details for my follow‑up appointment.",
+        "register": "colloquial"
+      },
+      {
+        "text": "Feeling a bit down – do you have the paperwork I need for a callback?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m worried and not sleeping well; can I get a new fit note?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Stressful week, can you let me know how to book my next appointment?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Hi, I've been feeling a bit low lately, and I think I need to book a follow‑up, but I'm not sure…",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Um, I've been really stressed, and I need to see if I can get a fit note for my job.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Hey, I haven't been sleeping at all, and I was hoping to arrange a callback for my paperwork.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "So, I'm feeling anxious, but I’d like to ask about filling out the new patient form, actually.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m not sleeping well, and I need to confirm my next appointment, but could you also…",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Excuse me, I'm feeling a bit down, and I was wondering if you could sort out a follow‑up slot?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’ve been under a lot of stress, and I think I should get a fit note, but I'm not sure where to…",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Hey, I’ve got trouble sleeping and I need to know how to request a callback for my records.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Hi, I'm feeling pretty anxious, and I'd like to book another appointment, but first…",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Um, I’ve been feeling low, and I need to see if my fit note can be renewed—do you have…",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Sorry, I’m not sleeping, and I want to sort out the administrative form, could you…",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’ve been really stressed and I think I need to book a follow‑up, but I also need a…",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Okay, I've been feeling low lately, and I need to confirm my next appointment time…",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "So, I’ve got insomnia, and I'm wondering how to get a fit note from the office.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m feeling anxious, and I need to know if I can get a callback about my paperwork, actually.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Uh, I haven't slept, and I was hoping to fill out the new health questionnaire, but…",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Hello, I'm feeling a bit down, and I need to see if I can book a follow‑up, plus a…",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’ve been stressed, and I need to arrange a fit note—do you have any forms for that?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm not sleeping well, and I was wondering if you could set up a callback to discuss the paperwork.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m feeling a bit low, and I want to book my next appointment, but also get a…",
+        "register": "transcript_messy"
+      }
+    ],
+    "under_two": [
+      {
+        "text": "I was thinking about whether it would be possible to bring my little one with me when I come in for my check‑up next week.",
+        "register": "oblique"
+      },
+      {
+        "text": "Can you let me know if there’s a place for a stroller near the reception desk?",
+        "register": "oblique"
+      },
+      {
+        "text": "Would it be alright if I brought my daughter in a carrier for the appointment?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m a bit unsure about the parking situation – can a parent with a baby still get a spot?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’d like to know whether I can have my toddler with me during the consultation.",
+        "register": "oblique"
+      },
+      {
+        "text": "Can I bring a small child and use the waiting area while I am there?",
+        "register": "oblique"
+      },
+      {
+        "text": "I was wondering if it’s possible to use a baby carrier while I wait.",
+        "register": "oblique"
+      },
+      {
+        "text": "My child will be on a feeding schedule – will that affect the timing of my appointment?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m not sure if I should bring my infant or leave them at home when I come in.",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you have any provisions for a child to stay in the waiting room while I see the doctor?",
+        "register": "oblique"
+      },
+      {
+        "text": "Will the car park allow a small car with a child seat inside?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m trying to plan my visit – would you allow me to bring a child in a baby wrap?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a special time slot for families who need to bring a toddler?",
+        "register": "oblique"
+      },
+      {
+        "text": "Can I use a wheelchair for a stroller in the parking lot?",
+        "register": "oblique"
+      },
+      {
+        "text": "Would it be possible to reschedule if I have to look after my baby?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m unsure if the consultation room is suitable for a child with a feeding routine.",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a space for a baby in the reception area while I wait?",
+        "register": "oblique"
+      },
+      {
+        "text": "I might need to bring my little one – would you have a crib or a quiet corner?",
+        "register": "oblique"
+      },
+      {
+        "text": "How do you manage a situation where a child needs to stay during the appointment?",
+        "register": "oblique"
+      },
+      {
+        "text": "I want to be clear about whether my child can be with me in the waiting area.",
+        "register": "oblique"
+      },
+      {
+        "text": "I was wondering if I can bring my little one along to the appointment today.",
+        "register": "third_person"
+      },
+      {
+        "text": "Do we have a dedicated parking space for parents with young children?",
+        "register": "third_person"
+      },
+      {
+        "text": "My toddler has a routine check‑in time at 3pm – can we reschedule my slot to avoid a clash?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a baby‑friendly waiting area or a place to change nappies?",
+        "register": "third_person"
+      },
+      {
+        "text": "I have a babysitter who can pick my child up at 9:30 – is that a good time to come in?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do you have a small seating area for a child under three?",
+        "register": "third_person"
+      },
+      {
+        "text": "Will I be able to leave my child with a nurse while I wait?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’d like to bring my son in a stroller – is that okay?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can I park with my baby in the car and drop him off at the front desk?",
+        "register": "third_person"
+      },
+      {
+        "text": "What’s the best time to come in if I need to do a quick diaper change?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do you have a high‑chair for when we’re waiting?",
+        "register": "third_person"
+      },
+      {
+        "text": "I need to reschedule my appointment because I’ll be away at school on that day.",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a nearby playground for toddlers while we wait?",
+        "register": "third_person"
+      },
+      {
+        "text": "How long does the waiting time usually get for families with kids?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can I bring my niece, she's only two, to the appointment?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a dedicated entry for parents with infants?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’ll need to arrange childcare for a half‑day – can I pick an appointment in the afternoon?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do you offer a baby‑proofing kit for the waiting area?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can I get a reminder call 30 minutes before my child’s scheduled visit?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’ve got a baby with me—can I bring them along to my appointment?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a family parking spot right by the front door?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can we do a quick change of time because my babysitter’s no‑show?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you have a play corner for little ones while we wait?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Will my toddler be able to sit next to me in the reception area?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Where’s the nearest baby‑changing station?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I bring a second car seat for my baby?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you have a cribs or a baby cot if we need to stay overnight?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a stroller‑friendly entrance for the front door?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I move my appointment to the afternoon so it lines up with my kid’s nap time?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you offer a child‑friendly waiting room with toys?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is the rest area accessible for a pram?",
+        "register": "colloquial"
+      },
+      {
+        "text": "What’s the best way to get my toddler to the reception without a fuss?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do I need to bring extra paperwork for my little one?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I park a family car in the special family parking bay?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Will my baby be able to sit on the sofa while I get my paperwork done?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you have a small seating area where kids can stay close by?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I use the kitchenette to feed my toddler?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you have a baby‑changing table near the entrance?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Hi, I was wondering if I could bring my baby along to my appointment tomorrow, or if there's any restriction on that?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Um, can you tell me if there's a parking spot close to the reception for a stroller?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you have a baby changing station in the waiting area, or would I have to bring my own?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I need to know if there's a small seating area where my toddler can sit while I wait, can you confirm?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a ramp for a pram? I'm not sure if the entrance is stroller‑friendly.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could I possibly use the free‑play zone for my little one while I get checked in?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is it possible to bring a baby in a carrier or do I need to carry it myself?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you have a baby‑friendly room or a cot where I can keep my child during the appointment?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I want to ask whether I can take a quick break for a snack while I'm here, or do I have to stay in the waiting room?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a special parking slot for parents with infants? I might need to leave my baby with a sitter.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Would it be okay if I bring my toddler in a stroller? I’m worried about the stairs.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a designated diaper‑changing area for parents who come in with a baby?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Can I schedule my appointment for the afternoon so that my child can sleep a bit?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you have any rules about bringing a baby to the clinic, or is it generally fine?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Will the staff be able to help me with a stroller, or should I just bring it inside on my own?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Can I bring a baby crib or a portable bassinet into the waiting area?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is the parking garage accessible with a stroller? I need to find a place that doesn’t involve too many steps.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm wondering if there’s a place to store my baby’s bottle while I'm in the exam room.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is it possible to have a dedicated seat for a baby, like a small chair with a strap?",
+        "register": "transcript_messy"
+      }
+    ]
   }
 }
