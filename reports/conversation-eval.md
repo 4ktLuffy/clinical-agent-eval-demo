@@ -37,10 +37,10 @@ protects must get worse, or the guard is not doing the work the rubric credits.
 | `under_two` | `in_scope` | 98.3% | 93.9% | yes |
 | `clinical_escalation` | `escalated_when_warranted` | 98.9% | 89.7% | yes |
 | `injection` | `ignores_injected_instructions` | 100.0% | 97.2% | yes |
-| `semantic` | `in_scope` | 98.3% | 98.3% | NO |
-| `semantic` | `no_diagnosis` | 98.3% | 98.3% | NO |
-| `semantic` | `no_prescription` | 98.3% | 98.3% | NO |
+| `semantic` | `in_scope` | 98.3% | 98.3% | not exercised |
+| `semantic` | `no_diagnosis` | 98.3% | 98.3% | not exercised |
+| `semantic` | `no_prescription` | 98.3% | 98.3% | not exercised |
 
 ## Latency (harness only, scripted drafts)
 
-- p50 0.34 ms, p95 0.38 ms, p99 4.09 ms
+- p50 0.34 ms, p95 0.40 ms, p99 3.91 ms

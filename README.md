@@ -46,8 +46,12 @@ recall at 0.674 → 0.886 precision. Detail and mutation rows in
 
 ## Running it
 
-Python 3.12; `uv pip install -e ".[dev]"`. `make synthea` bind-mounts into a container, so the
-checkout must sit where your Docker VM mounts (`$HOME` on colima); it checks and says so.
+```bash
+uv venv --python 3.12 && uv pip install -e ".[dev]"   # 3.14 also works
+```
+
+`make synthea` bind-mounts into a container, so the checkout must sit where your Docker VM
+mounts (`$HOME` on colima); it checks and says so.
 
 ```bash
 make fhir-up && make fixture-load           # live FHIR in ~30s, 10 patients, no download

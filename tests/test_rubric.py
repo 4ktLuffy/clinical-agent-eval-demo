@@ -110,3 +110,43 @@ def test_disabling_the_whole_guardrail_is_worse_than_any_single_guard(subset, co
     off_rates = aggregate(off)
     for dimension in ("in_scope", "no_diagnosis", "no_prescription", "escalated_when_warranted"):
         assert off_rates[dimension]["rate"] < on_rates[dimension]["rate"], dimension
+
+
+def test_a_guard_that_never_fired_is_not_rendered_as_a_failure(subset, corpus):
+    """Found by following the README on a fresh clone: the table printed `semantic ... NO`
+    three times, which reads as three broken guards. The JSON had carried `exercised` since
+    the stage was added; the renderer never printed it."""
+    from eval.conversation_run import render
+
+    report = {
+        "conversations": 1, "turns": 1, "turns_available": 1, "subset": False,
+        "subset_seed": None, "subset_strata": None, "run_date": "2026-09-05",
+        "rubric": {}, "model": "mock", "budget": None, "partial": None,
+        "latency_ms": {"p50": 1.0, "p95": 1.0, "p99": 1.0},
+        "mutation": {"semantic": [
+            {"dimension": "no_diagnosis", "before": 0.983, "after": 0.983,
+             "dropped": False, "exercised": False},
+            {"dimension": "in_scope", "before": 1.0, "after": 0.9,
+             "dropped": True, "exercised": True},
+        ]},
+    }
+    text = render(report)
+    assert "not exercised" in text
+    assert "| NO |" not in text, "an unexercised guard must not read as a failure"
+
+
+def test_the_latency_heading_says_where_the_drafts_came_from():
+    """Anyone pointing this at their own agent read a latency number headed 'scripted
+    drafts'. Also found on the fresh-clone run."""
+    from eval.conversation_run import render
+
+    base = {
+        "conversations": 1, "turns": 1, "turns_available": 1, "subset": False,
+        "subset_seed": None, "subset_strata": None, "run_date": "2026-09-05",
+        "rubric": {}, "budget": None, "partial": None, "mutation": None,
+        "latency_ms": {"p50": 1.0, "p95": 1.0, "p99": 1.0},
+    }
+    assert "harness only, scripted drafts" in render({**base, "model": "mock"})
+    real = render({**base, "model": "openai/gpt-oss-120b"})
+    assert "end to end" in real and "gpt-oss-120b" in real
+    assert "scripted drafts" not in real

@@ -241,7 +241,11 @@ def render(report: dict) -> str:
             for row in rows:
                 lines.append(
                     f"| `{guard}` | `{row['dimension']}` | {row['before'] * 100:.1f}% | "
-                    f"{row['after'] * 100:.1f}% | {'yes' if row['dropped'] else 'NO'} |"
+                    f"{row['after'] * 100:.1f}% | "
+                    # "NO" on a guard that never fired reads as a broken guard. The JSON has
+                    # carried `exercised` since the semantic stage was added; the table did
+                    # not print it, so a fresh reader saw three failures that were not.
+                    f"{'yes' if row['dropped'] else ('NO' if row.get('exercised', True) else 'not exercised')} |"
                 )
     if report.get("budget"):
         b = report["budget"]
@@ -258,7 +262,11 @@ def render(report: dict) -> str:
         lines += ["",
                   "A flat random sample would leave some guards with nothing to bite on. Every",
                   "kind above is represented, so a small-budget run still exercises all of them."]
-    lines += ["", "## Latency (harness only, scripted drafts)", "",
+    lines += ["", (
+            "## Latency (harness only, scripted drafts)"
+            if report.get("model", "mock") == "mock"
+            else f"## Latency (end to end, drafts from `{report['model']}`)"
+        ), "",
               f"- p50 {report['latency_ms']['p50']:.2f} ms, p95 {report['latency_ms']['p95']:.2f} ms,"
               f" p99 {report['latency_ms']['p99']:.2f} ms"]
     return "\n".join(lines) + "\n"
