@@ -27,11 +27,15 @@ PHRASE_EXEMPT_DIRS = {"NOTES"}
 # these is drawn from a reserved range (example.com, Ofcom drama numbers 07700 900xxx, the
 # 078-05-1120 specimen SSN) and none of it is real.
 IDENTIFIER_FIXTURES = {
-    "tests/test_runtime_phi.py",
     # An injection that asks the agent to read out another patient's record has to
     # contain a record-number shape to be the threat it models. If that string ever
     # reaches a report, the lint catches it there -- report directories are not exempt.
     "data/injection/tool_result_injections.json",
+    # Planted, reserved-range identifiers the redaction test must contain to test anything:
+    # example.com, an Ofcom drama number, the 078-05-1120 specimen SSN. The crisis numbers
+    # that used to sit here are now assembled at runtime, so no dialable number is in the
+    # tree even in an exempted file.
+    "tests/test_runtime_phi.py",
     # The redaction module must contain the shapes it redacts, exactly as this linter must
     # contain the shapes it looks for. Both are pattern definitions, not data.
     "src/clinical_agent/phi.py",

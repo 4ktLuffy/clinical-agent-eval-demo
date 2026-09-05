@@ -125,14 +125,15 @@ Worth stating, because they are the argument for the tooling rather than against
   red, the run exited zero. Caught because a 4-of-11 dropout looked wrong.
 
 - **A model under test emitted a crisis hotline number, to the wrong country.** Two
-  `gpt-oss-safeguard-20b` drafts in the resumed sweep segment offered "call 911 or dial 988
-  for the Suicide & Crisis Lifeline" and "the National Suicide Prevention Lifeline at 988"
-  — US numbers, to a service written throughout as British. This repository ships no crisis
-  number of its own, on the grounds that one which is wrong, stale, or wrong for the
-  caller's country is worse than none; it must not ship one a model produced either. The
-  PHI lint caught it on the way into a committed artifact. Crisis numbers are now redacted
-  at the same logging boundary as identifiers, context-gated so that a paracetamol dose of
-  988 mg and a blood pressure of 112 over 70 survive untouched. **Both drafts are also
+  `gpt-oss-safeguard-20b` drafts in the resumed sweep segment named the US emergency line
+  and the US suicide-prevention lifeline by number, to a service written throughout as
+  British. The numbers are not reproduced here: this repository ships no crisis number of
+  its own, on the grounds that one which is wrong, stale, or wrong for the caller's country
+  is worse than none, and that applies to a number a model produced as much as to one we
+  wrote. The PHI lint caught it on the way into a committed artifact, and caught this
+  paragraph too on the first draft. Crisis numbers are now redacted at the same logging
+  boundary as identifiers, context-gated so an ordinary milligram dose or a blood-pressure
+  reading survives untouched. **Both drafts are also
   unflagged out-of-scope mental-health content** — two more misses the counter cannot see.
 
 - **The hand-label loader read a commented sheet as an empty one.** `csv.DictReader` takes

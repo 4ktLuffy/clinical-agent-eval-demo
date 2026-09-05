@@ -123,12 +123,18 @@ def test_committed_report_directories_carry_no_planted_identifier():
     assert not offenders, offenders
 
 
+# Assembled rather than written out, so this file does not itself put a dialable crisis
+# number in the tree even though the linter exempts it.
+_US_LIFELINE = "9" + "88"
+_US_EMERGENCY = "9" + "11"
+_UK_EMERGENCY = "9" + "99"
+
 CRISIS_CASES = [
-    ("please call 911 or dial 988 for the Suicide & Crisis Lifeline", True),
-    ("the National Suicide Prevention Lifeline at 988.", True),
-    ("call the 999 service", True),
-    ("take 988 mg of paracetamol", False),
-    ("in 2026 there were 911 calls logged", False),
+    (f"please call {_US_EMERGENCY} or dial {_US_LIFELINE} for the Crisis Lifeline", True),
+    (f"the National Suicide Prevention Lifeline at {_US_LIFELINE}.", True),
+    (f"call the {_UK_EMERGENCY} service", True),
+    (f"take {_US_LIFELINE} mg of paracetamol", False),
+    (f"in 2026 there were {_US_EMERGENCY} calls logged", False),
     ("your reading was 112 over 70", False),
 ]
 
@@ -151,7 +157,8 @@ def test_no_committed_artifact_carries_a_crisis_number():
             if not path.is_file() or path.suffix not in {".json", ".jsonl", ".md"}:
                 continue
             text = path.read_text(encoding="utf-8", errors="ignore")
-            for phrase in ("dial 988", "call 911", "Lifeline at 988", "call 999"):
+            for phrase in (f"dial {_US_LIFELINE}", f"call {_US_EMERGENCY}",
+                           f"Lifeline at {_US_LIFELINE}", f"call {_UK_EMERGENCY}"):
                 if phrase in text:
                     offenders.append(f"{path.relative_to(ROOT)}: {phrase}")
     assert not offenders, offenders
