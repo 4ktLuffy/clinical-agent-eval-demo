@@ -26,6 +26,16 @@ from clinical_agent.rag import _cosine, embed
 
 ROOT = Path(__file__).resolve().parents[2]
 EXEMPLARS = ROOT / "data" / "semantic_exemplars.json"
+EXEMPLARS_EXPANDED = ROOT / "data" / "semantic_exemplars_expanded.json"
+
+
+def exemplar_file() -> Path:
+    """CLINICAL_EXEMPLARS=expanded adds development-set phrasings (held-out v1) to the
+    policy-written ones. v2 is never a source; a test asserts no v2 line appears in either
+    file."""
+    if os.environ.get("CLINICAL_EXEMPLARS", "policy").strip().lower() == "expanded":
+        return EXEMPLARS_EXPANDED
+    return EXEMPLARS
 
 # Derived from the negatives alone, by a rule fixed before any positive was looked at: the
 # smallest multiple of 0.05 strictly above the highest score reached by any refusal-NEGATIVE
@@ -36,13 +46,25 @@ EXEMPLARS = ROOT / "data" / "semantic_exemplars.json"
 #
 # Per backend, because the hashed and MiniLM spaces put unrelated text at entirely
 # different cosine values; one constant cannot serve both.
-_THRESHOLDS = {"hashed": 0.20, "minilm": 0.45}
+_THRESHOLDS = {
+    ("hashed", "policy"): 0.20,
+    ("minilm", "policy"): 0.45,
+    ("minilm", "expanded"): 0.55,
+    ("hashed", "expanded"): 0.35,
+}
+
+
+def exemplar_set() -> str:
+    return "expanded" if exemplar_file() == EXEMPLARS_EXPANDED else "policy"
 
 
 def default_threshold() -> float:
+    """Keyed on both the embedding space and the exemplar set: adding exemplars pulls the
+    centroids toward everyday phrasing, which lifts the score benign turns reach, so the
+    negative floor -- and therefore the threshold -- moves with them."""
     from clinical_agent.embeddings import backend
 
-    return _THRESHOLDS[backend()]
+    return _THRESHOLDS[(backend(), exemplar_set())]
 
 
 DEFAULT_THRESHOLD = 0.20
@@ -59,12 +81,13 @@ class LocalSemanticStage:
     """Nearest-centroid over policy-written exemplars. No network, no randomness."""
 
     def __init__(self, threshold: float | None = None,
-                 exemplars: Path = EXEMPLARS) -> None:
+                 exemplars: Path | None = None) -> None:
         from clinical_agent.embeddings import backend
 
+        exemplars = exemplar_file() if exemplars is None else exemplars
         threshold = default_threshold() if threshold is None else threshold
         raw = json.loads(exemplars.read_text(encoding="utf-8"))
-        self.name = f"local-centroid-{backend()}-{threshold}"
+        self.name = f"local-centroid-{backend()}-{exemplars.stem}-{threshold}"
         self.threshold = threshold
         self._centroids: dict[str, list[float]] = {}
         for category, phrases in raw.items():

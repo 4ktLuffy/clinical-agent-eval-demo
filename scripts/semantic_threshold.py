@@ -21,7 +21,9 @@ from eval.conversation_run import stratified_subset  # noqa: E402
 def main() -> int:
     import os
 
-    print(f"backend: {os.environ.get('CLINICAL_EMBEDDINGS', 'hashed')}")
+    from clinical_agent.embeddings import backend as _b
+    from clinical_agent.semantic import exemplar_set as _e
+    print(f"backend: {_b()}  exemplars: {_e()}")
     configured = default_threshold()
     stage = LocalSemanticStage()
     conversations = json.loads((ROOT / "data" / "conversations.json").read_text())
