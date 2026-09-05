@@ -73,6 +73,7 @@ def run_model(model: str, turns: list, corpus, pace: float) -> dict:
     import openai
 
     from clinical_agent.guardrail import classify
+    from clinical_agent.phi import scrub_for_log
     from clinical_agent.rag import retrieval_threshold
 
     client = openai.OpenAI(base_url=os.environ["EVAL_MODEL_BASE_URL"],
@@ -134,12 +135,49 @@ def run_model(model: str, turns: list, corpus, pace: float) -> dict:
     }
 
 
+def merge(previous: dict, addition: dict) -> dict:
+    """Stitch a resumed segment onto the rows already recorded, and recompute every
+    aggregate over the union. Summing two p95s would be arithmetic on a statistic."""
+    rows = previous["rows"] + addition["rows"]
+    empties = [r for r in rows if r.get("empty")]
+    scored = [r for r in rows if not r.get("empty")]
+    out_of_scope = [r for r in scored if r["draft_categories"]]
+    merged = {**previous, **addition, "rows": rows, "turns": len(rows),
+              "empty_drafts": len(empties), "scored_turns": len(scored),
+              "out_of_scope_drafts": len(out_of_scope),
+              "out_of_scope_rate": round(len(out_of_scope) / len(scored), 4) if scored else None,
+              "draft_side_catches": sum(1 for r in out_of_scope if r["replaced"]),
+              "prompt_tokens": previous["prompt_tokens"] + addition["prompt_tokens"],
+              "completion_tokens": previous["completion_tokens"] + addition["completion_tokens"],
+              "segments": (previous.get("segments") or [previous["run_date"]]) + [addition["run_date"]]}
+    total = merged["prompt_tokens"] + merged["completion_tokens"]
+    merged["tokens_per_turn"] = round(total / len(rows), 1) if rows else None
+    # Latency percentiles cannot be merged from summaries; keep the newest segment's and
+    # say so rather than inventing a combined figure.
+    merged["latency_note"] = ("p50/p95 are from the most recent segment only; percentiles "
+                              "do not combine across runs")
+    return merged
+
+
+def record_progress(model: str, result: dict, target: int) -> None:
+    path = OUT / "progress.json"
+    log = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    log.setdefault(model, []).append({
+        "date": date.today().isoformat(), "turns_now": result["turns"], "target": target,
+        "complete": result["turns"] >= target, "stopped": result["stopped"],
+    })
+    path.write_text(json.dumps(log, indent=2) + "\n", encoding="utf-8")
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--sample", type=int, default=100)
     parser.add_argument("--seed", type=int, default=20260905)
     parser.add_argument("--pace", type=float, default=4.0)
     parser.add_argument("--models", default="")
+    parser.add_argument("--resume", action="store_true",
+                        help="continue a partial row from the turn after its last recorded "
+                             "one, rather than re-billing turns already paid for")
     args = parser.parse_args(argv)
 
     OUT.mkdir(exist_ok=True)
@@ -151,12 +189,30 @@ def main(argv=None) -> int:
     wanted = args.models.split(",") if args.models else MODELS
     for model in wanted:
         path = OUT / f"{model.replace('/', '-')}.json"
+        done_rows, previous = [], None
         if path.exists():
-            print(f"{model}: already done, skipping", flush=True)
-            continue
-        print(f"--- {model}", flush=True)
-        result = run_model(model, turns, corpus, args.pace)
-        path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+            previous = json.loads(path.read_text(encoding="utf-8"))
+            done_rows = previous["rows"]
+            if len(done_rows) >= len(turns):
+                print(f"{model}: complete ({len(done_rows)} turns), skipping", flush=True)
+                continue
+            if not args.resume:
+                print(f"{model}: partial ({len(done_rows)}/{len(turns)}); "
+                      f"pass --resume to continue", flush=True)
+                continue
+        # Resume from the turn after the last one recorded. Same turn list, same seed, so
+        # the completed prefix is not re-billed and the row stays one coherent run.
+        remaining = turns[len(done_rows):]
+        print(f"--- {model}  {len(done_rows)} done, {len(remaining)} to go", flush=True)
+        result = run_model(model, remaining, corpus, args.pace)
+        if previous is not None:
+            result = merge(previous, result)
+        # Same logging boundary the telemetry uses: a model under test can emit an
+        # identifier or a crisis number, and neither belongs in a committed artifact.
+        from clinical_agent.phi import scrub_for_log as _scrub
+
+        path.write_text(json.dumps(_scrub(result), indent=2) + "\n", encoding="utf-8")
+        record_progress(model, result, len(turns))
         print(f"    turns={result['turns']} oos={result['out_of_scope_drafts']} "
               f"caught={result['draft_side_catches']} p50={result['latency_p50_ms']} "
               f"stopped={result['stopped']}", flush=True)

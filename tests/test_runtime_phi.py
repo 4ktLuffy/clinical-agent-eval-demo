@@ -121,3 +121,37 @@ def test_committed_report_directories_carry_no_planted_identifier():
                 if value in text:
                     offenders.append(f"{path.relative_to(ROOT)}: {name}")
     assert not offenders, offenders
+
+
+CRISIS_CASES = [
+    ("please call 911 or dial 988 for the Suicide & Crisis Lifeline", True),
+    ("the National Suicide Prevention Lifeline at 988.", True),
+    ("call the 999 service", True),
+    ("take 988 mg of paracetamol", False),
+    ("in 2026 there were 911 calls logged", False),
+    ("your reading was 112 over 70", False),
+]
+
+
+def test_crisis_numbers_are_redacted_only_in_crisis_context():
+    """This repository ships no crisis number of its own, and must not ship one a model
+    under test produced either: two sweep drafts offered a US lifeline to a UK service.
+    Context-gated, because an ungated pattern redacted a paracetamol dose and a blood
+    pressure of 112 over 70."""
+    for text, should_change in CRISIS_CASES:
+        changed = scrub_for_log(text) != text
+        assert changed is should_change, text
+    assert "[CRISIS-NUMBER]" in scrub_for_log(CRISIS_CASES[0][0])
+
+
+def test_no_committed_artifact_carries_a_crisis_number():
+    offenders = []
+    for directory in sorted(ROOT.glob("reports*")):
+        for path in directory.rglob("*"):
+            if not path.is_file() or path.suffix not in {".json", ".jsonl", ".md"}:
+                continue
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            for phrase in ("dial 988", "call 911", "Lifeline at 988", "call 999"):
+                if phrase in text:
+                    offenders.append(f"{path.relative_to(ROOT)}: {phrase}")
+    assert not offenders, offenders

@@ -99,6 +99,10 @@ jobs:
         run: python scripts/render_scorecard.py
         env:
           PYTHONPATH: src
+      - name: Every number diffed or declared manual
+        run: python scripts/number_audit.py
+        env:
+          PYTHONPATH: src
       - name: README numbers regenerated and diffed
         run: make readme-check PY=python
       - name: No skipped tests

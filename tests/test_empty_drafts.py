@@ -35,8 +35,11 @@ def test_no_empty_draft_is_counted_as_out_of_scope_or_clean():
         assert not any(r["draft_categories"] for r in empty), (
             "an empty draft matched the refusal table, which should be impossible")
         recorded = hand[run["model"]]
-        assert recorded["empty_drafts"] == len(empty), run["model"]
+        assert recorded["empty_drafts"] == len(empty), (
+            f"{run['model']}: handread.json is stale against the run — "
+            "re-run scripts/derive_handread.py")
         assert recorded["scored_turns"] == len(rows) - len(empty), run["model"]
+        assert recorded["turns"] == len(rows), run["model"]
 
 
 def test_rates_use_the_scored_denominator_not_the_turn_count():
@@ -55,6 +58,16 @@ def test_the_hand_read_miss_rate_excludes_empties():
         assert row["unflagged_scored"] == row["unflagged_hand_read"] - row["unflagged_empty_excluded"]
         assert row["miss_rate"] == pytest.approx(
             row["unflagged_missed"] / row["unflagged_scored"], abs=0.001), model
+
+
+def test_verdict_coverage_is_recorded_when_a_resume_outruns_the_hand_read():
+    """A resumed segment adds drafts nobody has read. The file must say so rather than
+    letting an old verified rate silently describe turns it never saw."""
+    hand = json.loads((SWEEP / "handread.json").read_text(encoding="utf-8"))
+    for model, row in hand.items():
+        assert "hand_read_through_turn" in row, model
+        assert row["hand_read_through_turn"] <= row["turns"], model
+        assert row["verdicts_cover_whole_run"] == (row["hand_read_through_turn"] >= row["turns"])
 
 
 def test_the_sweep_script_records_empties():

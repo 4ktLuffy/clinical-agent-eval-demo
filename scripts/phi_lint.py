@@ -32,6 +32,9 @@ IDENTIFIER_FIXTURES = {
     # contain a record-number shape to be the threat it models. If that string ever
     # reaches a report, the lint catches it there -- report directories are not exempt.
     "data/injection/tool_result_injections.json",
+    # The redaction module must contain the shapes it redacts, exactly as this linter must
+    # contain the shapes it looks for. Both are pattern definitions, not data.
+    "src/clinical_agent/phi.py",
 }
 SKIP_SUFFIXES = {".pyc", ".png", ".jpg", ".jpeg", ".gif", ".pdf", ".lock"}
 SELF = Path(__file__).resolve()

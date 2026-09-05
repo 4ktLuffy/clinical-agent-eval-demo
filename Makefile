@@ -6,7 +6,7 @@ PATIENTS ?= 200
 SEED ?= 20260902
 PY ?= .venv/bin/python
 
-.PHONY: scorecard fhir-up fhir-down fhir-check synthea synthea-jar load clean-fhir readme-check fixture-load ci-fixture conversations eval smoke replay loadtest verify
+.PHONY: number-audit scorecard fhir-up fhir-down fhir-check synthea synthea-jar load clean-fhir readme-check fixture-load ci-fixture conversations eval smoke replay loadtest verify
 
 fhir-up:  ## Bring up HAPI FHIR + Postgres and wait for the capability statement
 	$(COMPOSE) up -d
@@ -109,6 +109,9 @@ verify:  ## Everything a deploy must pass
 	$(MAKE) fhir-check
 	$(MAKE) smoke
 	$(MAKE) replay
+
+number-audit:  ## Every number is diffed against an artifact or declared manual
+	PYTHONPATH=src $(PY) scripts/number_audit.py
 
 readme-check:  ## Regenerate every number in the README and diff it
 	PYTHONPATH=src $(PY) scripts/readme_check.py

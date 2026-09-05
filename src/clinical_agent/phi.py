@@ -28,6 +28,15 @@ _MRN = re.compile(
 # "take 2 tablets" or "in 6 weeks".
 _UK_PHONE = re.compile(r"\b0\d{2,4}[\s-]?\d{3,4}[\s-]?\d{3,4}\b")
 _UK_DOB = re.compile(r"\b\d{1,2}[/-]\d{1,2}[/-]\d{4}\b")
+# Crisis and emergency numbers. This repository ships none of its own -- a number that is
+# wrong, stale, or wrong for the caller's country is worse than no number -- and it must not
+# ship one a model under test produced either. Two sweep drafts offered a US lifeline to a
+# UK service.
+_CRISIS = re.compile(
+    r"(?:(?<=\bcall )|(?<=\bdial )|(?<=\bcall the )|(?<=\bat )|(?<=\bring )|"
+    r"(?<=\bservices \()|(?<=\bLifeline at ))"
+    r"(988|911|999|112|116\s?123)\b",
+    re.IGNORECASE)
 
 # FHIR element names whose values are identifying regardless of content.
 IDENTIFYING_KEYS = {
@@ -69,7 +78,8 @@ def scrub_for_log(value: Any) -> Any:
     if isinstance(value, list):
         return [scrub_for_log(v) for v in value]
     if isinstance(value, str):
-        text = _MRN.sub("[MRN]", value)
+        text = _CRISIS.sub("[CRISIS-NUMBER]", value)
+        text = _MRN.sub("[MRN]", text)
         text = _EMAIL.sub("[EMAIL]", text)
         text = _SSN.sub("[SSN]", text)
         text = _PHONE.sub("[PHONE]", text)

@@ -1,4 +1,4 @@
-# Findings
+# Findings (manual: make readme-check diffs the artifact-backed figures; the rest regenerate with scripts/heldout_recall.py, scripts/model_sweep.py --resume, scripts/tool_injection_probe.py, scripts/booking_probe.py)
 
 **The same phrase table scored 82.7% recall at 1.000 precision on the turns it was written
 alongside, and 8.1% [5.8, 11.3] recall at 0.674 [0.530, 0.791] precision on held-out
