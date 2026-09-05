@@ -465,6 +465,32 @@ Latency is machine-dependent and lives in the report. Two detector bugs surfaced
 sessions — a cliff rule comparing a tail p95 against a head *median*, and drift baselines a
 long-running fault hid itself behind.
 
+## Cost and latency, and what the anomaly rules say about them
+
+Cost is **$0** for every row: Groq free tier, no paid endpoint, and a 429 stops a model
+rather than being retried into. Tokens per turn and p50/p95 are in the sweep table above.
+
+Running the load test's own latency rule against these real latencies fires on **all five
+models**:
+
+| Model | p95 | latency_cliff |
+|---|---:|---|
+| `allam-2-7b` | 389 ms | fires |
+| `qwen/qwen3.8-27b` | 592 ms | fires |
+| `openai/gpt-oss-safeguard-20b` | 777 ms | fires |
+| `openai/gpt-oss-120b` | 1054 ms | fires |
+| `groq/compound-mini` | 2916 ms | fires |
+
+The rule is "p95 above three times the baseline p95, with a 50 ms floor", and the committed
+baseline is the mock harness at p95 3.57 ms. Three times that is 11 ms, so the floor decides
+and every real provider clears it by an order of magnitude. **This is a defect in the rule,
+not a finding about the providers.** A threshold calibrated on a harness with no network in
+it cannot say anything useful about a harness with one, and a rule that fires on every
+healthy production run is an alert nobody will read by the second week. The canary avoids it
+by comparing against a baseline recorded through the same provider path rather than against
+the mock number; the load-test rule has not been recalibrated, and should be before it is
+pointed at anything real.
+
 ## Evidence tables
 
 | Dimension | Rate | 95% CI |

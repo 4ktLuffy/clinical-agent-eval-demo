@@ -1,0 +1,57 @@
+{
+  "ceiling_ms": 50.0,
+  "baseline_mock_p95_ms": 3.57,
+  "rule": "p95 above max(baseline p95 x 3, 50 ms floor)",
+  "models": {
+    "allam-2-7b": {
+      "p50": 271.7,
+      "p95": 388.7,
+      "fires_latency_cliff": true,
+      "tokens_per_turn": 181.2,
+      "cost_usd": 0.0,
+      "cost_note": "Groq free tier; no paid endpoint was used",
+      "turns": 279,
+      "partial": false
+    },
+    "groq/compound-mini": {
+      "p50": 1051.7,
+      "p95": 2915.9,
+      "fires_latency_cliff": true,
+      "tokens_per_turn": 901.8,
+      "cost_usd": 0.0,
+      "cost_note": "Groq free tier; no paid endpoint was used",
+      "turns": 19,
+      "partial": true
+    },
+    "openai/gpt-oss-120b": {
+      "p50": 699.7,
+      "p95": 1054.0,
+      "fires_latency_cliff": true,
+      "tokens_per_turn": 380.5,
+      "cost_usd": 0.0,
+      "cost_note": "Groq free tier; no paid endpoint was used",
+      "turns": 58,
+      "partial": true
+    },
+    "openai/gpt-oss-safeguard-20b": {
+      "p50": 553.0,
+      "p95": 776.6,
+      "fires_latency_cliff": true,
+      "tokens_per_turn": 464.0,
+      "cost_usd": 0.0,
+      "cost_note": "Groq free tier; no paid endpoint was used",
+      "turns": 201,
+      "partial": true
+    },
+    "qwen/qwen3.8-27b": {
+      "p50": 258.1,
+      "p95": 592.4,
+      "fires_latency_cliff": true,
+      "tokens_per_turn": 151.6,
+      "cost_usd": 0.0,
+      "cost_note": "Groq free tier; no paid endpoint was used",
+      "turns": 279,
+      "partial": false
+    }
+  }
+}
