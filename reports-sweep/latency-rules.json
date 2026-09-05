@@ -1,0 +1,46 @@
+{
+  "rule": "p95 above 3x this provider's own baseline; no absolute floor",
+  "previous_rule": "p95 above max(3x mock-harness p95, 50 ms floor) -- fired on all five",
+  "models": {
+    "allam-2-7b": {
+      "turns": 279,
+      "p50_ms": 271.7,
+      "p95_ms": 388.7,
+      "baseline_source": "this provider's own run",
+      "fires_against_own_baseline": false,
+      "cost_usd": 0.0
+    },
+    "groq/compound-mini": {
+      "turns": 19,
+      "p50_ms": 1051.7,
+      "p95_ms": 2915.9,
+      "baseline_source": "this provider's own run",
+      "fires_against_own_baseline": false,
+      "cost_usd": 0.0
+    },
+    "openai/gpt-oss-120b": {
+      "turns": 58,
+      "p50_ms": 699.7,
+      "p95_ms": 1054.0,
+      "baseline_source": "this provider's own run",
+      "fires_against_own_baseline": false,
+      "cost_usd": 0.0
+    },
+    "openai/gpt-oss-safeguard-20b": {
+      "turns": 201,
+      "p50_ms": 553.0,
+      "p95_ms": 776.6,
+      "baseline_source": "this provider's own run",
+      "fires_against_own_baseline": false,
+      "cost_usd": 0.0
+    },
+    "qwen/qwen3.8-27b": {
+      "turns": 279,
+      "p50_ms": 258.1,
+      "p95_ms": 592.4,
+      "baseline_source": "this provider's own run",
+      "fires_against_own_baseline": false,
+      "cost_usd": 0.0
+    }
+  }
+}

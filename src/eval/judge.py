@@ -12,6 +12,8 @@ import os
 import re
 from dataclasses import dataclass
 
+from clinical_agent.llm import ENV_API_KEY, ENV_BASE_URL, ENV_MODEL, parse_model_spec
+
 FAITHFUL_AT = 0.6
 _TOKEN = re.compile(r"[a-z0-9]+")
 _STOP = frozenset(
@@ -44,6 +46,10 @@ class JudgeScore:
     citation_quality: float
     faithful: bool
     rationale: str
+    # False when the model returned something unparseable. Such a turn carries no
+    # judgement, and scoring it as a confident 0.0 -- which an earlier version did --
+    # puts a crash into the calibration statistic as though it were an opinion.
+    valid: bool = True
 
 
 def _content(text: str) -> set[str]:
@@ -79,26 +85,57 @@ class RuleJudge:
 
 
 class LLMJudge:
-    def __init__(self, model: str) -> None:
+    """Judges through whichever provider EVAL_MODEL names, so the judge can be a different
+    model from the agent -- which is the point of the second-reader row."""
+
+    def __init__(self, model: str, provider: str = "anthropic") -> None:
         self.name = model
         self._model = model
+        self._provider = provider
         self._client = None
 
     def score(self, answer: str, context: str, citations: list[str], chunks: dict[str, str]) -> JudgeScore:
         if self._client is None:
-            import anthropic
+            if self._provider == "openai-compatible":
+                import openai
 
-            self._client = anthropic.Anthropic()
+                self._client = openai.OpenAI(
+                    base_url=os.environ.get(ENV_BASE_URL, ""),
+                    api_key=os.environ.get(ENV_API_KEY, ""),
+                )
+            else:
+                import anthropic
+
+                self._client = anthropic.Anthropic(
+                    api_key=os.environ.get("ANTHROPIC_API_KEY") or os.environ.get(ENV_API_KEY, "")
+                )
         prompt = RUBRIC.format(
             context=context or "none", citations=", ".join(citations) or "none", answer=answer
         )
         try:
-            message = self._client.messages.create(
-                model=self._model,
-                max_tokens=300,
-                messages=[{"role": "user", "content": prompt}],
-            )
-            raw = "".join(b.text for b in message.content if b.type == "text").strip()
+            if self._provider == "openai-compatible":
+                # Reasoning models spend most of a small budget on reasoning tokens and
+                # then truncate the JSON mid-object (finish_reason=length), which used to
+                # look like a judging failure rather than a budget we set too low.
+                response = self._client.chat.completions.create(
+                    model=self._model,
+                    # temperature=0 removes our own sampling as a source of drift. It does
+                    # not make the provider deterministic: batching and routing still move
+                    # the result, so a row is only claimed reproducible if a repeat run
+                    # actually reproduces it.
+                    temperature=0,
+                    max_tokens=int(os.environ.get("CLINICAL_JUDGE_MAX_TOKENS", "1200")),
+                    messages=[{"role": "user", "content": prompt}],
+                )
+                raw = (response.choices[0].message.content or "").strip()
+            else:
+                message = self._client.messages.create(
+                    model=self._model,
+                    temperature=0,
+                    max_tokens=int(os.environ.get("CLINICAL_JUDGE_MAX_TOKENS", "1200")),
+                    messages=[{"role": "user", "content": prompt}],
+                )
+                raw = "".join(b.text for b in message.content if b.type == "text").strip()
             start, end = raw.find("{"), raw.rfind("}")
             payload = json.loads(raw[start : end + 1])
             return JudgeScore(
@@ -108,12 +145,20 @@ class LLMJudge:
                 rationale=str(payload.get("rationale", ""))[:200],
             )
         except Exception as exc:
-            return JudgeScore(0.0, 0.0, False, f"judge parse failure: {type(exc).__name__}")
+            return JudgeScore(
+                0.0, 0.0, False, f"judge parse failure: {type(exc).__name__}", valid=False
+            )
 
 
 def build_judge(mode: str):
+    """The judge follows CLINICAL_JUDGE_MODEL if set, else EVAL_MODEL. Setting the first to
+    a different model from the agent is how the second-reader row gets an independent read."""
     if mode == "mock":
         return RuleJudge()
-    if mode == "real":
-        return LLMJudge(os.environ.get("CLINICAL_JUDGE_MODEL", "claude-opus-5"))
-    raise ValueError(f"unknown mode {mode!r}")
+    if mode != "real":
+        raise ValueError(f"unknown mode {mode!r}")
+    spec = (os.environ.get("CLINICAL_JUDGE_MODEL")
+            or os.environ.get(ENV_MODEL)
+            or "claude-opus-5")
+    provider, model = parse_model_spec(spec)
+    return LLMJudge(model, provider)

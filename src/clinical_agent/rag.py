@@ -15,6 +15,18 @@ from math import sqrt
 from pathlib import Path
 
 DIM = 512
+# Per backend: the hashed space and the MiniLM space put unrelated text at very different
+# cosine values, so one number cannot serve both. Each is derived by the same rule, in
+# scripts/retrieval_threshold.py, and neither is fitted to any held-out set.
+_RETRIEVAL_THRESHOLDS = {"hashed": 0.18, "minilm": 0.405627}
+
+
+def retrieval_threshold() -> float:
+    from clinical_agent.embeddings import backend
+
+    return _RETRIEVAL_THRESHOLDS[backend()]
+
+
 RETRIEVAL_THRESHOLD = 0.18
 
 _STOPWORDS = frozenset(
@@ -47,7 +59,7 @@ def _tokens(text: str) -> list[str]:
     return [t for t in _TOKEN.findall(text.lower()) if t not in _STOPWORDS and len(t) > 1]
 
 
-def embed(text: str) -> list[float]:
+def _embed_hashed(text: str) -> list[float]:
     """Hashed bag of words, L2-normalised. Cosine similarity is then a dot product."""
     vec = [0.0] * DIM
     for token in _tokens(text):
@@ -56,6 +68,20 @@ def embed(text: str) -> list[float]:
     if norm == 0.0:
         return vec
     return [v / norm for v in vec]
+
+
+def embed(text: str) -> list[float]:
+    """Whichever backend CLINICAL_EMBEDDINGS names. Both are L2-normalised, so cosine is
+    a dot product either way and every caller is unchanged.
+
+    The two spaces are not comparable: a threshold calibrated on one is meaningless on the
+    other, which is why RETRIEVAL_THRESHOLD and the semantic stage's threshold are both
+    resolved per backend rather than being single constants."""
+    from clinical_agent.embeddings import backend, encode
+
+    if backend() == "minilm":
+        return list(encode(text))
+    return _embed_hashed(text)
 
 
 def _cosine(a: list[float], b: list[float]) -> float:

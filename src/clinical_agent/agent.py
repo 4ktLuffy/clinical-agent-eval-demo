@@ -13,7 +13,7 @@ from typing import Any
 
 from clinical_agent.guardrail import GuardrailDecision, classify
 from clinical_agent.llm import LLMClient
-from clinical_agent.rag import RETRIEVAL_THRESHOLD, Corpus, Retrieved
+from clinical_agent.rag import Corpus, Retrieved, retrieval_threshold
 
 PROMPT = """You are a healthcare support agent on a patient call. Answer only from the
 context below. If the context does not answer the question, say so plainly.
@@ -68,7 +68,7 @@ class Agent:
         retrieved: list[Retrieved] = self._corpus.retrieve(turn["text"], k=4)
         stage_ms["retrieve"] = (time.perf_counter() - t0) * 1000
         top_score = retrieved[0].score if retrieved else 0.0
-        kept = [r for r in retrieved if r.score >= RETRIEVAL_THRESHOLD]
+        kept = [r for r in retrieved if r.score >= retrieval_threshold()]
 
         t0 = time.perf_counter()
         tool_error: str | None = None

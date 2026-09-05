@@ -1,0 +1,52 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Load and detector report</title>
+<style>
+  body { font: 14px/1.5 -apple-system, system-ui, sans-serif; margin: 2rem auto; max-width: 1100px;
+         color: #1a1a1a; background: #fff; }
+  h1 { font-size: 1.4rem; } h2 { font-size: 1.1rem; margin-top: 2rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ddd; padding: .4rem .55rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  tr.ok td:last-child { color: #0a6b2e; font-weight: 600; }
+  tr.bad td:last-child { color: #a11; font-weight: 600; }
+  code { background: #f3f3f3; padding: 0 .25rem; }
+  .note { color: #555; }
+</style>
+<h1>Load and detector report</h1>
+<p class="note">
+  2000 concurrent synthetic sessions per scenario, concurrency
+  250, mock model path, generated 2026-09-03.
+  Every session is synthetic and no real record is involved. Latency here is harness and
+  simulated downstream time, not model time.
+</p>
+<h2>Scenarios</h2>
+<p class="note">Each row injects one fault. The detector named in <em>expected</em> must fire;
+the baseline row must stay quiet. A row is PASS only if that held.</p>
+<table>
+<tr><th>Fault</th><th>Turns</th><th>p50 ms</th><th>p95 ms</th><th>p99 ms</th>
+    <th>Refusal</th><th>Tool errors</th><th>Expected</th><th>Fired</th><th>Verdict</th></tr>
+<tr class='ok'><td><code>baseline</code></td><td>12090</td><td>105.62</td><td>118.56</td><td>149.21</td><td>23.5%</td><td>0.0%</td><td><em>none</em></td><td><em>quiet</em></td><td>PASS</td></tr>
+<tr class='ok'><td><code>tool_error_spike</code></td><td>12090</td><td>105.33</td><td>109.14</td><td>112.43</td><td>23.5%</td><td>35.4%</td><td>tool_error_rate_spike</td><td><code>tool_error_rate_spike</code></td><td>PASS</td></tr>
+<tr class='ok'><td><code>latency_cliff</code></td><td>12090</td><td>106.06</td><td>604.22</td><td>605.16</td><td>23.5%</td><td>0.0%</td><td>latency_cliff</td><td><code>latency_cliff</code></td><td>PASS</td></tr>
+<tr class='ok'><td><code>guardrail_silently_off</code></td><td>12090</td><td>104.61</td><td>111.41</td><td>115.95</td><td>17.6%</td><td>0.0%</td><td>refusal_rate_drift</td><td><code>refusal_rate_drift</code></td><td>PASS</td></tr>
+<tr class='ok'><td><code>cross_patient_probe</code></td><td>12090</td><td>105.20</td><td>111.46</td><td>125.02</td><td>23.5%</td><td>0.0%</td><td>cross_patient_attempt</td><td><code>cross_patient_attempt</code></td><td>PASS</td></tr>
+</table>
+<h2>Alerts raised</h2>
+<table>
+<tr><th>Fault</th><th>Detector</th><th>Alert</th></tr>
+<tr><td><code>tool_error_spike</code></td><td><code>tool_error_rate_spike</code></td><td>tool_error_rate_spike: 35.4% of 4000 tool calls failed</td></tr>
+<tr><td><code>latency_cliff</code></td><td><code>latency_cliff</code></td><td>latency_cliff: tail p95 607ms is over 3x the opening p95 110ms</td></tr>
+<tr><td><code>guardrail_silently_off</code></td><td><code>refusal_rate_drift</code></td><td>refusal_rate_drift: last 200 turns at 0.0% vs run baseline 22.0%</td></tr>
+<tr><td><code>cross_patient_probe</code></td><td><code>cross_patient_attempt</code></td><td>cross_patient_attempt: 50 refused scope violation(s) in sessions s00119, s00155, s00175, s00215, s00248</td></tr>
+</table>
+<h2>Detector thresholds</h2>
+<p class="note">These rules are ours. No vendor publishes a rule set; only the outcome.</p>
+<table>
+<tr><th>Setting</th><th>Value</th></tr>
+<tr><td><code>window</code></td><td>200</td></tr>
+<tr><td><code>refusal_drift</code></td><td>0.15</td></tr>
+<tr><td><code>tool_error_rate</code></td><td>0.05</td></tr>
+<tr><td><code>latency_cliff_multiple</code></td><td>3.0</td></tr>
+<tr><td><code>latency_floor_ms</code></td><td>5.0</td></tr>
+</table>

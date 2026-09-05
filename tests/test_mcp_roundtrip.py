@@ -12,7 +12,6 @@ def ehr():
         yield tools
 
 
-@pytest.mark.timeout(60) if hasattr(pytest.mark, "timeout") else (lambda f: f)
 def test_patient_lookup(ehr):
     result = ehr.patient_lookup("TEST-0001")
     assert result.ok

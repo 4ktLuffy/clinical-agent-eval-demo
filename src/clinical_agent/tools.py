@@ -34,6 +34,11 @@ def _src_dir() -> Path:
 
 
 class EHRTools:
+    """Sync facade over the fixture EHR server (offline path)."""
+
+    module = "clinical_agent.ehr_server"
+    extra_env: dict[str, str] = {}
+
     def __init__(self) -> None:
         self._loop: asyncio.AbstractEventLoop | None = None
         self._thread: threading.Thread | None = None
@@ -69,9 +74,10 @@ class EHRTools:
         env["PYTHONPATH"] = os.pathsep.join(
             [str(_src_dir()), env.get("PYTHONPATH", "")]
         ).strip(os.pathsep)
+        env.update(self.extra_env)
         params = StdioServerParameters(
             command=sys.executable,
-            args=["-m", "clinical_agent.ehr_server"],
+            args=["-m", self.module],
             env=env,
         )
         self._stack = AsyncExitStack()
@@ -113,5 +119,39 @@ class EHRTools:
 
     def call(self, name: str, args: dict) -> ToolResult:
         if name not in {"patient_lookup", "list_slots", "book_appointment"}:
+            return ToolResult(ok=False, data=None, error=f"unknown tool {name}")
+        return self._invoke(name, args)
+
+
+class ScopedFhirTools(EHRTools):
+    """Sync facade over the patient-scoped FHIR MCP server.
+
+    The patient scope is handed to the subprocess as environment, so the server process
+    physically cannot address another patient: no tool takes a patient id.
+    """
+
+    module = "clinical_agent.fhir_mcp_server"
+    TOOLS = (
+        "patient_lookup",
+        "upcoming_appointments",
+        "active_medications",
+        "recent_encounters",
+        "schedule_appointment",
+        "cancel_appointment",
+    )
+
+    def __init__(self, fhir_url: str, patient_id: str, session_id: str, actor: str = "agent") -> None:
+        super().__init__()
+        self.extra_env = {
+            "CLINICAL_AGENT_FHIR_URL": fhir_url,
+            "CLINICAL_AGENT_PATIENT_ID": patient_id,
+            "CLINICAL_AGENT_SESSION_ID": session_id,
+            "CLINICAL_AGENT_ACTOR": actor,
+        }
+        self.patient_id = patient_id
+        self.session_id = session_id
+
+    def call(self, name: str, args: dict) -> ToolResult:
+        if name not in self.TOOLS:
             return ToolResult(ok=False, data=None, error=f"unknown tool {name}")
         return self._invoke(name, args)

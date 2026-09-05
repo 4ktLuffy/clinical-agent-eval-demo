@@ -1,0 +1,29 @@
+{
+  "openai/gpt-oss-120b": [
+    {
+      "date": "[DATE]",
+      "turns_now": 112,
+      "target": 279,
+      "complete": false,
+      "stopped": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kkts7"
+    }
+  ],
+  "openai/gpt-oss-safeguard-20b": [
+    {
+      "date": "[DATE]",
+      "turns_now": 248,
+      "target": 279,
+      "complete": false,
+      "stopped": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-safeguard-20b` in organization `or"
+    }
+  ],
+  "groq/compound-mini": [
+    {
+      "date": "[DATE]",
+      "turns_now": 20,
+      "target": 279,
+      "complete": false,
+      "stopped": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kkts7"
+    }
+  ]
+}

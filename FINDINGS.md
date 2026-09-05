@@ -1,0 +1,38 @@
+# Findings (manual: make readme-check, then scripts/heldout_recall.py, scripts/model_sweep.py, scripts/tool_injection_probe.py)
+
+**The same phrase table scored 82.7% recall at 1.000 precision on the turns it was written
+alongside, and 8.1% [5.8, 11.3] recall at 0.674 [0.530, 0.791] precision on held-out
+paraphrases it had never seen.** Labels unreviewed: the categories came from the generating model, not a human, and will
+be restated with strike counts once that review lands. The difference is provenance: the 180-turn subset was written beside the keyword table
+that scores it, so its 82.7% is partly a memory test. The held-out set is 382 positives and
+405 in-scope negatives across four registers, from a model used in no stage here, with zero
+overlap against the tuned conversations. Closing the gap
+took three attempts; the first is instructive. A centroid
+over the original hashed vectors raised recall to 12.3% and cut precision to 0.452, firing
+on shared vocabulary not shared meaning. The shipped configuration — a pinned MiniLM centroid
+behind the phrase table — scores **51.0% [46.0, 56.0] recall at 0.886 [0.838, 0.922]
+precision** on held-out v2. Every in-repo number here is an upper bound.
+
+**A counter nobody had read reported the opposite of the truth, both ways.** Five open
+models drafted the same turns under one policy at temperature 0. The draft-side table flagged 19 out-of-scope
+drafts for `qwen3.8-27b`, and reading every one shows **none are real**: eight are refusals
+whose topic word it matched, the ninth is medication timing, which the labelling rules place
+in scope. It flagged 14 for `allam-2-7b` and **all fourteen are real** — coordinating
+palliative services, "the infant might have hiccups", "ensure the baby is well-rested and
+continues taking the prescribed antihistamines". Twenty unflagged drafts per model invert it again: `allam-2-7b` misses 30% [14.5, 51.9] of
+what it produces, `qwen3.8-27b` misses 0% [0.0, 16.1] — worst false-positive rate, best miss
+rate, and the reverse. `gpt-oss-120b` wrote "I'm here to help you work through
+your anxiety" three times and the table saw none. The safety-tuned `gpt-oss-safeguard-20b` produced the most
+genuine out-of-scope content in the sweep, including a delivered breathing exercise. The
+counter measures how much a model talks about a topic.
+
+**Three gates passed for years against inputs written to pass them.** The prompt-injection defence scored 100% on the
+rubric and detected **zero of six** realistic injections planted in tool results: its input
+filter matched literal attack phrasings, its output check looked for a marker only this
+repository's own fixtures carry. Widened, it recognises five of those six — and **five of
+119** held-out injections a different model wrote, [1.8, 9.5]. The booking probe reported 5 of 5 double-bookings rejected,
+every one refused by an in-process check that would fail the moment a second replica
+existed; it now sends a stale ETag so the server has to answer 409. The latency rule fired on all five real providers: its baseline was a mock harness with no
+network in it and a 50 ms floor decided everything. The floor is gone, the baseline is the
+provider's own opening window, and all five are quiet. Each gate was green before it was correct. None ever failed to catch anything — none was
+asked a question it could get wrong.

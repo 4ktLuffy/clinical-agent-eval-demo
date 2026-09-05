@@ -91,3 +91,27 @@ def scored(pred: Sequence[bool], exp: Sequence[bool]) -> dict:
         "recall_ci": wilson(c["tp"], c["tp"] + c["fn"]),
         "f1": f1,
     }
+
+
+def kappa_interval(a: Sequence[object], b: Sequence[object], resamples: int = 2000,
+                   seed: int = 20260904) -> tuple[float, float]:
+    """Percentile bootstrap interval for Cohen's kappa.
+
+    At n=11 a point estimate of kappa is close to meaningless on its own -- the same judge
+    on the same turns produced -0.10 and -0.14 on two runs -- so the interval is reported
+    beside it. Paired resampling with replacement over the item indices.
+    """
+    import random
+
+    if len(a) != len(b) or len(a) < 3:
+        return (-1.0, 1.0)
+    rng = random.Random(seed)
+    n = len(a)
+    draws = []
+    for _ in range(resamples):
+        idx = [rng.randrange(n) for _ in range(n)]
+        draws.append(cohens_kappa([a[i] for i in idx], [b[i] for i in idx]))
+    draws.sort()
+    lo = draws[int(0.025 * len(draws))]
+    hi = draws[min(len(draws) - 1, int(0.975 * len(draws)))]
+    return (lo, hi)

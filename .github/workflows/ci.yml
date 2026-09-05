@@ -7,6 +7,35 @@ on:
 jobs:
   checks:
     runs-on: ubuntu-latest
+    # A real FHIR server, so the patient-scoping tests run here instead of skipping.
+    # The dataset is the committed 10-patient fixture, not a 188 MB Synthea download.
+    services:
+      db:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: hapi
+          POSTGRES_USER: hapi
+          POSTGRES_PASSWORD: hapi
+        options: >-
+          --health-cmd "pg_isready -U hapi -d hapi"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 30
+      fhir:
+        image: hapiproject/hapi:latest
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/hapi
+          SPRING_DATASOURCE_USERNAME: hapi
+          SPRING_DATASOURCE_PASSWORD: hapi
+          SPRING_DATASOURCE_DRIVERCLASSNAME: org.postgresql.Driver
+          SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+          HAPI_FHIR_FHIR_VERSION: R4
+          HAPI_FHIR_ALLOW_EXTERNAL_REFERENCES: "true"
+          JAVA_OPTS: "-Xmx2500m"
+        ports:
+          - 8080:8080
+    env:
+      CLINICAL_AGENT_FHIR_URL: http://localhost:8080/fhir
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -16,8 +45,28 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
+      - name: Cache the pinned embedding weights
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-all-MiniLM-L6-v2-1110a243fdf4706b3f48f1d95db1a4f5529b4d41
+      - name: Fetch the pinned embedding weights
+        run: python -c "from clinical_agent.embeddings import encode; encode('warm the cache')"
+        env:
+          PYTHONPATH: src
+      - name: Wait for FHIR
+        run: |
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:8080/fhir/metadata > /dev/null && echo "FHIR ready after $((i*5))s" && exit 0
+            sleep 5
+          done
+          echo "FHIR never became ready"; exit 1
+      - name: Load the committed fixture
+        run: make fixture-load PY=python
       - name: PHI lint
         run: python scripts/phi_lint.py
+      - name: Quote check
+        run: python scripts/verify_quotes.py
       - name: Tests
         run: pytest -q
       - name: Eval, mock path
@@ -30,6 +79,41 @@ jobs:
           PYTHONPATH: src
       - name: Demo
         run: ./scripts/demo.sh
+      - name: Conversation eval and per-guard mutation
+        run: python -m eval.conversation_run
+        env:
+          PYTHONPATH: src
+      - name: Replay gate
+        run: python -m eval.replay
+        env:
+          PYTHONPATH: src
+      - name: Load test and detector proof
+        # Smaller than the documented run, so it writes elsewhere rather than
+        # overwriting the committed artifact the README cites.
+        run: python -m eval.loadtest --sessions 400 --concurrency 100 --out reports-ci
+        env:
+          PYTHONPATH: src
+      - name: Live demo with audit chain verification
+        run: make demo PY=python
+      - name: Render the scorecard
+        run: python scripts/render_scorecard.py
+        env:
+          PYTHONPATH: src
+      - name: Every number diffed or declared manual
+        run: python scripts/number_audit.py
+        env:
+          PYTHONPATH: src
+      - name: README numbers regenerated and diffed
+        run: make readme-check PY=python
+      - name: No skipped tests
+        run: |
+          python -m pytest -q 2>&1 | tee /tmp/pytest.txt
+          if grep -qE "[0-9]+ skipped" /tmp/pytest.txt; then
+            echo "tests were skipped; the live FHIR service should make that impossible."
+            echo "Which ones:"
+            python -m pytest -q -rs 2>&1 | grep -E "^SKIPPED" || true
+            exit 1
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: reports-mock
@@ -51,6 +135,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev,real]"
+      - name: Cache the pinned embedding weights
+        if: steps.key.outputs.present == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-all-MiniLM-L6-v2-1110a243fdf4706b3f48f1d95db1a4f5529b4d41
+      - name: Fetch the pinned embedding weights
+        if: steps.key.outputs.present == 'true'
+        run: python -c "from clinical_agent.embeddings import encode; encode('warm the cache')"
+        env:
+          PYTHONPATH: src
       - name: Eval, real model
         if: steps.key.outputs.present == 'true'
         run: python -m eval.run --model real --out reports-real

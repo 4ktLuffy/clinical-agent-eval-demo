@@ -1,0 +1,4 @@
+{
+  "openai/gpt-oss-20b": "cannot be relied on to emit a closed answer: finish_reason=length with empty content at 1200/2500/4000 tokens, still empty at 7000 after 6998 reasoning tokens",
+  "qwen/qwen3.6-27b": "spends a whole 1000-token/minute output allowance on an unclosed reasoning block when asked for a list"
+}

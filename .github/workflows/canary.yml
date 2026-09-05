@@ -1,0 +1,52 @@
+name: canary
+
+# Daily replay of a fixed 20-turn set against the live provider. Commits nothing: it
+# uploads the diff and fails loudly. A canary that writes to the repository would make
+# every drift look like an intentional change the next morning.
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for a key
+        id: key
+        run: echo "present=${{ secrets.GROQ_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-python@v5
+        if: steps.key.outputs.present == 'true'
+        with:
+          python-version: "3.12"
+      - name: Install
+        if: steps.key.outputs.present == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,real]"
+      - name: Cache the pinned embedding weights
+        if: steps.key.outputs.present == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-all-MiniLM-L6-v2-1110a243fdf4706b3f48f1d95db1a4f5529b4d41
+      - name: Canary
+        if: steps.key.outputs.present == 'true'
+        run: python scripts/canary.py
+        env:
+          PYTHONPATH: src
+          CANARY_MODEL: ${{ vars.CANARY_MODEL || 'openai/gpt-oss-120b' }}
+          EVAL_MODEL_BASE_URL: https://api.groq.com/openai/v1
+          EVAL_MODEL_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      - name: No key leaked into the canary output
+        if: always() && steps.key.outputs.present == 'true'
+        run: python -m pytest tests/test_no_key_leak.py -q
+        env:
+          PYTHONPATH: src
+          EVAL_MODEL_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.key.outputs.present == 'true'
+        with:
+          name: canary-diff
+          path: reports-canary/

@@ -1,0 +1,115 @@
+{
+  "sessions": 2000,
+  "concurrency": 250,
+  "run_date": "2026-09-03",
+  "detector_config": {
+    "window": 200,
+    "refusal_drift": 0.15,
+    "tool_error_rate": 0.05,
+    "latency_cliff_multiple": 3.0,
+    "latency_floor_ms": 5.0
+  },
+  "scenarios": [
+    {
+      "fault": "baseline",
+      "wall_s": 5.365900249998958,
+      "summary": {
+        "turns": 12090,
+        "p50_ms": 105.62241700063169,
+        "p95_ms": 118.55733369975493,
+        "p99_ms": 149.2068189874044,
+        "tool_calls": 4000,
+        "tool_error_rate": 0.0,
+        "refusal_rate": 0.23490488006617039,
+        "scope_violations": 0
+      },
+      "alerts": {},
+      "detectors_fired": [],
+      "expected_detector": null
+    },
+    {
+      "fault": "tool_error_spike",
+      "wall_s": 5.246279332997801,
+      "summary": {
+        "turns": 12090,
+        "p50_ms": 105.32552099903114,
+        "p95_ms": 109.14044999972248,
+        "p99_ms": 112.42919837182853,
+        "tool_calls": 4000,
+        "tool_error_rate": 0.35425,
+        "refusal_rate": 0.23490488006617039,
+        "scope_violations": 0
+      },
+      "alerts": {
+        "tool_error_rate_spike": "tool_error_rate_spike: 35.4% of 4000 tool calls failed"
+      },
+      "detectors_fired": [
+        "tool_error_rate_spike"
+      ],
+      "expected_detector": "tool_error_rate_spike"
+    },
+    {
+      "fault": "latency_cliff",
+      "wall_s": 13.515697667000495,
+      "summary": {
+        "turns": 12090,
+        "p50_ms": 106.05870799918193,
+        "p95_ms": 604.2172703508186,
+        "p99_ms": 605.1645412505968,
+        "tool_calls": 4000,
+        "tool_error_rate": 0.0,
+        "refusal_rate": 0.23490488006617039,
+        "scope_violations": 0
+      },
+      "alerts": {
+        "latency_cliff": "latency_cliff: tail p95 607ms is over 3x the opening p95 110ms"
+      },
+      "detectors_fired": [
+        "latency_cliff"
+      ],
+      "expected_detector": "latency_cliff"
+    },
+    {
+      "fault": "guardrail_silently_off",
+      "wall_s": 5.182231958002376,
+      "summary": {
+        "turns": 12090,
+        "p50_ms": 104.61447899979248,
+        "p95_ms": 111.4102873492811,
+        "p99_ms": 115.95472186214465,
+        "tool_calls": 4000,
+        "tool_error_rate": 0.0,
+        "refusal_rate": 0.176095947063689,
+        "scope_violations": 0
+      },
+      "alerts": {
+        "refusal_rate_drift": "refusal_rate_drift: last 200 turns at 0.0% vs run baseline 22.0%"
+      },
+      "detectors_fired": [
+        "refusal_rate_drift"
+      ],
+      "expected_detector": "refusal_rate_drift"
+    },
+    {
+      "fault": "cross_patient_probe",
+      "wall_s": 5.2667995000010706,
+      "summary": {
+        "turns": 12090,
+        "p50_ms": 105.20218750025379,
+        "p95_ms": 111.45902064799884,
+        "p99_ms": 125.02132087269285,
+        "tool_calls": 4000,
+        "tool_error_rate": 0.0,
+        "refusal_rate": 0.23490488006617039,
+        "scope_violations": 50
+      },
+      "alerts": {
+        "cross_patient_attempt": "cross_patient_attempt: 50 refused scope violation(s) in sessions s00119, s00155, s00175, s00215, s00248"
+      },
+      "detectors_fired": [
+        "cross_patient_attempt"
+      ],
+      "expected_detector": "cross_patient_attempt"
+    }
+  ]
+}

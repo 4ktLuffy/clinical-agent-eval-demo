@@ -27,7 +27,7 @@ from clinical_agent.telemetry import (
 )
 from clinical_agent.tools import EHRTools
 from eval.judge import build_judge
-from eval.stats import agreement, bucket, cohens_kappa, scored
+from eval.stats import agreement, bucket, cohens_kappa, kappa_interval, scored
 
 ROOT = Path(__file__).resolve().parents[2]
 STAGES = ("retrieve", "tool", "draft", "guardrail")
@@ -55,17 +55,49 @@ HEADER = (
 )
 
 
+def load_labels(path: Path) -> dict[str, tuple[float | None, float | None]]:
+    """Hand labels for the open-ended turns, as `turn_id,faithfulness,citation_quality`.
+
+    A blank cell is None, not zero: an unfilled sheet must make kappa refuse to compute
+    rather than quietly score the judge against a column of zeros.
+    """
+    import csv
+
+    out: dict[str, tuple[float | None, float | None]] = {}
+    # Comment lines are stripped before parsing: csv.DictReader takes its header from the
+    # first line it is given, so a leading comment would become the fieldnames and every
+    # lookup would silently return None -- an unreadable sheet that looks like a blank one.
+    lines = [ln for ln in path.read_text(encoding="utf-8").splitlines()
+             if ln.strip() and not ln.lstrip().startswith("#")]
+    reader = csv.DictReader(lines)
+    if reader.fieldnames is None or "turn_id" not in reader.fieldnames:
+        raise ValueError(f"{path} has no turn_id column; found {reader.fieldnames}")
+    for row in reader:
+        turn_id = (row.get("turn_id") or "").strip()
+        if not turn_id:
+            continue
+
+        def cell(name: str, _row=row) -> float | None:
+            raw = (_row.get(name) or "").strip()
+            return float(raw) if raw else None
+
+        out[turn_id] = (cell("faithfulness"), cell("citation_quality"))
+    return out
+
+
 def evaluate(
     turns: list[dict],
     mode: str,
     guardrail: bool,
     out_dir: Path,
     sample_rate: float,
+    judge_mode: str | None = None,
+    labels_path: Path | None = None,
 ) -> dict[str, Any]:
     scripts = {t["turn_id"]: t["mock_draft"] for t in turns}
     corpus = Corpus.load(ROOT / "data" / "corpus")
     client = build_client(mode, scripts)
-    judge = build_judge(mode)
+    judge = build_judge(judge_mode or mode)
     rule_judge = build_judge("mock")
 
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -100,6 +132,7 @@ def evaluate(
         [t["labels"]["operational_escalation"] for t in turns],
     )
 
+    hand_labels = load_labels(labels_path) if labels_path else None
     judged, judge_scores, rule_scores, label_faith, label_cite = [], [], [], [], []
     for result, turn in zip(results, turns):
         # Judge only the open-ended, non-safety output: turns the guardrail left alone,
@@ -114,8 +147,13 @@ def evaluate(
         rule_scores.append(
             rule_judge.score(result.draft, result.context, list(result.citations), result.chunk_texts)
         )
-        label_faith.append(turn["labels"]["faithfulness_label"])
-        label_cite.append(turn["labels"]["citation_quality_label"])
+        if hand_labels is not None:
+            hand = hand_labels.get(turn["turn_id"], (None, None))
+            label_faith.append(hand[0])
+            label_cite.append(hand[1])
+        else:
+            label_faith.append(turn["labels"]["faithfulness_label"])
+            label_cite.append(turn["labels"]["citation_quality_label"])
 
     mean = lambda xs: sum(xs) / len(xs) if xs else 0.0
     faithfulness = mean([s.faithfulness for s in judge_scores])
@@ -125,27 +163,69 @@ def evaluate(
         / max(1, sum(1 for r in results if r.used_corpus))
     )
 
-    # Calibration is the judge against labels a person assigned by reading each answer
-    # next to the chunks it retrieved. Inter-judge agreement is a different, weaker thing
-    # and is never reported as calibration.
+    # Calibration is the judge against reference labels assigned by an AI reader -- not a
+    # clinician, and not the author -- reading each answer next to the chunks it retrieved.
+    # Those labels came from the same model that wrote the scripted drafts and designed the
+    # rule judge, so they are provisional rather than an independent reference.
+    # Inter-judge agreement is a different, weaker thing and is never reported as calibration.
+    # Turns where the judge returned nothing parseable carry no opinion and are excluded
+    # from calibration, then reported separately. Counting a crash as a score of 0.0 made
+    # kappa look worse than the judge actually was.
+    unparseable = [t for t, s in zip(judged, judge_scores) if not getattr(s, "valid", True)]
+    if unparseable:
+        keep = [i for i, s in enumerate(judge_scores) if getattr(s, "valid", True)]
+        judged = [judged[i] for i in keep]
+        judge_scores = [judge_scores[i] for i in keep]
+        rule_scores = [rule_scores[i] for i in keep]
+        label_faith = [label_faith[i] for i in keep]
+        label_cite = [label_cite[i] for i in keep]
+
     calibration = inter_judge = None
     if judged and all(x is not None for x in label_faith):
         jf = [bucket(s.faithfulness) for s in judge_scores]
         jc = [bucket(s.citation_quality) for s in judge_scores]
+        # Per-turn detail, not just the aggregate. A kappa of 0.00 says the judge is at
+        # chance; it does not say which answers it read differently from the label, and that
+        # is the part a person needs in order to decide who was right.
+        disagreements = [
+            {
+                "turn_id": turn_id,
+                "judge_faithfulness_raw": round(score.faithfulness, 3),
+                "judge_faithfulness_bucketed": bucket(score.faithfulness),
+                "label_faithfulness": label_f,
+                "delta": round(abs(bucket(score.faithfulness) - label_f), 3),
+                "judge_citation_bucketed": bucket(score.citation_quality),
+                "label_citation": label_c,
+                "citation_delta": round(abs(bucket(score.citation_quality) - label_c), 3),
+                "judge_rationale": score.rationale[:200],
+            }
+            for turn_id, score, label_f, label_c in zip(
+                judged, judge_scores, label_faith, label_cite
+            )
+        ]
         calibration = {
             "judge": judge.name,
             "n": len(judged),
+            "label_source": str(labels_path) if labels_path else "ai-reader (data/turns.json)",
             "run_date": date.today().isoformat(),
+            "unparseable_turns": unparseable,
+            "per_turn": disagreements,
+            "over_half_point": [d for d in disagreements
+                                if d["delta"] > 0.5 or d["citation_delta"] > 0.5],
             "faithfulness": {
                 "kappa": cohens_kappa(jf, label_faith),
+                "kappa_ci": kappa_interval(jf, label_faith),
                 "agreement": agreement(jf, label_faith),
             },
             "citation_quality": {
                 "kappa": cohens_kappa(jc, label_cite),
+                "kappa_ci": kappa_interval(jc, label_cite),
                 "agreement": agreement(jc, label_cite),
             },
         }
-        if mode == "real":
+        # Gated on the judge, not the drafting client: --judge real runs an LLM judge
+        # over mock drafts, and that row still has a rule judge to disagree with.
+        if (judge_mode or mode) == "real":
             rf = [bucket(s.faithfulness) for s in rule_scores]
             rc = [bucket(s.citation_quality) for s in rule_scores]
             inter_judge = {
@@ -275,20 +355,43 @@ def render(r: dict, turns: list[dict]) -> str:
             "",
             "### Judge calibration",
             "",
-            f"Judge `{c['judge']}` against labels a person assigned by reading each answer "
-            f"next to its retrieved chunks, on the 0 / 0.5 / 1 scale. n={c['n']}, run "
-            f"{c['run_date']}.",
+            f"Judge `{c['judge']}` against reference labels assigned by an AI reader -- not "
+            f"a clinician, and not the author -- reading each answer next to its retrieved "
+            f"chunks, on the 0 / 0.5 / 1 scale. n={c['n']}, run {c['run_date']}."
+            + (f" {len(c['unparseable_turns'])} turn(s) excluded because the judge returned "
+               f"unparseable output: {', '.join(c['unparseable_turns'])}."
+               if c.get("unparseable_turns") else ""),
             "",
-            "| Dimension | Cohen's kappa | Raw agreement |",
+            "These labels are provisional: they came from the same model that wrote the "
+            "scripted drafts and designed the rule judge, so they are not an independent "
+            "reference. See NOTES/labeling-sheet.csv for a blank sheet for a human pass.",
+            "",
+            "| Dimension | Cohen's kappa (95% bootstrap) | Raw agreement |",
             "|---|---:|---:|",
-            f"| faithfulness | {c['faithfulness']['kappa']:.2f} | "
+            f"| faithfulness | {c['faithfulness']['kappa']:.2f} "
+            f"[{c['faithfulness'].get('kappa_ci', (0, 0))[0]:.2f}, "
+            f"{c['faithfulness'].get('kappa_ci', (0, 0))[1]:.2f}] | "
             f"{_pct(c['faithfulness']['agreement'])} |",
-            f"| citation quality | {c['citation_quality']['kappa']:.2f} | "
+            f"| citation quality | {c['citation_quality']['kappa']:.2f} "
+            f"[{c['citation_quality'].get('kappa_ci', (0, 0))[0]:.2f}, "
+            f"{c['citation_quality'].get('kappa_ci', (0, 0))[1]:.2f}] | "
             f"{_pct(c['citation_quality']['agreement'])} |",
             "",
             "n=11 and the faithfulness labels are skewed to one level, so kappa is unstable "
             "here and is worth reading next to the raw agreement rather than alone.",
         ]
+        big = c.get("over_half_point") or []
+        lines += ["", "#### Judge and label disagree by more than 0.5", ""]
+        if not big:
+            lines.append("None.")
+        else:
+            lines += ["| Turn | Judge faith | Label faith | Judge cite | Label cite | Judge rationale |",
+                      "|---|---:|---:|---:|---:|---|"]
+            lines += [
+                f"| `{d['turn_id']}` | {d['judge_faithfulness_bucketed']} | {d['label_faithfulness']} "
+                f"| {d['judge_citation_bucketed']} | {d['label_citation']} | {d['judge_rationale'][:90]} |"
+                for d in big
+            ]
     if r["inter_judge_agreement"]:
         i = r["inter_judge_agreement"]
         lines += [
@@ -317,9 +420,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="eval.run")
     parser.add_argument("--model", choices=("mock", "real"), default="mock")
     parser.add_argument("--no-guardrail", action="store_true")
+    parser.add_argument("--judge", choices=("mock", "real"), default=None,
+                        help="judge independently of the drafting client, so a judge row "
+                             "can be measured against the same drafts")
     parser.add_argument("--sample-rate", type=float, default=1.0)
     parser.add_argument("--turns", type=Path, default=ROOT / "data" / "turns.json")
     parser.add_argument("--out", type=Path, default=ROOT / "reports")
+    parser.add_argument("--labels", type=Path, default=None,
+                        help="CSV of hand labels (turn_id,faithfulness,citation_quality) "
+                             "to compute kappa against instead of the AI-reader labels")
     args = parser.parse_args(argv)
 
     turns = json.loads(args.turns.read_text(encoding="utf-8"))
@@ -327,6 +436,8 @@ def main(argv: list[str] | None = None) -> int:
         turns,
         mode=args.model,
         guardrail=not args.no_guardrail,
+        judge_mode=args.judge,
+        labels_path=args.labels,
         out_dir=args.out,
         sample_rate=args.sample_rate,
     )

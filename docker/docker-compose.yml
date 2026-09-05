@@ -1,0 +1,48 @@
+# HAPI FHIR JPA server backed by Postgres. Synthetic data only.
+#
+# The project name is explicit. Without it Compose derives the name from this file's
+# parent directory, which is "docker" in every checkout -- so a second clone silently
+# attached to the first clone's containers and database volume. Override with
+# COMPOSE_PROJECT_NAME to run two stacks side by side.
+name: ${COMPOSE_PROJECT_NAME:-clinical-agent-eval}
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: hapi
+      POSTGRES_USER: hapi
+      POSTGRES_PASSWORD: hapi
+    volumes:
+      - fhir-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hapi -d hapi"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  fhir:
+    image: hapiproject/hapi:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/hapi
+      SPRING_DATASOURCE_USERNAME: hapi
+      SPRING_DATASOURCE_PASSWORD: hapi
+      SPRING_DATASOURCE_DRIVERCLASSNAME: org.postgresql.Driver
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+      HAPI_FHIR_FHIR_VERSION: R4
+      HAPI_FHIR_ALLOW_EXTERNAL_REFERENCES: "true"
+      HAPI_FHIR_ALLOW_MULTIPLE_DELETE: "true"
+      HAPI_FHIR_BULK_EXPORT_ENABLED: "false"
+      JAVA_OPTS: "-Xmx2500m"
+    ports:
+      # Overridable so a second checkout can run alongside the first.
+      - "${FHIR_PORT:-8080}:8080"
+    # No container healthcheck: the HAPI image is distroless, so there is no shell or curl
+    # inside it to run one. Readiness is asserted from the host by `make fhir-up`, which is
+    # where a deployment would check it anyway.
+
+volumes:
+  fhir-pgdata:
