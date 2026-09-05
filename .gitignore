@@ -15,6 +15,16 @@ reports/*
 !reports/load-report.html
 !reports/load-report.json
 !reports/fhir-check.json
+# Held-out and rendered artifacts the docs quote. The sweep cannot be regenerated in CI at
+# all (hours of provider calls), so committing its summary is the only way those numbers
+# are checkable rather than merely asserted.
+!reports/heldout-recall-none.json
+!reports/heldout-recall-local.json
+!reports/heldout-recall-none-s100.json
+!reports/heldout-recall-local-s100.json
+!reports/heldout-recall-local+llm-allam-2-7b-s100.json
+!reports/canary-baseline.json
+!reports/scorecard.png
 reports-real/
 
 # Generated / downloaded build inputs, not source.

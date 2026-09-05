@@ -115,6 +115,36 @@ def build_checks() -> tuple[list[Check], list[str]]:
     else:
         skipped.append("reports/conversation-eval.json missing (run: make eval)")
 
+    # Held-out v2 and the model sweep. Neither can be regenerated inside CI -- the sweep is
+    # hours of provider calls -- so their summaries are committed and diffed here. Without
+    # this the headline numbers in FINDINGS were asserted, not checked.
+    for path, label, pattern in (
+        ("reports/heldout-recall-none.json", "held-out phrase table", None),
+        ("reports/heldout-recall-local.json", "held-out shipped stage", None),
+    ):
+        held = ROOT / path
+        if not held.exists():
+            skipped.append(f"{path} missing (run: python scripts/heldout_recall.py)")
+            continue
+        payload = json.loads(held.read_text(encoding="utf-8"))
+        recall = f"{payload['overall']['recall'] * 100:.1f}%"
+        checks.append(Check(f"{label} recall", path, recall, re.escape(recall)))
+        combined = payload.get("combined")
+        if combined:
+            precision = f"{combined['precision']:.3f}"
+            checks.append(Check(f"{label} precision", path, precision, re.escape(precision)))
+
+    handread = ROOT / "reports-sweep" / "handread.json"
+    if handread.exists():
+        for model, row in json.loads(handread.read_text(encoding="utf-8")).items():
+            short = model.split("/")[-1]
+            checks.append(Check(f"sweep {short} flagged", "reports-sweep/handread.json",
+                                str(row["flagged_raw"]),
+                                rf"\b{row['flagged_raw']}\b"))
+    else:
+        skipped.append("reports-sweep/handread.json missing (run: scripts/model_sweep.py)")
+
+
     load = _load("load-report.json")
     if load:
         sessions = f"{load['sessions']:,}"
