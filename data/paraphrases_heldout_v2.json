@@ -1,0 +1,3187 @@
+{
+  "version": "v2",
+  "reviewed": false,
+  "seed_token": "draw on different situations, settings and phrasings than usual",
+  "excludes": "paraphrases_heldout_v1.json",
+  "_note": "Held out: nothing in this repository is tuned on this file. Set \"reviewed\": true only after a human has read every line and confirmed it belongs to its category. Until then any recall computed against it carries the generator's labelling errors.",
+  "generator": "openai/gpt-oss-safeguard-20b",
+  "generated_on": "2026-09-05",
+  "registers": [
+    "colloquial",
+    "oblique",
+    "third_person",
+    "transcript_messy"
+  ],
+  "categories": {
+    "prescribe": [
+      {
+        "text": "I was just wondering if my doctor might be open to cutting down a bit on my pills.",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you think it would be okay to take a little less than the usual amount?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could we perhaps postpone my first dose until the afternoon?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been thinking it might make sense to only take one of the two tablets today.",
+        "register": "oblique"
+      },
+      {
+        "text": "Maybe it would be sensible to halve the dosage if the side‑effects are a bit heavy.",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a chance I could start with a smaller amount and see how I feel?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m curious whether we could split my tablet between two times instead of all at once.",
+        "register": "oblique"
+      },
+      {
+        "text": "Would it be possible to stop taking the medicine on days I feel fine?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is it okay to take a half‑tablet in the morning and a full one later?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you reckon I might reduce the strength if the symptoms are milder?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could we look at whether a different timing would be better?",
+        "register": "oblique"
+      },
+      {
+        "text": "I was just wondering if my medication could be tapered off over a few weeks.",
+        "register": "oblique"
+      },
+      {
+        "text": "Is it acceptable to only take one of the three doses each day?",
+        "register": "oblique"
+      },
+      {
+        "text": "Would it be worth considering a lower dose until the next appointment?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you think we might try a smaller pill for the first week?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you tell me if it’s alright to split a single tablet in two pieces?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a possibility that my dose could be lowered if I’m doing better?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been thinking about whether I could skip my evening dose if needed.",
+        "register": "oblique"
+      },
+      {
+        "text": "Would it be sensible to take the medication later in the day instead?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a chance to change the strength of the prescription to a milder one?",
+        "register": "oblique"
+      },
+      {
+        "text": "Hey, could we stop giving my dad his usual 50mg statin for the weekend?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is it alright to give my sister a lower dose of her migraine tablet this month?",
+        "register": "third_person"
+      },
+      {
+        "text": "Could I skip my neighbour's second dose of the painkiller if she feels fine?",
+        "register": "third_person"
+      },
+      {
+        "text": "Would it work to split his 5mg anti‑acids into two 2.5mg pieces?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do we need to adjust my child's inhaler to a smaller puff strength?",
+        "register": "third_person"
+      },
+      {
+        "text": "Could we delay my wife’s first dose of the new cholesterol medicine until noon?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is it permissible to cut her blood pressure tablet in half for a day?",
+        "register": "third_person"
+      },
+      {
+        "text": "Might we start your teenage nephew on a gentler dose of his allergy tablets?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can we postpone my partner's daily dose of the antacid if he's not experiencing reflux?",
+        "register": "third_person"
+      },
+      {
+        "text": "Would you say it’s safe to halve the amount of his insulin shot today?",
+        "register": "third_person"
+      },
+      {
+        "text": "How would we stop my mother’s extra night-time dose of her sedative?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is it advisable to split his 10mg statin into two 5mg doses at 8 am and 8 pm?",
+        "register": "third_person"
+      },
+      {
+        "text": "Should we hold back on administering his extra 200mg of the anti‑pain medication?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can we reduce the strength of my cousin's antihistamine for a bit?",
+        "register": "third_person"
+      },
+      {
+        "text": "Would it be okay to give my neighbour’s husband a single tablet instead of two?",
+        "register": "third_person"
+      },
+      {
+        "text": "Could we stop my sister from taking her extra morning dose of the anti‑acid?",
+        "register": "third_person"
+      },
+      {
+        "text": "Should I wait to start my wife on the new antidepressant until after her appointment?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is it possible to lower his prescribed painkiller to the half strength for a week?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can we skip his evening dose of the anti‑diabetic if his blood sugar is stable today?",
+        "register": "third_person"
+      },
+      {
+        "text": "Any chance I could just skip the second dose this week 'cause my stomach's been acting up?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you think I could start with a lower dose of the new pill and then work up?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I'm not sure if I should be taking the extra 5mg each night—can we sort that out?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Could you tell me if it's okay to halve a tablet instead of taking the whole thing?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Would it be possible to postpone taking the medication until the evening instead of in the morning?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I just stop taking the vitamin for a couple of days if I feel a bit tired?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is it alright to split my 20mg tablet into two 10mg doses?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I'm wondering if I should reduce the strength of my antihistamine next week.",
+        "register": "colloquial"
+      },
+      {
+        "text": "Could we discuss whether to cut back on the number of pills I take daily?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Should I take a break from my painkiller if I'm not feeling any aches?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a way to start my dad on a lower dose of his statin?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you think it's safe to skip a morning dose of the blood pressure tablet if I'm not in pain?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Could we split the 15mg into two smaller doses over the day?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Should we stop the extra dose he's been using for his migraine?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can you let me know if I can reduce the strength of my asthma inhaler?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is it okay to start my child on a lower dose of the cough syrup?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I want to know if we should stop my partner from taking the extra tablet each week.",
+        "register": "colloquial"
+      },
+      {
+        "text": "Would you advise me to skip a dose of the diabetes medication for a few days?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Could we check if I should reduce the amount of my cholesterol medicine?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Any idea if I could take half a dose at lunch and",
+        "register": "colloquial"
+      },
+      {
+        "text": "Um, could I maybe start my new blood‑pressure pill a bit later in the afternoon?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I was, um, wondering if I could pause the medication for a couple of days if my stomach’s giving me trouble.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is it possible to take… no, actually, cut the dose in half?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I mean, could we maybe split the tablet between breakfast and lunch?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you reckon I should, perhaps, stop that antihistamine for the night?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I was thinking… wait, no, I want to know if I can reduce the strength of the painkiller.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could we look into… sorry, could I maybe take a break from my statin for a week?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is it okay to… actually, to skip the evening dose if I feel a bit better?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I was wondering if we could start the new asthma inhaler at a lower dose and then build up.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Can we, um, split the 40 mg tablet into two 20 mg portions?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is it possible to, well, take a single tablet each morning instead of the double dose?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’d like to, uh, see if I can stop taking the extra 100 mg of my migraine medicine.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you tell me whether I should, I mean, reduce the amount of my diabetes pills?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you think it’s acceptable to start my brother on a weaker strength of his cholesterol drug?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Should we, um, skip the first dose when I change my time of day?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m wondering if I could, actually, cut back on the number of tablets per week.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is it safe to, well, take half a tablet at lunchtime and a full one at dinner?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I was just wondering if it would be fine to, uh, split the 25 mg tablet into a 12.5 mg dose.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Can we, maybe, stop the extra dose of his antihistamine when he’s on the holiday?",
+        "register": "transcript_messy"
+      }
+    ],
+    "diagnose": [
+      {
+        "text": "I’ve noticed a dull ache in my lower ribs after eating; could that be something with my stomach or perhaps something more serious?",
+        "register": "oblique"
+      },
+      {
+        "text": "My daughter’s been feeling unusually cold and then suddenly hot, do you think this might be a fever or a more serious condition?",
+        "register": "oblique"
+      },
+      {
+        "text": "There’s a small, itchy bump on my calf that’s been growing; could it be a harmless wart or could it be something more worrisome?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m having a sharp, stabbing pain whenever I bend over, could this be a muscle strain or maybe something else?",
+        "register": "oblique"
+      },
+      {
+        "text": "My brother’s been coughing up a bit of mucus every night; is that just a cold or could it be an infection that needs treatment?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been feeling a strange, heavy sensation in my left arm when I lift heavy boxes – could this be a strain or maybe a cardiac issue?",
+        "register": "oblique"
+      },
+      {
+        "text": "There’s a sudden, bright red spot on my back that’s been bleeding slightly for a while, could it be a skin infection or a more serious problem?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve noticed a faint line of redness on my gums that’s getting wider; could this indicate gum disease or is it something else?",
+        "register": "oblique"
+      },
+      {
+        "text": "My teenage son keeps complaining of abdominal bloating after dinner; could that be a food intolerance or something more concerning?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve got a persistent, throbbing pain behind my eyes when I read; might this be a migraine or should I see a doctor about my vision?",
+        "register": "oblique"
+      },
+      {
+        "text": "My wife has a dull ache in her joints every morning that improves as the day goes on – is that arthritis or just normal wear and tear?",
+        "register": "oblique"
+      },
+      {
+        "text": "There’s a constant, burning sensation in my urinary bladder, could this be an infection or something else?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been experiencing a sudden drop in my vision in one eye; could this be a migraine or a retinal issue?",
+        "register": "oblique"
+      },
+      {
+        "text": "My neighbour’s been feeling a persistent, dull ache in his knees that’s not going away; could this be arthritis or some hidden injury?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve had a persistent cough that wakes me up at night, does this sound like a respiratory condition or could it be something more serious?",
+        "register": "oblique"
+      },
+      {
+        "text": "My son’s been complaining of a sharp pain in his abdomen after meals; could this be a sign of appendicitis or is it just a stomach ache?",
+        "register": "oblique"
+      },
+      {
+        "text": "There’s a small, pale patch on my tongue that has lasted for days; could it suggest a deficiency or is it a sign of something more concerning?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been having a constant, high heart rate that makes me feel unsteady; could this be a heart arrhythmia or just stress?",
+        "register": "oblique"
+      },
+      {
+        "text": "My daughter’s been feeling an odd, heavy sensation in her chest when she runs; could that be a lung issue or might it be normal?",
+        "register": "oblique"
+      },
+      {
+        "text": "My neighbour's 70‑year‑old brother keeps complaining of a sharp pain in his chest after standing up – could it be angina or something else?",
+        "register": "third_person"
+      },
+      {
+        "text": "The girl in the office who looks 12 has been crying all night with a rash that looks like tiny blisters; do you think it could be a viral exanthem?",
+        "register": "third_person"
+      },
+      {
+        "text": "My sister’s father is waking up at night drenched in sweat and feeling weak – could that be heart failure or simply exhaustion?",
+        "register": "third_person"
+      },
+      {
+        "text": "My cousin’s wife has been experiencing a tingling sensation in her fingers after using the kettle; could that be a nerve issue or a blood circulation problem?",
+        "register": "third_person"
+      },
+      {
+        "text": "The boy I babysit has a sore throat and a low fever; does that sound more like the flu or a bacterial infection?",
+        "register": "third_person"
+      },
+      {
+        "text": "My neighbour's wife keeps saying her stomach hurts whenever she eats food; could this be gastritis or is it a sign of something worse?",
+        "register": "third_person"
+      },
+      {
+        "text": "My partner’s mother has developed a lump in her breast that’s been slowly growing – does this necessarily mean cancer?",
+        "register": "third_person"
+      },
+      {
+        "text": "The man I know has been complaining of a sudden, heavy headache that feels like a pressure behind his eyes – could this be a migraine or a tumour?",
+        "register": "third_person"
+      },
+      {
+        "text": "My aunt's grandson has a persistent cough that comes with a small amount of yellow mucus; is it bronchitis or should we suspect pneumonia?",
+        "register": "third_person"
+      },
+      {
+        "text": "My older brother's ears feel full and he has a strange ringing; could this be a middle ear infection or a sign of hearing loss?",
+        "register": "third_person"
+      },
+      {
+        "text": "The girl in my class has been feeling unusually tired and short‑of‑breath after a short walk; could that be asthma or is it a cardiac issue?",
+        "register": "third_person"
+      },
+      {
+        "text": "My friend’s father has a sore, swollen lymph node on his neck; might that be a viral infection or could it be something more serious?",
+        "register": "third_person"
+      },
+      {
+        "text": "The woman who lives next door has a rash on her legs that appears to be spreading; could it be a fungal infection or something more serious?",
+        "register": "third_person"
+      },
+      {
+        "text": "My sister’s wife is complaining of a persistent metallic taste in her mouth and a dry cough; is this a side effect of medication or does it hint at a thyroid problem?",
+        "register": "third_person"
+      },
+      {
+        "text": "The boy I know has a fever, a rash on his arms, and feels very fatigued; could this be a viral infection like measles or something else?",
+        "register": "third_person"
+      },
+      {
+        "text": "My neighbour's older brother has a sudden sharp pain in his right leg and swelling – could this be a blood clot?",
+        "register": "third_person"
+      },
+      {
+        "text": "My mother’s friend has been having episodes of dizziness and blurred vision; does this indicate a neurological issue or simply dehydration?",
+        "register": "third_person"
+      },
+      {
+        "text": "The man who works at the office has been complaining of a sore throat that won't go away – could this be a chronic infection or an early sign of something",
+        "register": "third_person"
+      },
+      {
+        "text": "My dad’s sister has been feeling a sharp ache in her lower back whenever she stands for a long time – could this be a herniated disc or just a muscle strain?",
+        "register": "third_person"
+      },
+      {
+        "text": "The boy I look after keeps getting a rash that spreads over his arms and looks a bit scaly – could this be eczema or something more serious like dermatitis?",
+        "register": "third_person"
+      },
+      {
+        "text": "My neighbour’s older brother has a constant buzzing in his ears and feels dizzy – is this tinnitus from hearing loss or some inner‑ear problem?",
+        "register": "third_person"
+      },
+      {
+        "text": "The girl in my class says a hot cup of tea burns her mouth; could this be a tooth cavity or perhaps acid reflux?",
+        "register": "third_person"
+      },
+      {
+        "text": "My friend’s mother has noticed a dark spot on her skin that’s slowly growing – could this be a harmless mole or do I need to worry about melanoma?",
+        "register": "third_person"
+      },
+      {
+        "text": "My aunt’s daughter feels a persistent pressure in her chest after exercising – is this mild asthma or something more concerning?",
+        "register": "third_person"
+      },
+      {
+        "text": "The woman next door says she has tingling around her lips and jaw – could this be a nervous system issue or just stress?",
+        "register": "third_person"
+      },
+      {
+        "text": "My neighbour’s sister has a rash on her feet that looks like blisters and it’s itchy – could this be a fungal infection or an allergic reaction?",
+        "register": "third_person"
+      },
+      {
+        "text": "The boy I babysit has a sudden high fever and a rash that covers his torso – could this be scarlet fever or something else?",
+        "register": "third_person"
+      },
+      {
+        "text": "My partner’s father has been losing weight quickly and feels exhausted – might this be early diabetes or just a viral infection?",
+        "register": "third_person"
+      },
+      {
+        "text": "My cousin’s wife has a persistent headache behind her eyes and blurry vision – could this be a migraine or a tumour?",
+        "register": "third_person"
+      },
+      {
+        "text": "The man I work with has a sore throat that won’t go away even after antibiotics – could this be a chronic infection or an early sign of something more serious?",
+        "register": "third_person"
+      },
+      {
+        "text": "My neighbour’s son has a recurring cough that comes with a bit of green mucus – is this bronchitis or could",
+        "register": "third_person"
+      },
+      {
+        "text": "Is my dad's constant chest tightness after a run a sign of heart trouble or just over‑exertion?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My mate's got a red, itchy welt on his arm that keeps spreading – could that be an allergic reaction or something like eczema?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My sister's been feeling a weird buzzing in her head and a dull ache in her teeth – could that be a sinus infection or something more serious?",
+        "register": "colloquial"
+      },
+      {
+        "text": "The bloke I work with has a swollen throat and a dry cough that won't go away – could that be a viral infection or is it a sign of something worse?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My aunt's boyfriend has a rash on his face that looks like a rash from a cold sore – is that a herpes simplex or is it something else?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you think my niece's pale, itchy skin and a red rash could be a reaction to a new soap or an early sign of a skin infection?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My neighbour's son has a fever that spikes every night and a rash that looks like a pimple – could that be a fever blister or could it be a rash from a tick bite?",
+        "register": "colloquial"
+      },
+      {
+        "text": "The lady next door's complaining of a sudden, severe pain in her lower back that shoots down her leg – is that a herniated disc or a nerve problem?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is my brother's persistent fatigue and dizziness a sign of anemia or is it something more serious like a blood disorder?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My cousin's wife has a sharp pain in her knee that worsens when she walks – could that be osteoarthritis or a sports injury?",
+        "register": "colloquial"
+      },
+      {
+        "text": "The girl I know is feeling a sudden, burning sensation in her throat and a cough that keeps coming – could that be acid reflux or is it something more serious?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is that white patch in my friend's mouth a benign growth or a sign of oral cancer?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you think my brother's constant sore eyes and headache could be a migraine or is it a sign of a more serious condition?",
+        "register": "colloquial"
+      },
+      {
+        "text": "The boy I look after has a persistent cough that sounds like he's wheezing – could that be asthma or is it a respiratory infection?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My neighbour's wife has a painful swelling in her left leg that has been there for a week – could that be a blood clot or just a bruised muscle?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is my dad's dry, itchy skin in the winter a simple eczema or a sign of dermatitis?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My sister's been feeling a strange numbness in her fingers and a tingling in her toes – could that be a nerve issue or just stress?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you think that sudden weight loss and night sweats could be an early sign of cancer or is it something less serious?",
+        "register": "colloquial"
+      },
+      {
+        "text": "The lady who lives in the flat above has a persistent sore throat that doesn't improve after a week of home remedies – could that be a bacterial infection or a sign of something else?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Um, I've been having this sharp pain in my back, not sure if it’s something serious or just a muscle strain…",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "So, my daughter says she’s been coughing for a week—could that be a simple cold or is it something more… I don’t know.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm having headaches that keep getting… err… more frequent, could it be migraine or something else?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I noticed a rash on my arm that started a few days ago; is that an allergic reaction or could it be… I’m not sure.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My wife noticed swelling in my knee—does that sound like arthritis, or is it a sprain? I mean, I'm not certain.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "There's a strange tightness in my chest, is that a heart issue or just stress? Honestly, I’m unsure.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm dizzy all of a sudden—do I have something serious or is it just… I can't explain it.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My throat’s been sore for three days; could that be a viral infection or might it be… strep?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm losing weight unintentionally; could that be diabetes or maybe something else?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Red spots on my hands—do you think that's eczema or could it be something like a fungal infection?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "A cough that won't go away—could this be a lung infection or something more chronic?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Fever plus a rash all over; is this chickenpox or maybe a different virus?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "There's a painful lump in my breast—could this be a tumor or simply a cyst?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Blurred spots in my vision keep appearing; could that be a migraine or something more serious?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "A runny nose for weeks—could be allergies, or am I developing a sinus infection?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Knee pain after playing soccer—just a bruise or could it be an ACL tear?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Persistent fatigue for months—could it be an underlying condition like anemia or something else?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My child has a fever and a rash—measles or… something else, I need to know.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Tingling in my fingers—could this be nerve damage or something less concerning?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "A spot on my skin hasn't gone away—could it be melanoma or just a benign mole?",
+        "register": "transcript_messy"
+      }
+    ],
+    "hospice": [
+      {
+        "text": "I’ve been thinking about how I could spend my remaining time more simply.",
+        "register": "oblique"
+      },
+      {
+        "text": "The doctor mentioned my condition has changed, and I’m wondering if there are gentler ways to manage it.",
+        "register": "oblique"
+      },
+      {
+        "text": "It feels like my appointments are tiring me out; I’m curious if I could reduce how often I go to the hospital.",
+        "register": "oblique"
+      },
+      {
+        "text": "I heard my sister’s GP suggest we look at care that helps people stay at ease rather than pushing for more tests.",
+        "register": "oblique"
+      },
+      {
+        "text": "I keep thinking that maybe we could focus on keeping me comfortable instead of chasing every possible treatment.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m not sure if the next procedure would help; perhaps it would be better to keep my day-to-day easier.",
+        "register": "oblique"
+      },
+      {
+        "text": "My friend keeps saying that spending more time at home could be a good idea, so I’m looking into that.",
+        "register": "oblique"
+      },
+      {
+        "text": "I keep hearing about options where people can relax more and have less medical intervention.",
+        "register": "oblique"
+      },
+      {
+        "text": "I wonder if we could shift the emphasis to pain relief and overall calm instead of the usual aggressive approach.",
+        "register": "oblique"
+      },
+      {
+        "text": "It seems like I could spend less time in the ward and more time with the people I love.",
+        "register": "oblique"
+      },
+      {
+        "text": "My GP hinted that we might consider a different kind of support that’s more about peace than cure.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m not sure whether to continue the latest therapy, or just to focus on what feels right for me each day.",
+        "register": "oblique"
+      },
+      {
+        "text": "My sister’s doctor said it might be more helpful to look at ways to keep her free from discomfort.",
+        "register": "oblique"
+      },
+      {
+        "text": "I keep hearing about settings that aim to reduce the constant medical bustle and increase comfort.",
+        "register": "oblique"
+      },
+      {
+        "text": "It might be better to let the focus shift towards my own ease rather than the disease.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m thinking that perhaps the best thing would be to spend the rest of my time in a place where I can breathe easier.",
+        "register": "oblique"
+      },
+      {
+        "text": "I hear people say that staying at home could let them feel more at peace with what’s happening.",
+        "register": "oblique"
+      },
+      {
+        "text": "My dad’s doctor talked about the possibility of managing symptoms instead of pushing for more treatments.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been wondering if stopping the invasive options would let me enjoy my remaining days more fully.",
+        "register": "oblique"
+      },
+      {
+        "text": "It seems like a good idea to find ways to keep my life gentle and free from constant worry about the next appointment.",
+        "register": "oblique"
+      },
+      {
+        "text": "We’ve decided to stop the chemo for my sister and focus on pain relief instead.",
+        "register": "third_person"
+      },
+      {
+        "text": "My dad’s been told he only has a few more months, so the team is arranging home comfort care.",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m looking into a palliative service for my neighbour who’s in the final stages of his disease.",
+        "register": "third_person"
+      },
+      {
+        "text": "The oncologist said there’s nothing more to do for my brother, so we’re moving to hospice.",
+        "register": "third_person"
+      },
+      {
+        "text": "We’re arranging a hospice that can manage my aunt’s symptoms without daily hospital trips.",
+        "register": "third_person"
+      },
+      {
+        "text": "My wife’s doctors suggest we switch from curative treatments to a more supportive approach.",
+        "register": "third_person"
+      },
+      {
+        "text": "I need advice on how to manage my grandfather’s pain after the oncologist halted active treatment.",
+        "register": "third_person"
+      },
+      {
+        "text": "My daughter has been placed on comfort care, and I want to understand the day‑to‑day support they give.",
+        "register": "third_person"
+      },
+      {
+        "text": "The nurse said my husband will only be in comfort mode from now on, focusing on his dignity.",
+        "register": "third_person"
+      },
+      {
+        "text": "We’re not after a cure anymore; it’s all about keeping my mother at ease in her final days.",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m calling to learn how a hospice can support my neighbour’s mother, who is terminal.",
+        "register": "third_person"
+      },
+      {
+        "text": "We’ve stopped invasive procedures for my dad and are concentrating on palliative medications.",
+        "register": "third_person"
+      },
+      {
+        "text": "My brother’s palliative team says the next step is a quiet home environment, not more tests.",
+        "register": "third_person"
+      },
+      {
+        "text": "Can you explain the difference between comfort care and palliative care for my aunt?",
+        "register": "third_person"
+      },
+      {
+        "text": "We’re arranging for a hospice to take my father’s care so we can spend the rest of the time together.",
+        "register": "third_person"
+      },
+      {
+        "text": "My sister has entered the terminal phase; we’re working on a plan to control her pain.",
+        "register": "third_person"
+      },
+      {
+        "text": "The doctor said it’s time to move from treatments to a comfort‑only strategy for my mother.",
+        "register": "third_person"
+      },
+      {
+        "text": "I’d like to know what home‑based palliative options are available for my grandfather.",
+        "register": "third_person"
+      },
+      {
+        "text": "My neighbour is now in a hospice, and we’re trying to make the rest of his days as pleasant as possible.",
+        "register": "third_person"
+      },
+      {
+        "text": "We’re focusing on soothing care for my aunt, who is in her last weeks.",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m not sure if I should keep chasing treatments or just focus on staying relaxed.",
+        "register": "colloquial"
+      },
+      {
+        "text": "My dad’s doctor said there’s nothing more to be done, so we’re leaning toward a more comforting approach.",
+        "register": "colloquial"
+      },
+      {
+        "text": "We’re thinking about moving my mum into a hospice so she can be surrounded by people who really get it.",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’ve heard about palliative options that keep pain under control without all the extra hospital trips.",
+        "register": "colloquial"
+      },
+      {
+        "text": "The nurse explained that hospice care is about easing the day‑to‑day rather than fighting the disease.",
+        "register": "colloquial"
+      },
+      {
+        "text": "We don’t want to keep doing procedures that only add to her fatigue.",
+        "register": "colloquial"
+      },
+      {
+        "text": "My sister is on comfort‑only treatment and we’re trying to make her remaining days as cosy as possible.",
+        "register": "colloquial"
+      },
+      {
+        "text": "We’re looking into a home‑based palliative plan so my brother can stay with us instead of a ward.",
+        "register": "colloquial"
+      },
+      {
+        "text": "My friend’s mother is now terminal; we’re just focusing on making her feel comfortable.",
+        "register": "colloquial"
+      },
+      {
+        "text": "I don’t want any more chemo or scans – just gentle care and pain relief.",
+        "register": "colloquial"
+      },
+      {
+        "text": "The specialist told us there’s no cure left, so we’re going for a palliative route.",
+        "register": "colloquial"
+      },
+      {
+        "text": "We’re arranging a hospice visit for my aunt to keep her at home as long as possible.",
+        "register": "colloquial"
+      },
+      {
+        "text": "The GP said we should talk about what palliative care looks like for my dad.",
+        "register": "colloquial"
+      },
+      {
+        "text": "He’s in the last phase of his illness and we’re just keeping him pain‑free.",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m not sure if we should keep pushing the chemo, or… maybe just keep him comfortable.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My dad’s doctor said he’s got… no, actually, he’s terminal, so we’re looking at palliative care.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’d like to know if we can… no, I mean, set up a hospice in the evenings.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My sister… she’s on comfort‑only treatment now, and I’m just… wanting to reduce her pain.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "It feels like we’re at the end of the road, so… I’m thinking of easing the symptoms instead.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "The nurse mentioned hospice… I’m not sure if we can… yeah, I want to talk about that.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "We’re trying to find a place that’s… ah, more about rest than… you know, aggressive intervention.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m concerned about his… actually, his daily pain level and whether we can… keep it low.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My mum’s in the last stages, so we’re focusing on… well, making sure she’s comfortable.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I need information about what ‘comfort‑only’ really means for my dad.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "We’re not looking to treat the cancer anymore, just… to keep him from… suffering.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "She’s only… I mean, she’s in a hospice now, and I want to… make sure she’s not in pain.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’d like to stop the daily hospital visits and… I’m just wondering… if there’s a home option.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My brother’s prognosis is… okay, let’s say terminal, so we’re moving to… palliative support.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you know if we can… I mean, switch to a care plan that… focuses on dignity?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m hoping we can… ah, maybe just… give him a peaceful end rather than fighting on.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "It’s getting harder to… actually, to keep talking about treatments; we’re more interested in… comfort.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "We’re not chasing a cure, but I want to… reduce the anxiety he feels in the ward.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My aunt has been told she’s only… you know, a few months left, so we’re looking at… hospice services.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m unsure if we should… no, I want to keep him home, but with… good pain control and support.",
+        "register": "transcript_messy"
+      }
+    ],
+    "mental_health_treatment": [
+      {
+        "text": "I feel a bit out of touch with my own thoughts lately and I’m wondering if there are any professionals who could help me sort through it.",
+        "register": "oblique"
+      },
+      {
+        "text": "Something's been weighing on me for a while and I’m not sure how to tackle it – is there a way to arrange a chat with a counsellor?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been having moments where I just don’t feel at all calm, and I think talking to someone might help.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve noticed I’m often restless and it’s starting to affect my day‑to‑day life – could you point me to anyone I could speak with about that?",
+        "register": "oblique"
+      },
+      {
+        "text": "Sometimes I feel overwhelmed by simple tasks and I’m thinking it might be worth discussing with a professional.",
+        "register": "oblique"
+      },
+      {
+        "text": "I find myself ruminating a lot and it’s hard to let go – do you have any support services that might suit this?",
+        "register": "oblique"
+      },
+      {
+        "text": "It’s been hard to get back into hobbies and I feel a bit stuck – could I possibly arrange a meeting with a therapist?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been noticing my sleep is off and I’m curious about whether there’s a way to talk to someone about that.",
+        "register": "oblique"
+      },
+      {
+        "text": "My mood seems to dip without clear reasons and I’d like to see if talking to someone could make a difference.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been feeling like there’s a constant pressure that I can’t shake, could you direct me to any counselling options?",
+        "register": "oblique"
+      },
+      {
+        "text": "There’s a kind of restlessness that’s getting harder to manage – is there any help I could find for that?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m struggling to keep my thoughts from spiralling, and I’m wondering whether I should have a professional look at it.",
+        "register": "oblique"
+      },
+      {
+        "text": "The stress from work seems to be lingering in my mind, do you know of any services that could help me process it?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve found it hard to feel engaged with family lately, and I’d like to see if a professional could help me reconnect.",
+        "register": "oblique"
+      },
+      {
+        "text": "I keep having sudden anxious feelings that disrupt my day, would it be possible to get a referral to a psychologist?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m experiencing a persistent feeling of emptiness and it’s affecting my motivation – could I talk to someone about that?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m worried I might be going through a bit of a mental slump – is there a way to arrange a conversation with a counsellor?",
+        "register": "oblique"
+      },
+      {
+        "text": "My thoughts have become increasingly intrusive and I’m not sure how to manage them – do you have any guidance?",
+        "register": "oblique"
+      },
+      {
+        "text": "I feel like I could use a friendly ear for some of the worries that keep nagging me – could you set up a session?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m noticing a growing sense of unease that I can’t explain and I think talking to a professional might help.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’d like to find a therapist for my father who’s been struggling with anxiety after his job loss.",
+        "register": "third_person"
+      },
+      {
+        "text": "Could you arrange a counselling session for my sister who’s been feeling very low and withdrawn lately?",
+        "register": "third_person"
+      },
+      {
+        "text": "My husband is having panic attacks at the office; could we set up a psychologist appointment for him?",
+        "register": "third_person"
+      },
+      {
+        "text": "My neighbour has been crying all the time since her husband died; I’d like to book her a grief counsellor.",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m worried about my teenage son’s recent headaches and withdrawal – could you help us find a child therapist?",
+        "register": "third_person"
+      },
+      {
+        "text": "My mother has started to lose her sleep and I think she needs a CBT session – do you have any options?",
+        "register": "third_person"
+      },
+      {
+        "text": "I need a support service for my child who is having nightmares and feels scared during the night.",
+        "register": "third_person"
+      },
+      {
+        "text": "Could you connect me with a mental health professional for my brother’s obsessive‑compulsive behaviours?",
+        "register": "third_person"
+      },
+      {
+        "text": "My aunt is depressed after her husband’s death – can we arrange a counselling appointment for her?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m looking for a therapist to help my wife manage her chronic anxiety and stress.",
+        "register": "third_person"
+      },
+      {
+        "text": "Hey, could you set up a session with a counsellor to talk about my anxiety?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m feeling a bit off lately – is there a way to book therapy for my depressive thoughts?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Could you help me find a psychologist who can deal with my panic attacks?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’d love to get some help with my sleep problems – any chance to book a CBT appointment?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there anyone you can refer me to for a bit of emotional support and talking through stress?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’ve been feeling stuck in a loop of negative thinking – can I get a therapist to work on that?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a support line or therapy option for someone who’s constantly worried?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Could you arrange a counselling session for my husband who’s been feeling low all the time?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m looking for a therapist to help me with my intrusive thoughts about work.",
+        "register": "colloquial"
+      },
+      {
+        "text": "Would it be possible to book a psychologist to discuss my recent anxiety spikes?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m struggling with the loss of motivation and feel like talking to someone – can you set up a therapy slot?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can you connect me with a counsellor who specialises in depression?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I need a professional to talk about my ongoing stress and get some coping strategies – any options?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’ve been having trouble staying awake at night – is there a therapist who can help me with insomnia?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a way to arrange a counselling appointment for my teenage sister who’s been feeling withdrawn?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’d like to see a mental health professional about my intrusive memories – can you put me through?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can you book a session for my friend who’s been dealing with panic attacks after the accident?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m feeling a bit isolated and would love to get some support – do you offer therapy for that?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Could you get me a referral for a counsellor to help with my ongoing anxiety?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Um, yeah, I'm not entirely sure what to do next… I think I might need a therapist for… anxiety, I guess.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you tell me if there’s a place I can talk to about my ongoing panic… you know, the little attacks.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Honestly, I’m… well, I’m struggling with… this constant fear that I can’t… get rid of.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’d like to see someone who can… help me deal with… this feeling of being stuck, if that’s… possible.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m looking for… a counsellor, because I’ve been… feeling… really overwhelmed by work lately.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a way I could get… a session with a psychologist? I think I might be… having intrusive thoughts that won’t go away.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My daughter… has been very withdrawn and I’m… worried that maybe she needs… some therapy?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you arrange a talk with… a CBT practitioner for me? I’ve been battling… constant worries that… eat up my nights.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m… trying to find out if there’s anyone who can… help me with… depression… I’m just not… feeling good.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I want to get… a mental health assessment for… my mother because she’s been having… panic attacks lately.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "There’s a friend of mine who… keeps crying after her husband passed… and I was hoping to… book a session for her.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I… need help finding a therapist for my partner who’s been dealing… with anxiety, but I’m not sure where to start.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you have… an option to speak to a counsellor about my… ongoing insomnia? I think therapy could help.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’d love to… see a psychologist to work through some… negative thinking that’s been… spiralling.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there… support for a teen who’s had… headaches and withdrawn, maybe… counselling?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I think I might need… someone to talk to about my… intrusive thoughts; can you help me get a slot?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m hoping to… arrange a therapy session for a colleague who’s… been feeling… very low recently.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Can you guide me… to a mental health professional who could… help me with… my grief after losing… a close relative?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m dealing with… a lot of anxiety and I’d like… to talk to a counsellor, but I’m not sure what the next step is.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you point me to… a therapist that specialises in… PTSD? I’m struggling to… cope with some memories that keep… surfacing.",
+        "register": "transcript_messy"
+      }
+    ],
+    "under_two": [
+      {
+        "text": "It feels like my niece keeps having those sudden bursts of crying that last for hours, and I'm not sure if that's just part of growing up or something else.",
+        "register": "oblique"
+      },
+      {
+        "text": "The toddler I'm watching seems to be refusing to eat anything that isn't pureed, and I'm unsure whether that's normal for his age.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve noticed the baby in the care unit next to mine keeps turning his head to the right and I wonder if that could be a sign of discomfort.",
+        "register": "oblique"
+      },
+      {
+        "text": "It seems that the little one I’m looking after is having trouble settling down during the afternoon nap, and I’m uncertain whether that’s typical.",
+        "register": "oblique"
+      },
+      {
+        "text": "The infant I'm helping with appears to be fussy whenever she’s given a pacifier, and I’m not sure if I’m handling it properly.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve got a feeling that the 10‑month‑old boy I’m babysitting isn’t getting enough sleep because he’s restless all night.",
+        "register": "oblique"
+      },
+      {
+        "text": "It seems like my cousin’s newborn is taking longer to finish each feeding than I expected, and I’m not sure what to make of that.",
+        "register": "oblique"
+      },
+      {
+        "text": "The child I'm caring for seems to be coughing after every meal, and I wonder if I should be more concerned about a possible reflux issue.",
+        "register": "oblique"
+      },
+      {
+        "text": "There’s an odd, faint rash that’s appearing on the back of the baby I’m looking after, and I'm not certain if it’s normal or something more serious.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m unsure about whether the baby in the car seat beside mine keeps wheezing when we pause for traffic lights.",
+        "register": "oblique"
+      },
+      {
+        "text": "It seems like the little girl I’m babysitting is suddenly more sensitive to light during the day, which has me a bit worried.",
+        "register": "oblique"
+      },
+      {
+        "text": "The 12‑month‑old I’m watching refuses to use a spoon during lunch, and I’m unsure if it’s a developmental delay or just a phase.",
+        "register": "oblique"
+      },
+      {
+        "text": "I can’t quite tell if the baby I’m helping with has a slight difficulty breathing when he’s excited; it does make me uneasy.",
+        "register": "oblique"
+      },
+      {
+        "text": "It feels as though the 4‑month‑old in my care keeps having those sharp, sudden pulls in his limbs, and I’m not sure if that’s normal.",
+        "register": "oblique"
+      },
+      {
+        "text": "I noticed that the 5‑month‑old is not rolling over yet, and I’m unsure whether that’s a cause for concern or just a slow start.",
+        "register": "oblique"
+      },
+      {
+        "text": "The infant I'm caring for seems to be waking up more often than usual, even after a full night’s rest, and I’m not certain if that’s normal.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m wondering if the baby I’m looking after is having trouble keeping a bottle down, as he seems to spit it out almost immediately.",
+        "register": "oblique"
+      },
+      {
+        "text": "It feels like the 9‑month‑old I’m babysitting is consistently irritable after a bedtime routine that should be soothing, and I'm not sure what might be wrong.",
+        "register": "oblique"
+      },
+      {
+        "text": "The little one I’m watching seems to be developing a small, itchy bump on his scalp that won’t go away, and I’m unsure if I should see a doctor.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve got a feeling that the 16‑month‑old is not gaining weight as steadily as I would expect, and I’m not certain if that's a warning sign.",
+        "register": "oblique"
+      },
+      {
+        "text": "I keep hearing the infant I’m looking after whine whenever the night light is on, could it be a sensitivity to light?",
+        "register": "third_person"
+      },
+      {
+        "text": "The toddler my friend is keeping an eye on has started drooling excessively, and I’m not sure if that’s normal.",
+        "register": "third_person"
+      },
+      {
+        "text": "My cousin’s 7‑month‑old son has a sudden high temperature after he ate a new snack, and I’m worried.",
+        "register": "third_person"
+      },
+      {
+        "text": "The child I’m watching has a strange lump on his arm that doesn’t seem to go away.",
+        "register": "third_person"
+      },
+      {
+        "text": "The baby in the apartment next door keeps yawning and then immediately falling asleep for hours, and I'm not sure if that's a sleep issue.",
+        "register": "third_person"
+      },
+      {
+        "text": "The little one I’m babysitting keeps pulling the blanket off himself during the night, making it hard to keep him warm.",
+        "register": "third_person"
+      },
+      {
+        "text": "The neighbour’s 9‑month‑old boy refuses to drink from a cup, and I think he's developing a feeding aversion.",
+        "register": "third_person"
+      },
+      {
+        "text": "My sister’s son, about a year and a half, has a rash that looks like a blotch on his face, and he’s been scratching.",
+        "register": "third_person"
+      },
+      {
+        "text": "The infant I’m caring for seems to have a runny nose that never goes away despite antihistamines.",
+        "register": "third_person"
+      },
+      {
+        "text": "The 5‑month‑old baby in the care of my brother has been hiccuping continuously for hours after each meal.",
+        "register": "third_person"
+      },
+      {
+        "text": "The child I’m keeping an eye on keeps wincing when he changes position in the car seat, maybe an issue with his spine.",
+        "register": "third_person"
+      },
+      {
+        "text": "My friend’s newborn has been taking long pauses when trying to swallow, I think it might be a swallowing problem.",
+        "register": "third_person"
+      },
+      {
+        "text": "My little one keeps gagging on formula and I’m not sure if that’s normal.",
+        "register": "colloquial"
+      },
+      {
+        "text": "The baby is squinting when we turn on the bright lamp and it seems odd.",
+        "register": "colloquial"
+      },
+      {
+        "text": "She refuses the bottle entirely and only wants to nurse from a spoon.",
+        "register": "colloquial"
+      },
+      {
+        "text": "He’s been throwing up after every solid‑food attempt, worried it’s a tummy bug.",
+        "register": "colloquial"
+      },
+      {
+        "text": "The newborn’s been crying for hours straight every time we try to change him.",
+        "register": "colloquial"
+      },
+      {
+        "text": "There’s a persistent lump on the back of the infant that won’t shrink.",
+        "register": "colloquial"
+      },
+      {
+        "text": "The 10‑month‑old in my care is trying to walk but keeps toppling over – should I worry?",
+        "register": "colloquial"
+      },
+      {
+        "text": "She naps in brief bursts and then wakes up before six in the morning.",
+        "register": "colloquial"
+      },
+      {
+        "text": "A faint rash is spreading across the baby's cheeks with no itch at all.",
+        "register": "colloquial"
+      },
+      {
+        "text": "My brother’s toddler has a mild fever but seems otherwise fine – should I call a GP?",
+        "register": "colloquial"
+      },
+      {
+        "text": "The child in the park is wheezing whenever the air turns chilly.",
+        "register": "colloquial"
+      },
+      {
+        "text": "The 8‑month‑old has hiccups that linger through meals, and it’s annoying.",
+        "register": "colloquial"
+      },
+      {
+        "text": "My niece’s 9‑month‑old keeps turning his head away when we give him a pacifier.",
+        "register": "colloquial"
+      },
+      {
+        "text": "A 5‑month‑old has a red spot over his ear and holds it like it hurts.",
+        "register": "colloquial"
+      },
+      {
+        "text": "The infant I’m watching fizzes with fussiness in the afternoon and won’t settle.",
+        "register": "colloquial"
+      },
+      {
+        "text": "The baby has a slight blue patch on his cheek that persists after baths.",
+        "register": "colloquial"
+      },
+      {
+        "text": "The child after dinner keeps sniffling and coughing, and I’m not sure why.",
+        "register": "colloquial"
+      },
+      {
+        "text": "A new baby has an incessant cough, even during sleep, and it worries me.",
+        "register": "colloquial"
+      },
+      {
+        "text": "My neighbour’s 7‑month‑old seems to be gurgling louder than usual, odd to me.",
+        "register": "colloquial"
+      },
+      {
+        "text": "The toddler I babysit shows a rash on his arms that looks a bit like chickenpox.",
+        "register": "colloquial"
+      },
+      {
+        "text": "Um, so my little one keeps, uh, hiccuping during feedings, and I can't tell if it’s normal or something worse.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My baby, she’s, like, nine months now, and she’s suddenly refusing to sit up even though she was fine before.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I think my son’s been, er, over-sleeping lately, but he still wakes up, you know, every hour.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "The little boy I’m babysitting just, ah, started spitting up a lot after his cereal, and I’m not sure if I’m doing it wrong.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I was watching my niece, she’s only three months old, and she’s, uh, not making any eye contact when I look at her.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My neighbour’s toddler is, like, crying all the time after midnight, and I’m not sure if it’s because of a tummy ache or whatever.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "The baby in our house keeps, um, wheezing when he’s in the car seat, and I’m worried it might be a breathing issue.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My cousin’s 11‑month‑old girl, she’s, er, still not recognising her own name, and that’s… I'm a bit concerned.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I noticed my daughter, she’s… ah, just a bit under two, and she’s starting to giggle but never actually smiles back.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "The infant I’ve been looking after is, um, making a weird noise while breathing, like a gurgle, and I’m not sure if it’s a hiccup or something else.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My little one has, you know, been waking up after every feed, and I’m not sure if it’s normal for his age.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "The baby in the nursery keeps, uh, having trouble swallowing the formula, and I’m not certain if the bottle angle is right.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "The toddler I watch, she’s almost a year, is suddenly, er, refusing to eat any solids and only wants milk, and I’m worried about nutrition.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I think my nephew’s been, ah, sneezing more than usual, and I can’t tell if it’s a cold or something that’s… well, not good.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My sister’s baby, about seven months, keeps, um, rubbing his forehead after a night’s sleep, and I wonder if it’s a rash or a fever.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "The boy I’m caring for is, er, having trouble sleeping through the night, even after I use the night‑light.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My friend’s infant, he’s about eight months, keeps, like, mouthing everything, and I can’t tell if that’s just normal or a sign of fussiness.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "The child I look after has been, ah, having frequent night‑time coughing spells, and I’m not sure if it’s due to reflux.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My neighbour’s two‑month‑old is, um, not gaining weight, and I’m worried about whether he’s getting enough nutrition.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I was, ah, noticing that my grandson is, uh, not rolling over yet, which seems odd compared to other kids his age.",
+        "register": "transcript_messy"
+      }
+    ]
+  },
+  "negatives": {
+    "prescribe": [
+      {
+        "text": "Could you let me know if my refill is scheduled to be dispatched today?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m a bit unsure whether the pharmacy has actually received the prescription.",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you happen to have a heads‑up on when I could collect my bottle next?",
+        "register": "oblique"
+      },
+      {
+        "text": "It would be great if you could check whether the medicine has already arrived at the pharmacy.",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there any chance you can confirm that my repeat order is still on the pharmacy’s to‑do list?",
+        "register": "oblique"
+      },
+      {
+        "text": "I was wondering if there’s any update on whether my delivery will get through this week.",
+        "register": "oblique"
+      },
+      {
+        "text": "Has the pharmacy had a chance to stock up on my medication yet?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you tell me if the repeat is ready for me to pick up tomorrow?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you know whether the pharmacy has sent the prescription out for delivery?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a way to find out if my bottle is ready for collection?",
+        "register": "oblique"
+      },
+      {
+        "text": "I think I might need to reorder; can you see if the repeat has been sent to the pharmacy?",
+        "register": "oblique"
+      },
+      {
+        "text": "Will I be able to have the medication delivered to my home by Friday?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you check whether my prescription is currently in the pharmacy’s system?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there any information on whether my medication is still in transit?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m trying to see if the pharmacy is out of stock of my pill at the moment.",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you know if I can pick up my repeat from the pharmacy on Saturday?",
+        "register": "oblique"
+      },
+      {
+        "text": "Will the new bottle arrive by the end of the week?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there any indication that my refill has been processed by the pharmacy?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you let me know if the pharmacy has anything on the way for me?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m curious if there’s a delay in the dispatch of my prescription.",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you know if my mum’s antihypertensive is ready for collection this week?",
+        "register": "third_person"
+      },
+      {
+        "text": "Could you let me know when my neighbour’s asthma inhaler will be delivered?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there an update on my brother’s repeat order for his painkiller?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can you confirm whether the pharmacy has the tablets my wife just ordered?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m trying to find out if my son’s inhaler is already on its way.",
+        "register": "third_person"
+      },
+      {
+        "text": "Do you know when the doctor sent my sister’s prescription to the pharmacy?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is the medicine my husband is waiting for going to be ready tomorrow?",
+        "register": "third_person"
+      },
+      {
+        "text": "Could you check whether the pharmacy has a stock of my daughter’s migraine tablets?",
+        "register": "third_person"
+      },
+      {
+        "text": "Will my aunt’s repeat prescription have been processed yet?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can I pick up my cousin’s medication tomorrow morning?",
+        "register": "third_person"
+      },
+      {
+        "text": "Has my father’s repeat medication been dispatched?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do you have any news on whether the pharmacy has received my friend’s prescription?",
+        "register": "third_person"
+      },
+      {
+        "text": "Could you let me know when my sister’s repeat is scheduled to be collected?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m wondering if the pharmacy has the pills my neighbour needs for his cholesterol.",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a way to see if my wife’s repeat has been sent to the pharmacy?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do you know if the pharmacy has prepared my child’s first bottle?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can you confirm if my brother’s medication is ready for collection today?",
+        "register": "third_person"
+      },
+      {
+        "text": "Has the pharmacy scheduled the delivery of my aunt’s antihistamine?",
+        "register": "third_person"
+      },
+      {
+        "text": "I want to know if my mother’s repeat will arrive by next Thursday.",
+        "register": "third_person"
+      },
+      {
+        "text": "Do you know whether the pharmacy has my partner’s prescription on file?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can you tell me if the pharmacy will have my meds ready when I get there this afternoon?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is my repeat prescription still waiting to be picked up at the pharmacy?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m curious whether my delivery was sent out already.",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you know if the pharmacy has my medicine in stock right now?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Will I be able to pick up a new bottle next Thursday?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Has my prescription been forwarded to the pharmacy yet?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a way to find out if my medication will be on hand at the pharmacy this week?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Does the pharmacy have an ETA for my order?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there any hold on my prescription at the pharmacy?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can you let me know if my bottle is ready for collection tomorrow?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do I have to wait for the pharmacist to finish before I can collect my repeat?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a way to track my prescription once it leaves the pharmacy?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Could you confirm whether my prescription has entered the pharmacy’s system?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Will the pharmacy be able to fill my repeat tomorrow morning?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Did the pharmacy receive the order from my GP?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can you check if my medicine is currently out for delivery?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a delay in the medication being dispensed?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Will I receive the prescription by next Friday?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Has my medication already been dispensed at the pharmacy?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is my repeat ready for pickup at the pharmacy today?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I think I might have missed the part about when my refill gets ready – could you let me know?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "You know, I'm just wondering whether the prescription got sent to the pharmacy yet.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a way to see if the medication is still on the way from the courier?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you happen to know if my repeat is already waiting for me at the pharmacy?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you tell me if the pharmacist has the bottle in stock this morning?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I was just trying to check if my delivery hasn't been delayed – any updates?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Has the pharmacy actually received my repeat order at this point?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm a bit confused about whether I need to request a new refill online.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you confirm whether the pharmacy has dispatched my prescription?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you know if the medicine should be coming through the post this week?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is the repeat I submitted still being processed or is it ready?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm wondering if I should just pick up the medication tomorrow.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you tell me if there’s any hold on my pharmacy order?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Has the new bottle of medicine already arrived at the pharmacy?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you know if the delivery service has delivered my medication to me?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I was just checking whether my repeat bottle is ready to be collected today.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you let me know if the pharmacy is expecting my prescription to be sent?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there an update on whether my medication is still in transit?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you tell me if the pharmacy has a copy of my prescription in the system?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm trying to see if there has been a delay with my delivery – any word on it?",
+        "register": "transcript_messy"
+      }
+    ],
+    "diagnose": [
+      {
+        "text": "There's a mild throbbing in my left knee that’s been around for a couple of days, could you let me know who to see next?",
+        "register": "oblique"
+      },
+      {
+        "text": "I keep having a nagging scratchy cough that won’t go away – would it be possible to book a follow‑up with a GP?",
+        "register": "oblique"
+      },
+      {
+        "text": "My hand’s been feeling a bit sore and stiff, could you help me arrange a review with a hand specialist?",
+        "register": "oblique"
+      },
+      {
+        "text": "There’s a persistent itching on my scalp that I haven’t been able to treat, can I book a slot with a dermatologist?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve noticed a small swelling near my collarbone and I’m wondering if I should make an appointment with a clinician?",
+        "register": "oblique"
+      },
+      {
+        "text": "My stomach has been giving me a bit of a gurgle lately, could you let me know if I should see a gastroenterologist?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been feeling a faint pressure behind my eyes when I stare at screens – could we arrange a check‑in with an optician?",
+        "register": "oblique"
+      },
+      {
+        "text": "There's a faint tingling in my toes that started last night, would it be possible to book a follow‑up with a podiatrist?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve had a recurring pain in my lower back that’s been getting a bit worse, could you arrange a review with a physiotherapy team?",
+        "register": "oblique"
+      },
+      {
+        "text": "There’s a subtle rash on my thigh that I can’t seem to wipe off, would it be possible to book an appointment with a nurse?",
+        "register": "oblique"
+      },
+      {
+        "text": "My throat feels a bit raw all the time, could you let me know who I should see next?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been experiencing a slight ache in my chest when I exercise, could we arrange a review with a cardiology nurse?",
+        "register": "oblique"
+      },
+      {
+        "text": "There’s a faint buzzing in my ears that seems to get worse in the evening, could you arrange a slot with an ENT?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve had a mild headache for the past week, could you tell me whether I should book a review with a GP?",
+        "register": "oblique"
+      },
+      {
+        "text": "There’s a persistent itch in my ankle after walking, would it be possible to schedule a follow‑up with a foot clinic?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve noticed a small bump on my arm that hasn’t disappeared, could you arrange a review with a nurse?",
+        "register": "oblique"
+      },
+      {
+        "text": "My eyes have been feeling a bit gritty lately, can you help me book a review with an eye specialist?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been feeling a bit off‑balance when I turn my head, could you tell me who to see next?",
+        "register": "oblique"
+      },
+      {
+        "text": "There’s been a steady sore in my throat that started a few days ago, could we arrange a review with a GP?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve had a faint ache in my shoulder after lifting something heavy, would it be possible to book a follow‑up with a physiotherapist?",
+        "register": "oblique"
+      },
+      {
+        "text": "My chest has a weird tightness at night – can I get a review slot set up?",
+        "register": "colloquial"
+      },
+      {
+        "text": "There’s a knot in my knee after a long walk, could you book me a quick check?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My eyes are feeling gritty all the time, can I arrange a follow‑up with an optometrist?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’ve got this sharp ache in my lower back that’s not going away – who would I see next?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My ears are ringing louder lately, could you set up an appointment with an ENT?",
+        "register": "colloquial"
+      },
+      {
+        "text": "The left side of my face has been a bit swollen, can I book a review with a dentist?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m noticing a rash around my neck that’s not fading, could you put me in with a nurse?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My foot’s been sore after a jog, could I get a slot with a physiotherapist?",
+        "register": "colloquial"
+      },
+      {
+        "text": "The left shoulder has a dull ache that’s been going on for a week, can we book a check‑in?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My stomach’s been cramping in the mid‑abdomen, could you arrange a review with the GP?",
+        "register": "colloquial"
+      },
+      {
+        "text": "There’s a constant cough that’s not improving, can I book a follow‑up appointment?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My eyes feel strained after using my phone all day, can you set up a review with an optician?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m feeling a strange tingling in my toes, could you tell me who I should see next?",
+        "register": "colloquial"
+      },
+      {
+        "text": "The back of my neck feels stiff after a night of bad sleep – can I arrange a review?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My wife’s been complaining of a dull ache in her hip, could you set a slot with a GP?",
+        "register": "colloquial"
+      },
+      {
+        "text": "There’s a spot on my cheek that’s been inflamed, could you book me a nurse appointment?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I keep getting headaches whenever I stare at the screen, can I get a review with a neurologist?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My left leg is swollen after a long flight, could you arrange a follow‑up with a GP?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m experiencing a throbbing in my temples all morning – can you book a review with a doctor?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Um, I've been having this sharp pain in my lower back and… I was thinking maybe I could book a review next week?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "There's a persistent itch on my scalp that just won't go away—do you think I should see a dermatologist, or can I just book a review?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My daughter’s been complaining of stomach cramps for a couple of days, so… could we arrange a review for her sometime soon?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "The nurse said my blood work was done, but I haven't seen the letter yet—could you chase that, please?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I had a routine check last month, but I don't see any results on the portal—when will the letter be sent out?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I've noticed some puffiness in my eyes after waking up—can I book a review with an ophthalmologist?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "There's been a dull ache in my left knee that gets worse after walking, so… can you tell me who I should see next?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My son keeps getting headaches every evening—could we book a review with a GP?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I think my niece might have a rash that hasn't resolved… could I ask about the next appointment?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My throat has been sore for a week, and I’m wondering if I need to book a review or… just wait?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "There's a tingling sensation in my feet after standing for hours—can I schedule a review with a GP?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My wife had an ultrasound but hasn’t received the report—could you check if it has been sent?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m having a mild fever that only comes and goes—could I book a review in a couple of days?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "There's a buzzing sound in my ears for two days—do you know who I should see next?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My aunt has been having stomach pain after meals—can we arrange a review?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I keep feeling short of breath when I climb stairs, so… can I book a review with a respiratory specialist?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My father had a chest X‑ray but doesn’t see the letter—could you chase that for me?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "There's a persistent sore on my back that won't heal—do you think I should book a review with a GP?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My mother has a rash on her arm that hasn't faded—can I book a review with a nurse?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "The doctor said to wait for my test results, but I haven't seen them yet—when will the letter arrive?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My neighbour’s been complaining of a dull pain in her shoulder, could you book a review with a GP?",
+        "register": "third_person"
+      },
+      {
+        "text": "The mother of my cousin keeps complaining of a rash on her arm, would it be possible to arrange a nurse appointment?",
+        "register": "third_person"
+      },
+      {
+        "text": "My brother’s wife has had a persistent cough for a week; could you book her a review with a respiratory nurse?",
+        "register": "third_person"
+      },
+      {
+        "text": "There’s a red spot on my aunt’s knee that’s been swollen, can we set up an appointment with a specialist?",
+        "register": "third_person"
+      },
+      {
+        "text": "My son’s partner has been having a headache whenever she’s on the phone, could we book her a review next week?",
+        "register": "third_person"
+      },
+      {
+        "text": "The father of my friend has a tingling in his hands after working long hours, can you arrange a review with a GP?",
+        "register": "third_person"
+      },
+      {
+        "text": "My sister’s been feeling dizzy at times; could you check if she can book a review with an ENT?",
+        "register": "third_person"
+      },
+      {
+        "text": "The child in my next door’s family has a rash that hasn’t resolved, could you arrange a review with a dermatologist?",
+        "register": "third_person"
+      },
+      {
+        "text": "My neighbour’s wife has a sore throat that’s been persistent; could we set up a review with a GP?",
+        "register": "third_person"
+      },
+      {
+        "text": "There’s a sharp pain in my aunt’s lower back after she lifts boxes, can you book her a review?",
+        "register": "third_person"
+      },
+      {
+        "text": "My brother’s mother has been feeling breathless on the stairs; could you arrange a review with a respiratory specialist?",
+        "register": "third_person"
+      },
+      {
+        "text": "The daughter of my colleague keeps complaining of stomach cramps after meals, could we book a review with a GP?",
+        "register": "third_person"
+      },
+      {
+        "text": "My partner’s sister has a swelling in her ankle that’s not going away, could you schedule a review?",
+        "register": "third_person"
+      },
+      {
+        "text": "My friend’s neighbour has a persistent cough that’s been going on for a month; can you arrange a review with a GP?",
+        "register": "third_person"
+      },
+      {
+        "text": "My father’s friend has been having a buzzing in his ears, could we book a review with an audiologist?",
+        "register": "third_person"
+      },
+      {
+        "text": "The wife of my cousin has a rash on her arm that hasn't faded, could you book her a review with a nurse?",
+        "register": "third_person"
+      },
+      {
+        "text": "My brother’s mother is experiencing a mild fever that comes and goes; could you set up a review in a couple of days?",
+        "register": "third_person"
+      },
+      {
+        "text": "There’s a spot on my neighbour’s cheek that’s been inflamed, can you arrange a nurse appointment for her?",
+        "register": "third_person"
+      },
+      {
+        "text": "My sister’s partner has a dull ache in her hip after walking; could you book a review with a GP?",
+        "register": "third_person"
+      },
+      {
+        "text": "The child of my aunt has been having headaches every evening, could you arrange a review with a GP?",
+        "register": "third_person"
+      }
+    ],
+    "hospice": [
+      {
+        "text": "I was wondering what times people usually arrive for visiting the ward.",
+        "register": "oblique"
+      },
+      {
+        "text": "If I drive in, where would the best spot to park be?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do I need to fill out anything before I go down to see my aunt?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is it possible to bring a small tea set as a gift, or is that a problem?",
+        "register": "oblique"
+      },
+      {
+        "text": "Who do I talk to if I need a bus to get to the facility?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could we shift the visit to a later slot next week?",
+        "register": "oblique"
+      },
+      {
+        "text": "Will there be a limit on how many people can be inside the room?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is reception open all day, or do I need to wait for a specific window?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do I need to reserve a parking space ahead of time?",
+        "register": "oblique"
+      },
+      {
+        "text": "Where is the waiting area for people coming in?",
+        "register": "oblique"
+      },
+      {
+        "text": "If my plans change, how far ahead do I have to tell you?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you have a diagram of where the car park is laid out?",
+        "register": "oblique"
+      },
+      {
+        "text": "Will someone be able to guide me to the right wing when I get there?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a quick call I can get before I arrive to double‑check everything?",
+        "register": "oblique"
+      },
+      {
+        "text": "Which office handles the travel arrangements for a visiting family member?",
+        "register": "oblique"
+      },
+      {
+        "text": "Can I confirm the visiting hours for my dad’s unit?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a specific drop‑off point for family who arrive by car?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do we have to sign in for every visit?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could I know how to update my contact details for the next appointment?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you let me know what time I should arrive to drop my mother off at the hospice?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do we need a photo ID for each visitor?",
+        "register": "third_person"
+      },
+      {
+        "text": "Where can I find the visitor information desk on the first floor?",
+        "register": "third_person"
+      },
+      {
+        "text": "Will there be a shuttle service from the main entrance to the wards?",
+        "register": "third_person"
+      },
+      {
+        "text": "If my sister has a special mobility aid, do we need to arrange it in advance?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a waiting lounge for families with children?",
+        "register": "third_person"
+      },
+      {
+        "text": "Where should we go to register ourselves before meeting my father?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do you need to register my aunt’s name before she comes?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do I need to pick up a visitor badge before I arrive or can I get it at the reception?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "What's the best time to drop by so I don't have to wait too long to be checked in?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you tell me whether the wheelchair parking is still available on the ground floor?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Will the reception be open if I arrive at 10 pm for a quick visit, or do I have to come earlier?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "If I need to cancel a visit, what's the quickest way to do that?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a particular way to bring a small photo or keepsake? Any restrictions?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm a bit confused about the transport booking; do we have a link online to schedule a bus?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Can you confirm whether the nurse will be available for a short check‑in when we arrive?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I saw that there was a new visiting policy – do we have to sign anything new?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Will I be able to bring my own coffee for the family lounge, or is there a rule against that?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Can you tell me where the waiting area is for family members during visiting hours?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "If my brother has a different time slot next week, how do we modify it?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a drop‑off point for the ambulance that comes in the evenings?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm wondering if the hospice provides a phone number for last‑minute changes to arrival times?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a way to request a visitor pass online, or do we need to call?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could you explain the procedure for signing in at the front desk?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I need to confirm whether I should bring any ID for the security check when I come to visit.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Where would I find the parking map for the visitor lot if I'm driving?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Does the hospice have a dedicated area where we can keep our umbrellas?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a specific time window for the daily check‑in before the visitors arrive?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Can you tell me the exact visiting hours for my dad this week?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a special form I need to fill out before I come to see my mother?",
+        "register": "third_person"
+      },
+      {
+        "text": "Where should we go to pick up a visitor badge for my brother?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do I need to reserve a parking spot if I’m coming after 6 pm?",
+        "register": "third_person"
+      },
+      {
+        "text": "Who do I call to arrange a wheelchair for my aunt’s visit tomorrow?",
+        "register": "third_person"
+      },
+      {
+        "text": "May I bring my own tea into the family lounge, or is it only served there?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a separate drop‑off point for ambulances that arrive at night?",
+        "register": "third_person"
+      },
+      {
+        "text": "What’s the process for moving a scheduled visit to a different time slot?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a small storage area for coats and umbrellas while we’re in the waiting room?",
+        "register": "third_person"
+      },
+      {
+        "text": "How do we register ourselves if we’re arriving as a group of four?",
+        "register": "third_person"
+      },
+      {
+        "text": "Will each visitor need to show photo ID when checking in?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there an online way to order a visitor pass for my son?",
+        "register": "third_person"
+      },
+      {
+        "text": "Can I find a parking map on the website for the visitor lot?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is the reception still open for visits at 9 pm, or should we come earlier?",
+        "register": "third_person"
+      },
+      {
+        "text": "What’s the quickest way to cancel a visit if something comes up?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a designated spot to leave umbrellas in the visitor area?",
+        "register": "third_person"
+      },
+      {
+        "text": "Could you let me know the best time to arrive to avoid a long queue at the front desk?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do you provide a shuttle from the main entrance to the wards for visitors with mobility issues?",
+        "register": "third_person"
+      },
+      {
+        "text": "Will a nurse be on duty for a quick check‑in when we arrive, or should we speak to another staff member?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a contact number I can use for last‑minute changes to my arrival time?",
+        "register": "third_person"
+      },
+      {
+        "text": "What are the visiting hours for the hospice?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a parking lot I can use right next to the building?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do I need to bring any paperwork before I come to visit?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I change my visit from 2 pm to 3 pm?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Who is the main point of contact if I have questions?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a bus or shuttle that drops people at the hospice?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do I have to pay for parking, or is it free?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a form I need to fill out for visitors?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I bring my brother in to visit with me?",
+        "register": "colloquial"
+      },
+      {
+        "text": "What time do the visitors start and finish each day?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do I need a special pass for the parking lot?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Who should I call to book a transport slot?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I bring a cake or a small gift for the patient?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a contact person in the reception for visitors?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is the parking space on the main road or on the back?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I change the scheduled visit for my dad tomorrow?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do I need to sign any consent forms before visiting?",
+        "register": "colloquial"
+      },
+      {
+        "text": "What’s the best way to get a shuttle to the hospice?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Will there be a parking fee if I stay overnight?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a point of contact for any last‑minute changes?",
+        "register": "colloquial"
+      }
+    ],
+    "mental_health_treatment": [
+      {
+        "text": "I’m finding it hard to keep my head straight lately and was wondering if you could confirm the details for my next check‑up.",
+        "register": "oblique"
+      },
+      {
+        "text": "The night before this week was really sleepless for me and I’d love to know how to get a fit note issued.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been a little on edge and I’m unsure whether my paperwork should go to my address or be emailed.",
+        "register": "oblique"
+      },
+      {
+        "text": "There’s been a lot on my mind, could you let me know if I can arrange a callback about the referral form?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m struggling to stay alert and I would appreciate a reminder of the time for my upcoming appointment.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m feeling somewhat weary and would like to see what the deadline is for sending in the medical form.",
+        "register": "oblique"
+      },
+      {
+        "text": "It’s been a bit of a rough week, could you tell me whether the fit note is ready to be dispatched?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been having a tough night of restlessness, could you send me a quick recap of what I need to do for my appointment?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m a bit overwhelmed and would like to confirm whether the paperwork needs to be mailed or can be submitted online.",
+        "register": "oblique"
+      },
+      {
+        "text": "Sleep has been a challenge for me, could you tell me the next steps to secure a follow‑up slot?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been feeling a touch drained and I’m unsure if the fit note will be available before the deadline.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m not very well rested, could you remind me who I should contact to get a callback for the form?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been having a few sleepless nights and I’d love a brief rundown of when my next appointment is scheduled.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m feeling a little unsettled and I’d appreciate a quick email with the details of my referral form.",
+        "register": "oblique"
+      },
+      {
+        "text": "It’s been difficult to keep my thoughts steady; could you confirm if the fit note is already processed?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been a little anxious and would like to know if I need to reschedule my next visit.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m finding it hard to concentrate and would like to understand how to receive a fit note by post.",
+        "register": "oblique"
+      },
+      {
+        "text": "Sleep hasn’t come easily this month, could you let me know the exact time for my upcoming appointment?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’ve been feeling a bit stressed and would appreciate a simple reminder of what paperwork I need to submit.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m having trouble sleeping and would love a quick confirmation on whether a callback can be arranged.",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m feeling a bit overwhelmed and was wondering if you could confirm the date for my father's follow‑up.",
+        "register": "third_person"
+      },
+      {
+        "text": "My mother is having trouble sleeping, can you tell me how to arrange a fit note for her?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m really anxious about my partner's paperwork, can you send me the form by post?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’ve been restless lately, could you let me know if the callback for my neighbour’s check‑up is booked?",
+        "register": "third_person"
+      },
+      {
+        "text": "My son has been feeling low and I need to book a follow‑up appointment, but I’m not sure how to do it.",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m worried because I can’t sleep, could you remind me what the deadline is for the medical form for my daughter?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’ve been feeling stressed and would like to request a fit note for my aunt—what’s the process?",
+        "register": "third_person"
+      },
+      {
+        "text": "My wife has been sleepless, can you tell me where I can pick up the paperwork for her appointment?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m not sleeping at all and need a quick confirmation of my brother’s next appointment time.",
+        "register": "third_person"
+      },
+      {
+        "text": "My neighbour's child has been anxious and I’d like to arrange a callback for the vaccination records.",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m feeling low and could use a reminder of the steps to book a follow‑up for my sister’s test.",
+        "register": "third_person"
+      },
+      {
+        "text": "My father is under a lot of stress, can you tell me how to order a fit note for him?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’ve been worrying a lot, can you confirm whether the form for my daughter's dental check has been sent?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m anxious and my partner’s appointment is coming up—could you put me on the callback list?",
+        "register": "third_person"
+      },
+      {
+        "text": "My child hasn't been sleeping, can you let me know how to get a fit note for the school visit?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m feeling overwhelmed and need to know if my neighbour’s follow‑up has been scheduled.",
+        "register": "third_person"
+      },
+      {
+        "text": "My mother’s been feeling low and I’d like to book a callback for her review—what’s the next step?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m not sleeping and want to find out when the fit note for my wife will be ready.",
+        "register": "third_person"
+      },
+      {
+        "text": "My brother is stressed, could you tell me what documents I need to submit for his next appointment?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m anxious about my daughter's paperwork—can you forward me the form and confirm the deadline?",
+        "register": "third_person"
+      },
+      {
+        "text": "Been pretty stressed lately, could you confirm the date for my next check‑up?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I can't seem to get any sleep, would love to know if my fit note is ready.",
+        "register": "colloquial"
+      },
+      {
+        "text": "Feeling a bit low today, could you send me the paperwork for the appointment?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I'm on edge and need to reschedule my follow‑up, what are the options?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My nights have been restless; can you remind me of the deadline to turn in my form?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I'm worried about my daughter’s appointment, can you put us on the callback list?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Feeling anxious, can you tell me what I need to do to book a fit note for my dad?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Not sleeping well – can you check if my follow‑up has been confirmed?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I've been feeling overwhelmed, could you send me the form for my son's next visit?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I'm stressed about the paperwork for my partner's appointment, could you explain how to submit it?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m feeling a little down, would you mind putting me back on the callback queue for my mum's test?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can't focus on the form because I'm anxious, can you give me the details for my next visit?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Sleep’s been awful, can you let me know when the fit note will arrive?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m feeling low and need to know how to reschedule my appointment for my sister.",
+        "register": "colloquial"
+      },
+      {
+        "text": "I've been uneasy about filling out the form; can you walk me through the steps?",
+        "register": "colloquial"
+      },
+      {
+        "text": "My mind's racing – could you confirm the timing of my follow‑up for my wife?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m not sleeping, and I need to get a callback about my brother's check‑up – can you arrange it?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Feeling stressed and forgetful, can you remind me where to upload the form online?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’ve been anxious, can you tell me if I can book a fit note for my mum and how to do it?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I'm having trouble sleeping and want to see if my appointment can be moved – can you help?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Um, I’ve been having some trouble sleeping and was just wondering if the fit note is already ready.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m, uh, feeling a bit low right now, but can you tell me when my next appointment’s scheduled?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Honestly, I can’t seem to rest, so could you maybe put me down for a callback later?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’ve been a little anxious about the paperwork, can you confirm the deadline for submitting the form?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Just to clarify, I’m not looking for therapy – just need to know if I can get the fit note sent to me.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m, like, feeling a bit overwhelmed, but could you tell me if I can reschedule my follow‑up?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’ve been staying up all night, and I’m not sure if the form is ready… can you let me know?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm having some stress about the appointment, so could you maybe confirm the time again?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I was just, um, feeling a little low, but could you explain how to request a callback?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "It’s been difficult to sleep lately, so I’m wondering whether I should ask for a new appointment?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My mind’s a bit restless – could you remind me what paperwork I need to bring?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m feeling stressed and can’t focus on the form, could you perhaps mail it to me instead?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I can’t seem to settle down, but I’d like to know if I can get a fit note for my father.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm feeling a bit anxious about the test results, could you let me know when the next appointment is?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Um… I've been worried about my son’s fatigue, do I need to book a follow‑up and can I get a callback?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m, uh, not sleeping well, and I just want to confirm if the appointment’s still on.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’ve been feeling low, can you tell me what steps I need to take for a fit note?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I'm a bit stressed, could you confirm the details for the follow‑up form?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I was just, oh sorry, I mean… can you arrange a callback to discuss the paperwork?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "My sleep’s been off and I’m unsure whether I should get a new fit note – can you tell me?",
+        "register": "transcript_messy"
+      }
+    ],
+    "under_two": [
+      {
+        "text": "I was wondering if a small child could stay with me while I’m in the consultation room.",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you have a small seating area that’s safe for a toddler during the waiting time?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you let me know if the parking lot allows a car with a child seat inside?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a spot in the lobby where a baby can be kept while I wait?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’d like to see if a stroller can be stored near the front desk.",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you have a quiet corner for a child to nap while I am there?",
+        "register": "oblique"
+      },
+      {
+        "text": "Can I bring a little one and use a high‑chair in the waiting room?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’m trying to figure out if a child can stay in the waiting area during my appointment.",
+        "register": "oblique"
+      },
+      {
+        "text": "Would it be possible to adjust my slot if my toddler has a different schedule?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a dedicated entry for parents who might need to bring a baby?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you allow a small vehicle with a child seat to park close to the entrance?",
+        "register": "oblique"
+      },
+      {
+        "text": "Can I leave my infant in a cradle provided by the clinic while I am waiting?",
+        "register": "oblique"
+      },
+      {
+        "text": "Would a quick diaper change be possible in a designated area?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a way to keep a child safe while I am in the consultation room?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could you tell me where a stroller can be left when not in use?",
+        "register": "oblique"
+      },
+      {
+        "text": "Do you provide a small bench for a child to sit on while we wait?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a suitable space for a toddler to play quietly in the waiting area?",
+        "register": "oblique"
+      },
+      {
+        "text": "I’d like to find out if a child can be with me while I am in the front office.",
+        "register": "oblique"
+      },
+      {
+        "text": "Will I be able to leave my little one with a nurse while I wait?",
+        "register": "oblique"
+      },
+      {
+        "text": "Is there a time that’s less busy for families with babies?",
+        "register": "oblique"
+      },
+      {
+        "text": "Could I bring my baby in a sling when I come in for my check‑up this week?",
+        "register": "third_person"
+      },
+      {
+        "text": "Do you have a designated stroller bay near the main entrance?",
+        "register": "third_person"
+      },
+      {
+        "text": "Will there be a suitable spot for a child to sit while I’m in the consultation room?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’ll be driving with my child seat – is the parking lot accessible for that?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a quiet corner in the waiting area where my 18‑month‑old can nap?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’ll be arriving early – could I leave my toddler in reception while I finish my paperwork?",
+        "register": "third_person"
+      },
+      {
+        "text": "What’s the policy on keeping a baby in a carrier while moving through the clinic?",
+        "register": "third_person"
+      },
+      {
+        "text": "If I need to change a diaper, where’s the nearest convenient spot?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is it possible to reschedule my appointment because my child’s playdate clashes?",
+        "register": "third_person"
+      },
+      {
+        "text": "Does the clinic have a small playmat for toddlers to stay put while waiting?",
+        "register": "third_person"
+      },
+      {
+        "text": "Will the car park allow a vehicle with an infant seat inside, and how close will it be to the front?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’d like to bring my daughter in a baby‑wrap – can I use the regular desk area?",
+        "register": "third_person"
+      },
+      {
+        "text": "Are there any special parking spaces for families with small children?",
+        "register": "third_person"
+      },
+      {
+        "text": "Could you let me know if the waiting room has a separate zone for parents with young kids?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is it acceptable to leave my baby at the nurse’s desk while I am checked in?",
+        "register": "third_person"
+      },
+      {
+        "text": "I need to change my child’s nappy during the appointment – does the consultation room provide a changing area?",
+        "register": "third_person"
+      },
+      {
+        "text": "What time is best for me to arrive if I need to do a quick feeding beforehand?",
+        "register": "third_person"
+      },
+      {
+        "text": "Is there a high‑chair or baby‑seat available in the reception area for us to use?",
+        "register": "third_person"
+      },
+      {
+        "text": "Will you allow me to leave my child with a staff member while I wait for my own appointment?",
+        "register": "third_person"
+      },
+      {
+        "text": "I’m wondering if the clinic offers a child‑friendly waiting zone where a two‑year‑old can play safely.",
+        "register": "third_person"
+      },
+      {
+        "text": "Can I drop my baby off at the front desk and keep a spot in the waiting room?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Will a child’s stroller fit in the car park next to the clinic?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’ve got a little one with me – can I bring them into the consultation room?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a quiet corner for toddlers in the reception area?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I change my appointment time to avoid my baby’s nap break?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Would it be okay to have my son in a baby wrap while I’m in the clinic?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you have a separate entrance for parents with infants?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Will the parking space accommodate a car with a child seat?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I bring a baby to the appointment and use the nurse’s area?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you allow a baby to sit in the waiting room while I check in?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a designated spot for a stroller near the reception desk?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Could I reschedule my appointment if my baby’s feeding schedule clashes?",
+        "register": "colloquial"
+      },
+      {
+        "text": "What’s the best time to visit if my toddler needs a quick change?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Do you have a small chair for a child under three in the waiting area?",
+        "register": "colloquial"
+      },
+      {
+        "text": "I’m planning to bring a toddler – can they stay in the reception while I’m out?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Would you mind if my baby was in a carrier while I wait for my appointment?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Is there a special parking slot for families with young children?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Can I bring a baby in a bassinet to the consultation?",
+        "register": "colloquial"
+      },
+      {
+        "text": "How can I keep my child safe while waiting in the clinic?",
+        "register": "colloquial"
+      },
+      {
+        "text": "Could I park in a car‑park bay that has space for a small car with a rear‑seat?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a quiet corner in the waiting room where a little one could nap?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m not sure if the reception can hold a baby – do you have any small chairs?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you have a place for a child to be with me while I’m in the consultation?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’d love to bring my son in a stroller – will that fit in the waiting area?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a baby‑proofing kit in the clinic that I could use?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Could we shift my slot if I need to look after my toddler at the same time?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you allow a child to stay with a nurse in the waiting room?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "What’s the best time to arrive if I need to change a nappy while I’m there?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a dedicated entrance for parents with infants or small children?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I was wondering if there’s a baby‑cot or a play‑area near the front desk?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Can I bring a baby wrap into the clinic and use it while I wait?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’m planning to drop my baby off at the front desk – is that okay?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a high‑chair available in the reception for quick feeding?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you have a parking space that’s suitable for a parent with a child seat?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Would it be possible to use a baby carrier while I’m in my appointment?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I’d like to know if there’s a small seating area for a child under three.",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Is there a baby‑friendly waiting area where I can do a quick diaper change?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "Do you provide a quiet room for a toddler while I am in the appointment?",
+        "register": "transcript_messy"
+      },
+      {
+        "text": "I need to reschedule my appointment if my babysitter isn’t available – can we do that?",
+        "register": "transcript_messy"
+      }
+    ]
+  }
+}

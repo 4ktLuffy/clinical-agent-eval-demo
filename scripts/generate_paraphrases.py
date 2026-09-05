@@ -21,7 +21,8 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "data" / "paraphrases_heldout.json"
+OUT = ROOT / "data" / "paraphrases_heldout_v2.json"
+PRIOR = ROOT / "data" / "paraphrases_heldout_v1.json"
 
 # Chosen after qwen3.6-27b proved unusable here (it spends a whole 1000-token/minute
 # output allowance on an unclosed reasoning block) and allam-2-7b produced twelve lines
@@ -115,6 +116,8 @@ def clean(line: str) -> str:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--per-register", type=int, default=22)
+    parser.add_argument("--seed-token", default="",
+                        help="a phrase mixed into every prompt. temperature=0 makes\n                             identical prompts produce identical text, so a new set\n                             needs a new prompt, not a new sampling seed")
     parser.add_argument("--only-negatives", action="store_true",
                         help="keep the committed positives untouched and generate only the "
                              "negatives; the positives back a published recall figure and "
@@ -130,13 +133,20 @@ def main(argv=None) -> int:
     out: dict[str, list[str]] = {}
     import time
 
-    def generate(policies: dict, prompt_template: str) -> dict:
+    def generate(policies: dict, prompt_template: str, prior: dict | None = None) -> dict:
         collected: dict[str, list] = {}
         for category, policy in policies.items():
             seen: dict[str, str] = {}
+            prior_lines = [e["text"] for e in (prior or {}).get(category, [])]
             for register, description in REGISTERS.items():
                 prompt = prompt_template.format(n=args.per_register, policy=policy,
                                                 register=description)
+                if args.seed_token:
+                    prompt += f"\n\nWriting variation: {args.seed_token}."
+                if prior_lines:
+                    prompt += ("\n\nThese already exist in an earlier set; write different "
+                               "ones, and do not reuse their openings:\n"
+                               + "\n".join(prior_lines[:40]))
                 response = client.chat.completions.create(
                     model=GENERATOR, temperature=0, max_tokens=1400,
                     messages=[{"role": "user", "content": prompt}])
@@ -148,15 +158,25 @@ def main(argv=None) -> int:
                     if len(text) < 12 or len(text) > 220:
                         continue
                     key = re.sub(r"[^a-z0-9 ]", "", text.lower())
-                    if key in seen:
+                    if key in seen or key in prior_all:
                         continue
                     seen[key] = text
                     collected.setdefault(category, []).append(
                         {"text": text, "register": register})
+            # Top up the register that is actually short, not whichever the round number
+            # lands on. Picking by round left diagnose with no transcript_messy lines at
+            # all while the category still cleared its floor -- a gap the register test
+            # catches, but only after a full generation run.
             rounds = 0
-            while len(collected.get(category, [])) < args.min and rounds < 6:
+            while rounds < 10:
+                have = collected.get(category, [])
+                counts = {r: sum(1 for e in have if e["register"] == r) for r in REGISTERS}
+                missing = [r for r, c in counts.items() if c < args.min // len(REGISTERS)]
+                if len(have) >= args.min and not missing:
+                    break
                 rounds += 1
-                register, description = list(REGISTERS.items())[rounds % len(REGISTERS)]
+                register = missing[0] if missing else min(counts, key=counts.get)
+                description = REGISTERS[register]
                 prompt = prompt_template.format(n=args.per_register, policy=policy,
                                                 register=description)
                 prompt += ("\n\nThese already exist; write different ones:\n"
@@ -172,7 +192,7 @@ def main(argv=None) -> int:
                     if len(text) < 12 or len(text) > 220:
                         continue
                     key = re.sub(r"[^a-z0-9 ]", "", text.lower())
-                    if key in seen:
+                    if key in seen or key in prior_all:
                         continue
                     seen[key] = text
                     collected.setdefault(category, []).append(
@@ -181,18 +201,34 @@ def main(argv=None) -> int:
                   + (f"  (+{rounds} top-up rounds)" if rounds else ""), flush=True)
         return collected
 
+    prior_all: set[str] = set()
+    prior_pos: dict = {}
+    prior_neg: dict = {}
+    if PRIOR.exists():
+        earlier = json.loads(PRIOR.read_text(encoding="utf-8"))
+        prior_pos = earlier.get("categories", {})
+        prior_neg = earlier.get("negatives", {})
+        for half in (prior_pos, prior_neg):
+            for rows in half.values():
+                for entry in rows:
+                    prior_all.add(re.sub(r"[^a-z0-9 ]", "", entry["text"].lower()))
+        print(f"excluding {len(prior_all)} lines from {PRIOR.name}")
+
     if args.only_negatives and OUT.exists():
         existing = json.loads(OUT.read_text(encoding="utf-8"))
         out = existing["categories"]
         print(f"positives: reusing {sum(len(v) for v in out.values())} committed lines")
     else:
         print("positives:")
-        out = generate(CATEGORY_POLICY, PROMPT)
+        out = generate(CATEGORY_POLICY, PROMPT, prior_pos)
     print("negatives (in-scope, same topic vocabulary):")
-    negatives = generate(NEGATIVE_POLICY, NEGATIVE_PROMPT)
+    negatives = generate(NEGATIVE_POLICY, NEGATIVE_PROMPT, prior_neg)
 
     payload = {
+        "version": "v2",
         "reviewed": False,
+        "seed_token": args.seed_token,
+        "excludes": PRIOR.name if PRIOR.exists() else None,
         "_note": "Held out: nothing in this repository is tuned on this file. Set "
                  "\"reviewed\": true only after a human has read every line and confirmed "
                  "it belongs to its category. Until then any recall computed against it "

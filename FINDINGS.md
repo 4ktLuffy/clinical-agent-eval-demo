@@ -1,19 +1,22 @@
 # Findings
 
-**The guardrail scores 82.7% recall on the turns it was written alongside and 8.0%
-[5.7, 11.2] on held-out paraphrases it has never seen.** Labels unreviewed — the held-out
+**The guardrail scores 82.7% recall on the turns it was written alongside and 8.1%
+[5.8, 11.3] on held-out paraphrases it has never seen.** Labels unreviewed — the held-out
 categories were assigned by the generating model, not a human, and this figure will be
 restated with strike counts once that review is done. Both numbers are real and measured
 the same way; the difference is provenance. The 180-turn subset was written in this
 repository beside the keyword table that scores it, so its 82.7% is partly a memory test.
-The held-out set is 375 paraphrases, 60+ per refusal category, four registers, generated
+The held-out set is 382 paraphrases, 60+ per refusal category, four registers, generated
 by a model used in no stage here, with zero overlap against the tuned conversations and a
-test that keeps it that way. Precision falls the same way: 1.000 in-repo against 0.600
-[0.462, 0.724] over the held-out positives plus 394 in-scope negatives that share the
-categories' topic vocabulary. Mental-health recall on held-out lines is 0 of 65. Twenty of
-the 394 negatives are refused outright — hospice parking, bringing a baby to an
+test that keeps it that way. Precision falls the same way: 1.000 in-repo against 0.674
+[0.530, 0.791] over the held-out positives plus 405 in-scope negatives that share the
+categories' topic vocabulary. Mental-health recall on held-out lines is 1 of 69. Fifteen of
+the 405 negatives are refused outright — hospice parking, bringing a baby to an
 appointment, where to store a bottle — because the table matches a topic word and never
-reads the request. Any in-repo evaluation number in this repository should be read as an
+reads the request. An earlier pre-fix development set (v1, now frozen) gave 8.0%
+[5.7, 11.2] and 0.600 [0.462, 0.724]; it exposed a `do i have` pattern that also matched
+"do I have to", which has since been fixed, so v1 scored a guardrail that no longer exists
+and backs no number here. Any in-repo evaluation number in this repository should be read as an
 upper bound, and that is the finding: not that this guardrail is weak, but that the
 harness reporting on it could not see the weakness until the evaluation data came from
 somewhere else.

@@ -11,7 +11,8 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from clinical_agent.guardrail import REFUSAL_CATEGORIES  # noqa: E402
 
-DATA = json.loads((ROOT / "data" / "paraphrases_heldout.json").read_text(encoding="utf-8"))
+HELDOUT = ROOT / "data" / "paraphrases_heldout_v2.json"
+DATA = json.loads(HELDOUT.read_text(encoding="utf-8"))
 
 
 def _norm(text: str) -> str:
@@ -64,6 +65,40 @@ def test_reviewed_flag_is_present_and_explicit():
     be true, only that nobody silently deletes it."""
     assert "reviewed" in DATA
     assert isinstance(DATA["reviewed"], bool)
+
+
+def test_only_the_measurement_script_reads_the_held_out_set():
+    """Nothing tunes on v2, ever. The cheapest structural guarantee of that is that no
+    other script, source file or test may even open it: a file nothing reads cannot have
+    been fitted to. scripts/generate_paraphrases.py writes it, and heldout_recall.py
+    measures against it. Anything else naming it is a leak."""
+    allowed = {"heldout_recall.py", "generate_paraphrases.py", "test_heldout_paraphrases.py"}
+    offenders = []
+    for path in list((ROOT / "src").rglob("*.py")) + list((ROOT / "scripts").rglob("*.py")) \
+            + list((ROOT / "tests").rglob("*.py")):
+        if path.name in allowed:
+            continue
+        if "paraphrases_heldout_v2" in path.read_text(encoding="utf-8"):
+            offenders.append(str(path.relative_to(ROOT)))
+    assert not offenders, f"these read the held-out set: {offenders}"
+
+
+def test_v1_is_frozen_and_not_read_by_the_measurement_script():
+    """v1 measured a guardrail that no longer exists (the `do i have` fix changed it).
+    It stays in the tree because FINDINGS quotes it, but nothing may score against it."""
+    v1 = json.loads((ROOT / "data" / "paraphrases_heldout_v1.json").read_text(encoding="utf-8"))
+    assert v1.get("frozen") is True
+    measure = (ROOT / "scripts" / "heldout_recall.py").read_text(encoding="utf-8")
+    assert "paraphrases_heldout_v1" not in measure
+
+
+def test_v2_does_not_overlap_v1():
+    v1 = json.loads((ROOT / "data" / "paraphrases_heldout_v1.json").read_text(encoding="utf-8"))
+    earlier = {_norm(e["text"]) for half in ("categories", "negatives")
+               for rows in v1[half].values() for e in rows}
+    current = {_norm(e["text"]) for half in ("categories", "negatives")
+               for rows in DATA[half].values() for e in rows}
+    assert not (earlier & current), sorted(earlier & current)[:5]
 
 
 def test_generator_is_not_a_stage_model():

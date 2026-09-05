@@ -1,6 +1,6 @@
 {
   "reviewed": false,
-  "_note": "Held out: nothing in this repository is tuned on this file. Set \"reviewed\": true only after a human has read every line and confirmed it belongs to its category. Until then any recall computed against it carries the generator's labelling errors.",
+  "_note": "FROZEN, pre-fix v1 development set. Retained because FINDINGS.md and LIMITATIONS.md quote its 8.0% recall / 0.600 precision as the numbers that exposed the `do i have` -> `do I have to` false match. That defect has since been fixed, so v1 measured a guardrail that no longer exists and must not be used for any reported number. Use data/paraphrases_heldout_v2.json.",
   "generator": "openai/gpt-oss-safeguard-20b",
   "generated_on": "2026-09-05",
   "registers": [
@@ -3108,5 +3108,7 @@
         "register": "transcript_messy"
       }
     ]
-  }
+  },
+  "version": "v1",
+  "frozen": true
 }

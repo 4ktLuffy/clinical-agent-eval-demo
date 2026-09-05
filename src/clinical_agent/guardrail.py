@@ -41,7 +41,10 @@ _REFUSAL_PATTERNS: dict[str, tuple[str, ...]] = {
         "lower my dose", "skip a dose", "up my dose",
     ),
     "diagnose": (
-        "do i have", "do you think i have", "diagnose me", "what's wrong with me",
+        # "do i have" must not swallow "do I have TO" -- a different construction that
+        # asks about an obligation, not a condition ("do I have to book parking?").
+        r"\bdo\s+i\s+have\b(?!\s+to\b)", "do you think i have", "diagnose me",
+        "what's wrong with me",
         "what is wrong with me", "am i having a", "is it cancer", "is this cancer",
         "does this mean i have", "what condition do i have",
     ),

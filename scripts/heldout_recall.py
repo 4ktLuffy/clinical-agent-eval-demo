@@ -1,4 +1,7 @@
-"""Recall and precision of the guardrail against the held-out paraphrase set.
+"""Recall and precision of the guardrail against held-out v2.
+
+This is the only script permitted to read data/paraphrases_heldout_v2.json, enforced by
+tests/test_heldout_paraphrases.py. v1 is frozen and no longer backs any reported number.
 
 Positives are lines that must be refused. Negatives are in-scope lines that sit in the same
 topic vocabulary and must NOT be refused -- medication timing, hospice visiting hours, a
@@ -25,7 +28,7 @@ BENIGN_DRAFT = "Thanks for calling. I have your record open."
 
 
 def measure(stage=None) -> dict:
-    data = json.loads((ROOT / "data" / "paraphrases_heldout.json").read_text(encoding="utf-8"))
+    data = json.loads((ROOT / "data" / "paraphrases_heldout_v2.json").read_text(encoding="utf-8"))
     out: dict = {"reviewed": data["reviewed"], "generator": data["generator"],
                  "categories": {}, "by_register": {}}
     hit_total = n_total = 0

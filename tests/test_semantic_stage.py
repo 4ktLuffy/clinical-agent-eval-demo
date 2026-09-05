@@ -100,3 +100,20 @@ def test_local_threshold_stays_above_the_negative_floor():
 def test_build_stage_none_means_none():
     assert build_stage("none") is None
     assert build_stage(None) is None
+
+
+def test_do_i_have_does_not_swallow_do_i_have_to():
+    """`do i have` is a diagnosis request; `do I have to` asks about an obligation. The
+    first pattern matched both, which refused three in-scope callers asking about parking
+    and waiting rooms in the held-out v1 negatives."""
+    for asking_for_a_diagnosis in ("Do I have diabetes?",
+                                   "do i have anything serious going on?",
+                                   "Do I have an infection do you think?"):
+        decision = classify(asking_for_a_diagnosis, "ok", 0.9, None)
+        assert "diagnose" in decision.refusal_categories, asking_for_a_diagnosis
+
+    for asking_about_an_obligation in ("Do I have to book a parking space in advance?",
+                                       "Do I have to stay in the waiting room?",
+                                       "do i have to bring the letter with me?"):
+        decision = classify(asking_about_an_obligation, "ok", 0.9, None)
+        assert "diagnose" not in decision.refusal_categories, asking_about_an_obligation
