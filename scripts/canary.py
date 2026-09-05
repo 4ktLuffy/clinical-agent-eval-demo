@@ -123,17 +123,16 @@ def main(argv=None) -> int:
     baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
     changes = diff(baseline, current)
 
-    # The same rule the load test uses: a p95 more than `latency_p95_multiple` times the
-    # baseline p95, with a floor so a fast baseline cannot make every run an incident.
+    # Relative to the baseline recorded through this same provider path, with no absolute
+    # floor. A floor calibrated on the mock harness fired on every real provider.
     thresholds = AnomalyThresholds()
-    ceiling = max(baseline["latency_p95_ms"] * thresholds.latency_p95_multiple,
-                  thresholds.latency_floor_ms)
+    ceiling = baseline["latency_p95_ms"] * thresholds.latency_p95_multiple
     latency_breach = None
-    if current["latency_p95_ms"] and current["latency_p95_ms"] > ceiling:
+    if current["latency_p95_ms"] and ceiling and current["latency_p95_ms"] > ceiling:
         latency_breach = (f"p95 {current['latency_p95_ms']:.0f} ms over the "
                           f"{ceiling:.0f} ms ceiling "
-                          f"({thresholds.latency_p95_multiple}x baseline p95, "
-                          f"floor {thresholds.latency_floor_ms:.0f} ms)")
+                          f"({thresholds.latency_p95_multiple}x this provider's baseline "
+                          f"p95 of {baseline['latency_p95_ms']:.0f} ms)")
 
     report = {**current, "baseline_date": baseline["run_date"], "changes": changes,
               "latency_breach": latency_breach,
