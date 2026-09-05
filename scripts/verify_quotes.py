@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
-"""Assert every phrase the README quotes from the job posting is verbatim.
+"""Assert every phrase the README quotes from Hippocratic AI is verbatim.
 
-The posting text is pinned here rather than fetched, so the check is deterministic and
-offline. If the posting changes, this file is what gets updated, deliberately.
+Two sources, both pinned here rather than fetched, so the check is deterministic and
+offline: the Forward Deployed Engineer posting, and the company figures from the PR
+Newswire release of mid-August 2026, "Orchestrators Focused on Outcomes". If either
+source changes, this file is what gets updated, deliberately.
+
+Company figures are checked in both directions -- present in the README, and matching the
+pinned release -- and superseded figures are checked for absence. An out-of-date number in
+a document that argues for accuracy is the one error the document cannot survive.
 """
 
 from __future__ import annotations
@@ -36,6 +42,13 @@ QUOTES = [
 ]
 
 
+# PR Newswire, mid-August 2026, "Orchestrators Focused on Outcomes".
+COMPANY_FIGURES = ("$444M", "250M+", "300+")
+
+# Figures these replaced. Any of them still in the README means the refresh was partial.
+SUPERSEDED = ("$404M", "$126M", "180 million", "180m", "1.8 million", "7 million")
+
+
 def main() -> int:
     readme = re.sub(r"\s+", " ", (ROOT / "README.md").read_text(encoding="utf-8"))
     failures = []
@@ -46,11 +59,19 @@ def main() -> int:
             failures.append(f"quoted phrase missing from README: {quote!r}")
     if "before customers notice" in readme:
         failures.append("README says 'before customers notice'; the posting says 'do'")
+    for figure in COMPANY_FIGURES:
+        if figure not in readme:
+            failures.append(f"company figure missing from README: {figure!r}")
+    for stale in SUPERSEDED:
+        if stale in readme:
+            failures.append(f"superseded figure still in README: {stale!r}")
     if failures:
         for failure in failures:
             print("  " + failure, file=sys.stderr)
         return 1
-    print(f"quote check passed: {len(QUOTES)} phrases verbatim and present")
+    print(f"quote check passed: {len(QUOTES)} phrases verbatim and present, "
+          f"{len(COMPANY_FIGURES)} company figures current, "
+          f"{len(SUPERSEDED)} superseded figures absent")
     return 0
 
 
