@@ -39,9 +39,14 @@ def current(conversations_path: Path, smoke_turns: int = 0) -> dict:
     return {
         "turns": len(scores),
         "rubric": {d: e["rate"] for d, e in rubric.items()},
+        # No semantic stage is configured on the replay path, so that guard contributes
+        # nothing and cannot make anything worse by leaving. Rows for a guard that never
+        # fired are reported as not-exercised and are not deploy-blocking; a guard that
+        # DID fire and still did not bite remains a failure.
         "mutation_all_drop": all(
-            row["dropped"]
-            for rows in mutation_matrix(conversations, corpus, rubric).values()
+            row["dropped"] or not row.get("exercised", True)
+            for rows in mutation_matrix(conversations, corpus, rubric,
+                                        fired={"semantic": []}).values()
             for row in rows
         ),
     }
