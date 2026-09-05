@@ -15,6 +15,7 @@ from pathlib import Path
 from clinical_agent.agent import PROMPT
 from clinical_agent.budget import BudgetExhausted, CallBudget, RateLimited
 from clinical_agent.guardrail import REFUSAL_CATEGORIES, classify
+from clinical_agent.phi import scrub_for_log
 from clinical_agent.rag import Corpus, retrieval_threshold
 from eval.rubric import DIMENSIONS, aggregate, score_turn
 from eval.stats import scored, wilson
@@ -381,7 +382,7 @@ def main(argv: list[str] | None = None) -> int:
     if axes:
         with (args.out / "drafts.jsonl").open("w", encoding="utf-8") as handle:
             for row in axes:
-                handle.write(json.dumps(row) + "\n")
+                handle.write(json.dumps(scrub_for_log(row)) + "\n")
     (args.out / "conversation-eval.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     (args.out / "conversation-eval.md").write_text(render(report), encoding="utf-8")
     print(render(report))

@@ -41,8 +41,8 @@ provider-nondeterministic across identical temperature=0 runs.
 
 ### Semantic second stage
 
-Runs only where the phrase table is uncertain — no turn-side match, or any draft-side hit — and
-can only add categories, never clear one. Held-out v2 results in [`LIMITATIONS.md`](LIMITATIONS.md).
+Runs only where the phrase table is uncertain, and can only add categories, never clear one.
+Held-out v2 results in [`LIMITATIONS.md`](LIMITATIONS.md).
 
 | Stage | Refusal P | Refusal R | Misses | Of the 9 |
 |---|---|---|---|---|

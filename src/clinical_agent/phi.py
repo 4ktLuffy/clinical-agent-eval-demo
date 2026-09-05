@@ -18,6 +18,16 @@ _EMAIL = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.]{2,}\b")
 _PHONE = re.compile(r"\b(?:\+?\d{1,2}[-. ])?\(?\d{3}\)?[-. ]?\d{3}[-. ]?\d{4}\b")
 _SSN = re.compile(r"\b\d{3}-\d{2}-\d{4}\b")
 _DATE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
+# Record-number shapes a caller or a model might echo back in free text. Deliberately
+# narrow: it must not eat ordinary numbers like "take 2 tablets" or "in 6 weeks".
+_MRN = re.compile(
+    r"\b(?:MRN|NHS(?:\s+number)?|record\s+number|patient\s+(?:id|number))\b"
+    r"(?:\s+(?:is|no\.?|number|#))?[:\s#]*([A-Z]{0,3}\d[\d\s-]{4,}\d)",
+    re.I)
+# UK landline/mobile shapes. Anchored on a leading 0 and 10-11 digits so it cannot eat
+# "take 2 tablets" or "in 6 weeks".
+_UK_PHONE = re.compile(r"\b0\d{2,4}[\s-]?\d{3,4}[\s-]?\d{3,4}\b")
+_UK_DOB = re.compile(r"\b\d{1,2}[/-]\d{1,2}[/-]\d{4}\b")
 
 # FHIR element names whose values are identifying regardless of content.
 IDENTIFYING_KEYS = {
@@ -38,6 +48,35 @@ CLINICAL_KEYS = {
     "doseAndRate", "doseQuantity", "unit", "valueQuantity", "effectiveDateTime",
     "issued", "interpretation", "referenceRange", "low", "high", "component",
 }
+
+
+def scrub_for_log(value: Any) -> Any:
+    """Session-less redaction applied at the logging boundary, to anything about to be
+    written to a report, a telemetry line or an artifact.
+
+    The Redactor tokenises typed FHIR elements on the way OUT of the tool surface. This is
+    the second boundary: free text that a model wrote, or a caller said, which can carry an
+    identifier no schema marked as one. Tokens here are fixed strings rather than the
+    Redactor's per-session counters, because a log line must not depend on which session
+    wrote it.
+
+    Names are not pattern-matchable and are NOT handled here. They are kept out by never
+    putting an unredacted name into the prompt in the first place; this function is the
+    backstop for the shapes that can be matched.
+    """
+    if isinstance(value, dict):
+        return {k: scrub_for_log(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [scrub_for_log(v) for v in value]
+    if isinstance(value, str):
+        text = _MRN.sub("[MRN]", value)
+        text = _EMAIL.sub("[EMAIL]", text)
+        text = _SSN.sub("[SSN]", text)
+        text = _PHONE.sub("[PHONE]", text)
+        text = _UK_PHONE.sub("[PHONE]", text)
+        text = _UK_DOB.sub("[DOB]", text)
+        return _DATE.sub("[DATE]", text)
+    return value
 
 
 @dataclass

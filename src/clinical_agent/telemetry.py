@@ -14,6 +14,8 @@ from pathlib import Path
 from statistics import median
 from typing import Any, Sequence
 
+from clinical_agent.phi import scrub_for_log
+
 
 @dataclass(frozen=True)
 class AnomalyThresholds:
@@ -63,6 +65,7 @@ class TelemetryLog:
             "operational_escalation": decision.operational_escalation,
             "operational_reason": decision.operational_reason,
         }
+        row = scrub_for_log(row)
         self._handle.write(json.dumps(row) + "\n")
         self.records.append(row)
         return row

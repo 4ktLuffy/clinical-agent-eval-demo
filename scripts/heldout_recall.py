@@ -43,6 +43,20 @@ def stratified(rows_by_category: dict, n: int, seed: int) -> dict:
     return out
 
 
+def sample_positives(n: int, seed: int = 20260905) -> list[dict]:
+    """The sanctioned way for another script to obtain held-out v2 lines.
+
+    v2 is read by this module and no other -- tests/test_heldout_paraphrases.py enforces
+    that -- so anything needing a slice asks here rather than opening the file. Callers get
+    inputs to run against; nothing about the set is tunable through this door.
+    """
+    data = json.loads((ROOT / "data" / "paraphrases_heldout_v2.json").read_text(encoding="utf-8"))
+    sliced = stratified(data["categories"], n, seed)
+    return [{"id": f"v2-{category}-{i}", "text": row["text"], "category": category,
+             "register": row["register"], "set": "v2"}
+            for category, rows in sorted(sliced.items()) for i, row in enumerate(rows)]
+
+
 def measure(stage=None, sample: int = 0, seed: int = 20260905) -> dict:
     data = json.loads((ROOT / "data" / "paraphrases_heldout_v2.json").read_text(encoding="utf-8"))
     if sample:
