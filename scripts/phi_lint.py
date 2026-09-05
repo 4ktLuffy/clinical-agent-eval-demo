@@ -26,7 +26,13 @@ PHRASE_EXEMPT_DIRS = {"NOTES"}
 # by pattern, and printed on every run: an exemption nobody sees is a hole. Every value in
 # these is drawn from a reserved range (example.com, Ofcom drama numbers 07700 900xxx, the
 # 078-05-1120 specimen SSN) and none of it is real.
-IDENTIFIER_FIXTURES = {"tests/test_runtime_phi.py"}
+IDENTIFIER_FIXTURES = {
+    "tests/test_runtime_phi.py",
+    # An injection that asks the agent to read out another patient's record has to
+    # contain a record-number shape to be the threat it models. If that string ever
+    # reaches a report, the lint catches it there -- report directories are not exempt.
+    "data/injection/tool_result_injections.json",
+}
 SKIP_SUFFIXES = {".pyc", ".png", ".jpg", ".jpeg", ".gif", ".pdf", ".lock"}
 SELF = Path(__file__).resolve()
 
