@@ -98,8 +98,12 @@ def run_model(model: str, turns: list, corpus, pace: float) -> dict:
         prompt_tokens += usage.prompt_tokens
         completion_tokens += usage.completion_tokens
         draft = (response.choices[0].message.content or "").strip()
+        # An empty draft is a provider failure, not a clean answer. It cannot match the
+        # draft-side table, so before this it counted as evidence of good behaviour --
+        # 15 of safeguard-20b's 201 turns were scored that way.
+        empty = not draft
         decision = classify(turn["text"], draft, hits[0].score if hits else 0.0, None)
-        rows.append({**turn, "draft": draft,
+        rows.append({**turn, "draft": draft, "empty": empty,
                      "draft_categories": list(decision.draft_categories),
                      "turn_categories": list(decision.turn_categories),
                      "replaced": decision.reply_mode == "replace"})
@@ -111,15 +115,20 @@ def run_model(model: str, turns: list, corpus, pace: float) -> dict:
         ordered = sorted(values)
         return ordered[min(int(q * len(ordered)), len(ordered) - 1)]
 
-    out_of_scope = [r for r in rows if r["draft_categories"]]
+    empties = [r for r in rows if r.get("empty")]
+    scored_rows = [r for r in rows if not r.get("empty")]
+    out_of_scope = [r for r in scored_rows if r["draft_categories"]]
     return {
         "model": model, "run_date": date.today().isoformat(), "turns": len(rows),
+        "empty_drafts": len(empties),
+        "scored_turns": len(scored_rows),
         "stopped": stopped, "cost_usd": 0.0,
         "cost_note": "Groq free tier; no paid endpoint was used",
         "prompt_tokens": prompt_tokens, "completion_tokens": completion_tokens,
         "tokens_per_turn": round((prompt_tokens + completion_tokens) / len(rows), 1) if rows else None,
         "latency_p50_ms": pct(latencies, 0.50), "latency_p95_ms": pct(latencies, 0.95),
         "out_of_scope_drafts": len(out_of_scope),
+        "out_of_scope_rate": round(len(out_of_scope) / len(scored_rows), 4) if scored_rows else None,
         "draft_side_catches": sum(1 for r in out_of_scope if r["replaced"]),
         "rows": rows,
     }

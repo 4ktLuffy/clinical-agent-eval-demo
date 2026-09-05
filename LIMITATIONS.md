@@ -430,13 +430,23 @@ Five open models on the Groq free tier, same 180-turn in-repo subset plus the sa
 changed. Cost **$0** throughout: free tier, no paid endpoint, and a 429 stops a model
 rather than being retried into.
 
-| Model | n | out-of-scope drafts (counter) | verified rate | verified real | 95% CI | draft-side catches | tokens/turn | p50 ms | p95 ms |
-|---|---:|---:|---:|---:|---|---:|---:|---:|---:|
-| `allam-2-7b` | 279 | 14 | 1.00 | 14 | [0.030, 0.082] | 14 | 181 | 272 | 389 |
-| `qwen/qwen3.8-27b` | 279 | 19 | **0.00** | **0** | [0.000, 0.014] | 19 | 152 | 258 | 592 |
-| `openai/gpt-oss-safeguard-20b` * | 201 | 19 | 1.00 | 19 | [0.061, 0.143] | 19 | 464 | 553 | 777 |
-| `openai/gpt-oss-120b` * | 58 | 6 | 1.00 | 6 | [0.048, 0.208] | 6 | 381 | 700 | 1054 |
-| `groq/compound-mini` * | 19 | 3 | 1.00 | 3 | [0.055, 0.376] | 3 | 902 | 1052 | 2916 |
+| Model | turns | empty | scored | counter | verified rate | real | rate/scored turn | 95% CI | tokens/turn | p50 ms | p95 ms |
+|---|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|---:|
+| `allam-2-7b` | 279 | 0 | 279 | 14 | 1.00 | 14 | 0.050 | [0.030, 0.082] | 181 | 272 | 389 |
+| `qwen/qwen3.8-27b` | 279 | 0 | 279 | 19 | **0.00** | **0** | 0.000 | [0.000, 0.014] | 152 | 258 | 592 |
+| `openai/gpt-oss-safeguard-20b` * | 201 | **15** | 186 | 19 | 1.00 | 19 | 0.102 | [0.066, 0.154] | 464 | 553 | 777 |
+| `openai/gpt-oss-120b` * | 58 | **2** | 56 | 6 | 1.00 | 6 | 0.107 | [0.050, 0.215] | 381 | 700 | 1054 |
+| `groq/compound-mini` * | 19 | 0 | 19 | 3 | 1.00 | 3 | 0.158 | [0.055, 0.376] | 902 | 1052 | 2916 |
+
+**An empty draft is a provider failure, not a clean answer.** It cannot match the
+draft-side table, so it used to count as evidence of good behaviour: 15 of
+`gpt-oss-safeguard-20b`'s 201 turns and 2 of `gpt-oss-120b`'s 58 were scored that way, and
+3 of the 20 unflagged drafts read by hand for safeguard were nothing at all. Empties are now
+excluded from every rate denominator and reported as their own column;
+`tests/test_empty_drafts.py` guards both the stored artifacts and the code path. By count,
+`gpt-oss-safeguard-20b` still produced the most genuine out-of-scope content (19). By rate
+per scored turn the two most partial rows sit higher, but on 19 and 56 turns their intervals
+are far too wide to order the models by.
 
 \* partial: stopped by a free-tier daily token limit and never retried into. Rates are
 per-turn, so the partial rows are comparable; the counts are not.
@@ -465,13 +475,13 @@ skin-care instructions -- 19 genuine in 201 turns, the highest verified rate in 
 **The counter also cannot see what it misses.** Twenty UNFLAGGED drafts per model were read
 as well; verdicts in `reports-sweep/handread.json`.
 
-| Model | unflagged read | out-of-scope missed | miss rate | 95% CI |
-|---|---:|---:|---:|---|
-| `allam-2-7b` | 20 | 6 | **0.300** | [0.145, 0.519] |
-| `openai/gpt-oss-120b` | 20 | 3 | 0.150 | [0.052, 0.360] |
-| `groq/compound-mini` | 16 | 1 | 0.062 | [0.011, 0.283] |
-| `openai/gpt-oss-safeguard-20b` | 20 | 1 | 0.050 | [0.009, 0.236] |
-| `qwen/qwen3.8-27b` | 20 | 0 | 0.000 | [0.000, 0.161] |
+| Model | unflagged read | empty (excluded) | scored | missed | miss rate | 95% CI |
+|---|---:|---:|---:|---:|---:|---|
+| `allam-2-7b` | 20 | 0 | 20 | 6 | **0.300** | [0.145, 0.519] |
+| `openai/gpt-oss-120b` | 20 | 1 | 19 | 3 | 0.158 | [0.055, 0.376] |
+| `groq/compound-mini` | 16 | 0 | 16 | 1 | 0.062 | [0.011, 0.283] |
+| `openai/gpt-oss-safeguard-20b` | 20 | 3 | 17 | 1 | 0.059 | [0.010, 0.270] |
+| `qwen/qwen3.8-27b` | 20 | 0 | 20 | 0 | 0.000 | [0.000, 0.161] |
 
 `gpt-oss-120b` wrote "I'm here to help you work through your anxiety. Let's start by talking
 about what's most worrying you right now" three times and the table flagged none of them.
@@ -485,8 +495,8 @@ the worst false-positive rate (0.00 verified) and the best miss rate (0.000); `a
 has a perfect verified rate and the worst miss rate (0.300). The counter is not measuring
 safety in either direction -- it is measuring how much a model talks about a topic.
 
-Three of `gpt-oss-safeguard-20b`'s sampled drafts, and one of `gpt-oss-120b`'s, were **empty
-strings**. The harness counts an empty draft as a clean one.
+Three of `gpt-oss-safeguard-20b`'s sampled drafts, and one of `gpt-oss-120b`'s, were empty
+strings; they are excluded from the denominators above rather than counted as clean.
 
 `groq/compound-mini`'s 429 names `gpt-oss-120b`, so the compound models route to that model
 and share its exhausted daily quota rather than holding one of their own.
