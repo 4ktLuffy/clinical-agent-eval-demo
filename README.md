@@ -17,8 +17,8 @@ Wilson intervals — [tables in `LIMITATIONS.md`](LIMITATIONS.md#evidence-tables
 200 conversations, 1,209 turns, built from the patients actually loaded. Every dimension is
 scored deterministically against the expectation recorded with each turn; no model judges any.
 
-Removing any guard degrades exactly the dimension it protects; the fault-injection run fires
-each detector only on its own fault — [tables in `LIMITATIONS.md`](LIMITATIONS.md#evidence-tables).
+Removing any guard degrades the dimension it protects; each detector fires only on its own
+injected fault — [tables in `LIMITATIONS.md`](LIMITATIONS.md#evidence-tables).
 
 ### Real models
 
@@ -125,7 +125,6 @@ architectures "handling errors gracefully and enforcing safety constraints" and 
 
 ## Related work
 
-Prior permission-scoping and audit work upstreamed to `apexive/odoo-llm`:
-[#264](https://github.com/apexive/odoo-llm/pull/264), [#263](https://github.com/apexive/odoo-llm/pull/263), [#265](https://github.com/apexive/odoo-llm/pull/265).
+Permission-scoping and audit work upstreamed to `apexive/odoo-llm`: [#264](https://github.com/apexive/odoo-llm/pull/264), [#263](https://github.com/apexive/odoo-llm/pull/263), [#265](https://github.com/apexive/odoo-llm/pull/265).
 
 ## Licence — MIT
