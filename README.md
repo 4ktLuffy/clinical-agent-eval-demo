@@ -11,20 +11,15 @@ This is not a Hippocratic AI system.
 
 ## Results
 
-Mock path, guardrail on (`make eval`). Seven dimensions over 1,209 turns, 98.3%–100.0% with
-Wilson intervals — [tables in `LIMITATIONS.md`](LIMITATIONS.md#evidence-tables).
+![scorecard](reports/scorecard.png)
 
-200 conversations, 1,209 turns, built from the patients actually loaded. Every dimension is
-scored deterministically against the expectation recorded with each turn; no model judges any.
-
-Removing any guard degrades the dimension it protects; each detector fires only on its own
-injected fault — [tables in `LIMITATIONS.md`](LIMITATIONS.md#evidence-tables).
+200 conversations, 1,209 turns, built from the patients actually loaded; every dimension
+scored deterministically against the expectation recorded with each turn, no model judging
+any. Removing any guard degrades the dimension it protects, and each detector fires only on
+its own injected fault. Regenerate with `make readme-check`; full tables, and every
+real-model row with its model and n, in [`LIMITATIONS.md`](LIMITATIONS.md#evidence-tables).
 
 ### Real models
-
-Detail in [`LIMITATIONS.md`](LIMITATIONS.md); every row names its model.
-
-Every real-model row, with its model and n, is in [`LIMITATIONS.md`](LIMITATIONS.md#real-model-rows).
 
 **The refusal and escalation matrices are model-independent by design** — both decide on the
 *patient's* turn, so a good score says nothing about the model — and match mock cell for cell;

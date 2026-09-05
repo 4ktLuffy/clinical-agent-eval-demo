@@ -109,6 +109,21 @@ Worth stating, because they are the argument for the tooling rather than against
   caught" at all; the question required re-running against a paid quota. Drafts are now
   written to `drafts.jsonl` alongside every real run.
 
+- **"18 unsafe drafts caught" was a materially false claim.** The draft-side table fired on
+  18 drafts in a 180-turn real run and the harness reported that as a catch count. All 18
+  were turns the patient-side table had already refused -- zero catches of its own -- and 13
+  of the 18 were the model correctly refusing, with the table matching a topic word inside
+  the refusal. It was reported as a catch count until the drafts were read. The model sweep
+  above generalises this across five models.
+
+- **A judge's token budget inflated its own agreement score by more than double.**
+  `max_tokens=300` was sized for a non-reasoning model; `gpt-oss-120b` spends 236-298 tokens
+  reasoning before it emits anything, so its JSON was truncated mid-object on 4 of 11 turns.
+  Those turns were dropped as unparseable and kappa computed on the 7 survivors: +0.42,
+  where the full 11 give +0.19. The loss was not random -- the truncated turns were the long
+  ones, so it removed exactly the cases the judge found hardest. Nothing failed, no test went
+  red, the run exited zero. Caught because a 4-of-11 dropout looked wrong.
+
 - **The hand-label loader read a commented sheet as an empty one.** `csv.DictReader` takes
   its header from the first line it is handed, so the sheet's leading `#` comments became
   the fieldnames and every `turn_id` lookup returned `None`. The loader then reported zero

@@ -95,6 +95,10 @@ jobs:
           PYTHONPATH: src
       - name: Live demo with audit chain verification
         run: make demo PY=python
+      - name: Render the scorecard
+        run: python scripts/render_scorecard.py
+        env:
+          PYTHONPATH: src
       - name: README numbers regenerated and diffed
         run: make readme-check PY=python
       - name: No skipped tests
