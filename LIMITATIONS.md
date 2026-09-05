@@ -188,6 +188,70 @@ generator's until a human reads them. And the generator shares a family with the
 `gpt-oss-20b` used as an LLM stage: irrelevant to the phrase-table numbers, which involve
 no model, but stage numbers on this set carry it.
 
+## Embeddings: hashed vs MiniLM
+
+`sentence-transformers/all-MiniLM-L6-v2`, pinned to revision `1110a243`, CPU-only,
+weights cached in CI, deterministic across independently constructed encoders. Default
+since it beat the hashed backend on both axes. Both thresholds are re-derived per backend
+by their stated rules and never fitted to a held-out set: retrieval by rate-matching the
+hashed backend on the in-repo subset (`scripts/retrieval_threshold.py`), the centroid by
+the smallest multiple of 0.05 above the in-repo negative floor
+(`scripts/semantic_threshold.py`, hashed 0.181 -> 0.20, MiniLM 0.415 -> 0.45).
+
+Exemplars unchanged and recorded before any v2 measurement: `data/semantic_exemplars.json`
+at commit `f2e22bb`, sha256 `43c1f3da3856bc70`.
+
+| Stage on held-out v2 | Recall | 95% CI | Precision | 95% CI |
+|---|---:|---|---:|---|
+| phrase table only | 8.1% | [0.058, 0.113] | 0.674 | [0.530, 0.791] |
+| + centroid, hashed | 12.3% | [0.094, 0.160] | 0.452 | [0.360, 0.548] |
+| + centroid, **MiniLM** | **31.9%** | [0.275, 0.368] | **0.689** | [0.618, 0.753] |
+
+Per category with MiniLM: prescribe 38.5%, diagnose 1.1%, hospice 40.5%, mental health
+50.7%, under-two 36.1%. By register: colloquial 41.3%, transcript-messy 34.3%,
+third-person 33.7%, oblique 19.2%. `diagnose` barely moves, and oblique phrasing stays the
+hardest register under every backend.
+
+The hashed centroid is the interesting row: it raises recall a little and destroys
+precision (0.674 -> 0.452), because bag-of-words similarity fires on shared vocabulary
+rather than shared meaning. Reporting it matters -- "we added a semantic stage" would have
+been true and would have made the guardrail worse.
+
+**RAG was not silently degraded.** On the open-ended turns the rule judge scores citation
+quality 0.826 -> 0.858 and faithfulness 0.772 -> 0.783. One regression: T005 now retrieves
+below the MiniLM threshold, fires `weak_retrieval`, and so drops out of the judged set,
+taking operational-escalation precision 1.000 -> 0.833 against the in-repo label. That is
+the same turn whose citation the judge analysis found unsupported, so MiniLM may be right
+and the in-repo label wrong. The two citation means are over 11 and 10 turns respectively
+and are not strictly comparable.
+
+## LLM second stage: why the remaining misses remain
+
+260 of 382 v2 positives are missed by the phrase table and the MiniLM centroid together.
+A seeded sample of 40 (`reports-c-llm-misses/dump.json`, seed 20260905) was put through the
+strict rubric with `gpt-oss-20b`, prompts and raw outputs dumped per turn.
+
+| Cause | Count | What the evidence shows |
+|---|---:|---|
+| rubric too narrow | 32 | the same policy text as an LLM rubric catches them, so the gap is the centroid's exemplars |
+| model cannot | 6 | 3 missed by `gpt-oss-20b` *and* `gpt-oss-120b`; 3 never returned a closed answer |
+| mislabelled positive | 2 | the line never states the child is under two |
+| gating skipped | 0 | the gate runs whenever the turn table matched nothing, true for all of these |
+
+**Three of the six "model cannot" are a harder finding than a miss:** `gpt-oss-20b` returned
+`finish_reason=length` with empty content at 1200, 2500 and 4000 tokens. One closed only at
+7000 after 4093 reasoning tokens; one was still empty at 7000 after 6998. For those inputs
+the model cannot be relied on to produce a closed answer under any practical cap, which is
+a availability property, not an accuracy one.
+
+The two mislabelled positives are strike candidates under `data/LABELLING.md`
+(`strike: no age`) -- "the child I look after", "the little boy I'm babysitting" never give
+an age, and `gpt-oss-120b` reads both as `diagnose`, which is defensible.
+
+The 32 are not fixed by widening the rubric here: the rubric already names "palliative" and
+"comfort-only care" in words, and rewriting it on the strength of these lines would be
+tuning on held-out v2, which nothing may do.
+
 ## Evidence tables
 
 | Dimension | Rate | 95% CI |

@@ -137,7 +137,10 @@ class LLMSemanticStage:
             response = self._client.chat.completions.create(
                 model=self._model,
                 temperature=0,
-                max_tokens=int(os.environ.get("CLINICAL_SEMANTIC_MAX_TOKENS", "1200")),
+                # 1200 was not enough: a reasoning model spent the whole allowance thinking
+                # and returned empty content (finish_reason=length) on 3 of 40 turns. Same
+                # defect the judge had at 300.
+                max_tokens=int(os.environ.get("CLINICAL_SEMANTIC_MAX_TOKENS", "2500")),
                 messages=[{"role": "user", "content": _RUBRIC.format(turn=turn)}],
             )
             raw = (response.choices[0].message.content or "").strip()
