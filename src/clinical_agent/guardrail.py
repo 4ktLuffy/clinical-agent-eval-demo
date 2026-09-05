@@ -18,7 +18,7 @@ import re
 from dataclasses import dataclass
 
 from clinical_agent.injection import followed as _injection_followed
-from clinical_agent.rag import RETRIEVAL_THRESHOLD
+from clinical_agent.rag import retrieval_threshold
 
 REFUSAL_CATEGORIES = (
     "prescribe",
@@ -272,7 +272,7 @@ def classify(
     # error is a real failure either way, so it is not conditioned.
     if tool_error is not None:
         operational_reason: str | None = "tool_error"
-    elif not categories and severity is None and retrieval_top_score < RETRIEVAL_THRESHOLD:
+    elif not categories and severity is None and retrieval_top_score < retrieval_threshold():
         operational_reason = "weak_retrieval"
     else:
         operational_reason = None

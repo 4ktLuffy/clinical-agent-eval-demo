@@ -15,7 +15,7 @@ from pathlib import Path
 from clinical_agent.agent import PROMPT
 from clinical_agent.budget import BudgetExhausted, CallBudget, RateLimited
 from clinical_agent.guardrail import REFUSAL_CATEGORIES, classify
-from clinical_agent.rag import RETRIEVAL_THRESHOLD, Corpus
+from clinical_agent.rag import Corpus, retrieval_threshold
 from eval.rubric import DIMENSIONS, aggregate, score_turn
 from eval.stats import scored, wilson
 
@@ -90,7 +90,7 @@ def run_set(conversations: list[dict], corpus: Corpus,
             started = time.perf_counter()
             retrieved = corpus.retrieve(turn["text"], k=4)
             top = retrieved[0].score if retrieved else 0.0
-            kept = [r for r in retrieved if r.score >= RETRIEVAL_THRESHOLD]
+            kept = [r for r in retrieved if r.score >= retrieval_threshold()]
             injected = turn.get("injected_context", "")
 
             if client is None:

@@ -27,13 +27,24 @@ from clinical_agent.rag import _cosine, embed
 ROOT = Path(__file__).resolve().parents[2]
 EXEMPLARS = ROOT / "data" / "semantic_exemplars.json"
 
-# Derived from the negatives alone, by a rule fixed before any positive was looked at:
-# the smallest round threshold strictly above the highest score reached by any
-# refusal-NEGATIVE turn in the 180-turn subset (0.181, "Hello, I got a message asking me to
-# call back"). That buys zero false positives by construction. It is deliberately not
-# tuned against the turns the phrase table misses -- doing so would make the before/after
-# row measure the tuning rather than the stage. scripts/semantic_threshold.py regenerates
-# the 0.181 and shows the rule failing if the exemplars change.
+# Derived from the negatives alone, by a rule fixed before any positive was looked at: the
+# smallest multiple of 0.05 strictly above the highest score reached by any refusal-NEGATIVE
+# turn in the in-repo 180-turn subset (hashed floor 0.181 -> 0.20; MiniLM floor 0.415 -> 0.45). That buys zero false positives by construction. It
+# is deliberately not tuned against the turns the phrase table misses, and never against
+# any held-out set. scripts/semantic_threshold.py regenerates the floor per backend and
+# fails if the configured value has gone stale.
+#
+# Per backend, because the hashed and MiniLM spaces put unrelated text at entirely
+# different cosine values; one constant cannot serve both.
+_THRESHOLDS = {"hashed": 0.20, "minilm": 0.45}
+
+
+def default_threshold() -> float:
+    from clinical_agent.embeddings import backend
+
+    return _THRESHOLDS[backend()]
+
+
 DEFAULT_THRESHOLD = 0.20
 
 
@@ -47,10 +58,13 @@ class SemanticStage(Protocol):
 class LocalSemanticStage:
     """Nearest-centroid over policy-written exemplars. No network, no randomness."""
 
-    def __init__(self, threshold: float = DEFAULT_THRESHOLD,
+    def __init__(self, threshold: float | None = None,
                  exemplars: Path = EXEMPLARS) -> None:
+        from clinical_agent.embeddings import backend
+
+        threshold = default_threshold() if threshold is None else threshold
         raw = json.loads(exemplars.read_text(encoding="utf-8"))
-        self.name = f"local-centroid@{threshold}"
+        self.name = f"local-centroid-{backend()}-{threshold}"
         self.threshold = threshold
         self._centroids: dict[str, list[float]] = {}
         for category, phrases in raw.items():
@@ -146,7 +160,7 @@ def build_stage(spec: str | None):
         return None
     if spec.startswith("local"):
         _, _, threshold = spec.partition("@")
-        return LocalSemanticStage(float(threshold) if threshold else DEFAULT_THRESHOLD)
+        return LocalSemanticStage(float(threshold) if threshold else None)
     if spec.startswith("llm:"):
         return LLMSemanticStage(spec[len("llm:"):])
     raise ValueError(f"unknown semantic stage {spec!r}")

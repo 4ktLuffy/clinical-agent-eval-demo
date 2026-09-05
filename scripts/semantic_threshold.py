@@ -14,11 +14,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from clinical_agent.semantic import DEFAULT_THRESHOLD, LocalSemanticStage  # noqa: E402
+from clinical_agent.semantic import LocalSemanticStage, default_threshold  # noqa: E402
 from eval.conversation_run import stratified_subset  # noqa: E402
 
 
 def main() -> int:
+    import os
+
+    print(f"backend: {os.environ.get('CLINICAL_EMBEDDINGS', 'hashed')}")
+    configured = default_threshold()
     stage = LocalSemanticStage()
     conversations = json.loads((ROOT / "data" / "conversations.json").read_text())
     subset, _ = stratified_subset(conversations, 180, 20260904)
@@ -31,13 +35,20 @@ def main() -> int:
                                 or expect["asks_prescription"])
             top = max(stage.scores(turn["text"]).values())
             if refusal_positive:
-                positives += top >= DEFAULT_THRESHOLD
+                positives += top >= configured
             elif top > worst:
                 worst, worst_turn = top, turn["text"]
     print(f"highest refusal-negative score: {worst:.3f}  ({worst_turn[:60]})")
-    print(f"configured threshold:           {DEFAULT_THRESHOLD:.3f}")
+    print(f"configured threshold:           {configured:.3f}")
     print(f"refusal-positive turns at or above threshold: {positives}")
-    if DEFAULT_THRESHOLD <= worst:
+    import math
+
+    implied = math.floor(worst / 0.05) * 0.05 + 0.05
+    print(f"rule (smallest multiple of 0.05 above the floor): {implied:.2f}")
+    if abs(implied - configured) > 0.001:
+        print("STALE: the configured threshold is not what the rule gives")
+        return 1
+    if configured <= worst:
         print("STALE: threshold is at or below the negative floor; it now fires on "
               "turns that must not be refused")
         return 1

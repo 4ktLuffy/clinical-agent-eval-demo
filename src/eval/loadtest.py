@@ -18,7 +18,7 @@ from pathlib import Path
 
 from clinical_agent.detectors import DetectorConfig, run_detectors
 from clinical_agent.guardrail import classify
-from clinical_agent.rag import RETRIEVAL_THRESHOLD, Corpus
+from clinical_agent.rag import Corpus, retrieval_threshold
 from clinical_agent.telemetry import percentile
 
 ROOT = Path(__file__).resolve().parents[2]
