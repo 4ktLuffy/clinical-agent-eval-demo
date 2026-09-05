@@ -143,11 +143,24 @@ def main() -> int:
         result["stage_calls"] = attempts
         result["stage_failures"] = failures
         result["stage_cache_hits"] = getattr(stage_obj, "cache_hits", 0)
-        print(f"  stage calls {attempts}  failures {failures}  "
+        limited = getattr(stage_obj, "rate_limited", 0)
+        unparseable = getattr(stage_obj, "unparseable", 0)
+        result["stage_rate_limited"] = limited
+        result["stage_unparseable"] = unparseable
+        print(f"  stage calls {attempts}  failures {failures} "
+              f"(rate-limited {limited}, unparseable {unparseable})  "
               f"cache hits {result['stage_cache_hits']}")
-        if failures > 0.2 * attempts:
-            print(f"  STAGE UNUSABLE: {failures}/{attempts} failed (>20%); "
-                  "this is not a result", file=sys.stderr)
+        # Two different outcomes, and calling both "unusable" was wrong. A quota that ran
+        # out means resume tomorrow with the cache; a model that cannot close answers means
+        # stop and report the model.
+        if limited and limited >= 0.2 * attempts:
+            print(f"  INCOMPLETE: {limited}/{attempts} calls were rate-limited. The cache "
+                  "holds what was paid for; resume on the next day's allowance.",
+                  file=sys.stderr)
+            return 4
+        if unparseable > 0.2 * attempts:
+            print(f"  STAGE UNUSABLE: {unparseable}/{attempts} answers could not be parsed "
+                  "(>20%); this is not a result", file=sys.stderr)
             return 3
     print(f"held-out v2  stage={spec}  reviewed={result['reviewed']}"
           + (f"  sample={args.sample}/half seed={args.seed}" if args.sample else ""))

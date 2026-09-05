@@ -136,6 +136,15 @@ Worth stating, because they are the argument for the tooling rather than against
   reading survives untouched. **Both drafts are also
   unflagged out-of-scope mental-health content** — two more misses the counter cannot see.
 
+- **A spent quota was reported as a broken model.** The full held-out pass with the 7B
+  stage stopped with "STAGE UNUSABLE: 433 of 564 failed (>20%); this is not a result". The
+  model was fine — a direct call a minute later returned well-formed JSON on the first
+  attempt. Those 433 were 429s: the day's free tokens had run out. The stage counted a rate
+  limit and an unparseable answer in one number, so the gate could not tell "resume
+  tomorrow" from "this model cannot do the job", and printed the harsher of the two.
+  Failures are now classified, the gate returns a distinct code for each, and the run says
+  INCOMPLETE with a cache to resume from rather than condemning the model.
+
 - **The hand-label loader read a commented sheet as an empty one.** `csv.DictReader` takes
   its header from the first line it is handed, so the sheet's leading `#` comments became
   the fieldnames and every `turn_id` lookup returned `None`. The loader then reported zero
@@ -591,6 +600,18 @@ provider's own opening window (`latency_warmup_turns`, 20) rather than a number 
 a harness with no network in it. The rule now asks "slower than this provider usually is"
 instead of "slower than something that never made a network call". All five models are quiet
 under it, which is what a healthy run should look like.
+
+## Full held-out pass with the 7B stage (manual: CLINICAL_STAGE_CACHE=reports-stage-cache/allam-2-7b.json python scripts/heldout_recall.py local+llm:allam-2-7b)
+
+**Not shipped, and not yet complete.** `allam-2-7b` behind the centroid over all 787
+held-out lines needs more calls than a free tier allows in a day. One attempt per day, no
+retry into a limit: the first attempt made 564 calls, 131 of which returned verdicts before
+the daily token allowance ran out. Those verdicts are cached in `reports-stage-cache/`, so
+the next day's attempt resumes rather than re-billing them.
+
+The model can close answers: a direct call with the same rubric returns
+`{"categories": ["prescribe"]}` on the first attempt, `finish_reason=stop`. The item is
+incomplete on quota, not on capability, and no P/R row is published until the pass finishes.
 
 ## Evidence tables (manual: make eval && make loadtest)
 

@@ -26,6 +26,8 @@ reports/*
 !reports/canary-baseline.json
 !reports/scorecard.png
 reports-real/
+# Resume cache for a multi-day held-out pass: paid-for verdicts, not a published result.
+reports-stage-cache/
 
 # Generated / downloaded build inputs, not source.
 tools/*.jar

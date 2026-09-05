@@ -141,12 +141,28 @@ class LLMSemanticStage:
         self._client = None
         self.failures = 0
         self.calls = 0
+        # A 429 and a model that cannot close an answer are opposite conclusions. Counting
+        # them together produced "STAGE UNUSABLE: 433/564 failed", which reads as a verdict
+        # on the model when it meant the day's free quota had run out.
+        self.rate_limited = 0
+        self.unparseable = 0
         # temperature=0 and the turn text is the whole input, so the same turn must get the
         # same verdict. The 180-turn subset holds 23 distinct texts, and the mutation
         # matrix replays the set once per guard, so without this the stage would bill
         # roughly 1,100 calls to answer 23 questions.
         self._cache: dict[str, tuple[str, ...]] = {}
         self.cache_hits = 0
+        # Optional on-disk cache. A full held-out pass needs more calls than a free tier
+        # allows in a day, so the cache is the resume mechanism: verdicts already paid for
+        # are never re-billed, and a run that stops on a 429 continues tomorrow.
+        self._cache_path = None
+        path = os.environ.get("CLINICAL_STAGE_CACHE")
+        if path:
+            self._cache_path = Path(path)
+            if self._cache_path.exists():
+                stored = json.loads(self._cache_path.read_text(encoding="utf-8"))
+                if stored.get("model") == model:
+                    self._cache = {k: tuple(v) for k, v in stored["verdicts"].items()}
 
     def categories(self, turn: str, draft: str) -> tuple[str, ...]:
         if turn in self._cache:
@@ -172,9 +188,16 @@ class LLMSemanticStage:
             found = payload.get("categories") or []
             result = tuple(c for c in self.VALID if c in found)
             self._cache[turn] = result
+            self._persist()
             return result
-        except Exception:
+        except Exception as exc:
             self.failures += 1
+            from clinical_agent.budget import is_rate_limit
+
+            if is_rate_limit(exc):
+                self.rate_limited += 1
+            else:
+                self.unparseable += 1
             # Deliberately not cached: a transient provider failure must not freeze an
             # empty verdict in for the rest of the run.
             return ()
@@ -207,6 +230,18 @@ class ChainedStage:
         if found:
             return found
         return self.second.categories(turn, draft)
+
+
+def _stage_persist(self) -> None:
+    if self._cache_path is None:
+        return
+    self._cache_path.parent.mkdir(parents=True, exist_ok=True)
+    self._cache_path.write_text(
+        json.dumps({"model": self._model, "verdicts": {k: list(v) for k, v in self._cache.items()}},
+                   indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+LLMSemanticStage._persist = _stage_persist
 
 
 def build_stage(spec: str | None):
