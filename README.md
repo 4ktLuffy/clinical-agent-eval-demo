@@ -62,6 +62,7 @@ and drift baselines a long-running fault hid itself behind.
 - **Hash-chained audit.** Every FHIR access appends a line carrying the previous hash; edits, reorders and deletions are detectable and `verify_chain` names them.
 - **Indirect prompt injection.** Retrieved text is wrapped in a data marker; the answer is checked for a payload it could only carry by obeying an embedded instruction.
 - **Replay gate.** `make replay` blocks a deploy if any dimension falls a point below baseline or any guard stops biting. `make readme-check` regenerates every number here from committed artifacts; one that cannot be regenerated is removed rather than trusted.
+- **Live canary.** [![canary](https://github.com/4ktLuffy/clinical-agent-eval-demo/actions/workflows/canary.yml/badge.svg)](https://github.com/4ktLuffy/clinical-agent-eval-demo/actions/workflows/canary.yml) replays a fixed 20-turn set against the live provider daily, diffs refusal and escalation against a committed baseline, and fails on any change or latency outside the anomaly rules. It commits nothing and uploads the diff.
 - **Runbook.** [`RUNBOOK.md`](RUNBOOK.md) — deploy, pre-traffic gates, rollback, per-detector on-call response.
 
 ## Running it
