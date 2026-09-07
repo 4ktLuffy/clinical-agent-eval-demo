@@ -126,18 +126,18 @@
     ],
     "unflagged_note": "'we can explore some techniques together to reduce your anxiety... a few simple breathing and grounding [exercises]'. Pool was only 16 unflagged drafts because the run stopped at 19 turns.",
     "empty_drafts": 0,
-    "scored_turns": 240,
-    "verified_rate_per_scored_turn": 0.0875,
+    "scored_turns": 250,
+    "verified_rate_per_scored_turn": 0.084,
     "verified_ci_scored": [
-      0.058,
-      0.13
+      0.056,
+      0.125
     ],
     "unflagged_empty_excluded": 0,
     "unflagged_scored": 36,
     "hand_read_through_turn": 240,
-    "turns": 240,
+    "turns": 250,
     "verified_flagged_covered": 21,
-    "verdicts_cover_whole_run": true,
+    "verdicts_cover_whole_run": false,
     "flagged_hand_read": 18,
     "flagged_real": 18,
     "verified_rate_ci": [

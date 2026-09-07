@@ -9,22 +9,21 @@ own detectors, and a go-live runbook. **The deployment layer is the capability.*
 are separate and name their model. Judge labels were assigned by an AI reader, not a clinician.
 This is not a Hippocratic AI system.
 
-(manual: python scripts/heldout_recall.py local+llm:allam-2-7b) **Shipped configuration.**
-`data/policy.yaml` names the stage. With a provider key: phrase
-table → MiniLM centroid → `allam-2-7b`, which on held-out v2 scores **91.9% [88.7, 94.2]
-recall at 0.641 [0.599, 0.680] precision**. Without a key it falls back to the centroid
-alone — **51.0% [46.0, 56.0] recall at 0.886 [0.838, 0.922] precision** — announced on
-stderr rather than downgraded silently. Beside both, the same guardrail on the in-repo turns
-it was written alongside: **82.7% recall at 1.000 precision**, an upper bound, never alone.
+(manual: python scripts/heldout_recall.py local) **Shipped configuration: phrase table →
+MiniLM centroid.** `data/policy.yaml` names it; the LLM stage stays selectable and is
+measured beside it. Held-out v2 is 382 positives + 405 in-scope negatives, from a model used
+in no stage, nothing tuned on them, ever.
 
-(manual: python scripts/heldout_recall.py local+llm:allam-2-7b) The LLM stage buys 41 points
-of recall and pays 25 points of precision for them: it refuses
-**197 of 405 in-scope callers (48.6%)**, including 82.3% of the people asking an
-administrative question that merely mentions a symptom. Whether that trade is the right one
-is a deployment decision, not a benchmark result; both rows are published so it can be made
-deliberately. 382 positives + 405 negatives, from a model used in no stage, nothing tuned on
-them, ever. Labels unreviewed; rules in [`data/LABELLING.md`](data/LABELLING.md), the gap and
-what closed it in [`FINDINGS.md`](FINDINGS.md).
+| Stage | Recall | 95% CI | Precision | 95% CI | Refuses in-scope callers |
+|---|---:|---|---:|---|---:|
+| phrase table only | 8.1% | [0.058, 0.113] | 0.674 | [0.530, 0.791] | 3.7% |
+| **+ MiniLM (shipped)** | **51.0%** | [0.460, 0.560] | **0.886** | [0.838, 0.922] | **6.2%** |
+| + `allam-2-7b` | 91.9% | [0.887, 0.942] | 0.641 | [0.599, 0.680] | **48.6%** |
+(manual: python scripts/heldout_recall.py local+llm:allam-2-7b)
+
+(manual: make eval) The LLM stage finds 41 points more of what it should refuse and refuses nearly half of the callers it should have helped; that trade is a deployment decision, so both rows ship. The default needs no key; selecting the LLM stage without one falls back to MiniLM and says so on stderr. Beside all three, the same guardrail on the in-repo turns it was written alongside: **82.7% recall at 1.000 precision** — an upper bound, never alone. Labels unreviewed; rules in
+[`data/LABELLING.md`](data/LABELLING.md), the gap and what closed it in
+[`FINDINGS.md`](FINDINGS.md).
 
 ## Results (manual: make eval)
 
@@ -69,8 +68,7 @@ recall at 0.674 → 0.886 precision. Detail and mutation rows in
 uv venv --python 3.12 && uv pip install -e ".[dev]"   # 3.14 also works
 ```
 
-Everything below `make eval` needs a running Docker daemon. `make synthea` bind-mounts into
-a container, so the checkout must sit where your Docker VM mounts (`$HOME` on colima).
+Everything below `make eval` needs a running Docker daemon. `make synthea` bind-mounts into a container, so the checkout must sit where your Docker VM mounts (`$HOME` on colima).
 
 ```bash
 make fhir-up && make fixture-load    # live FHIR in ~30s, 10 patients, no download
@@ -80,18 +78,17 @@ make loadtest                        # 2,000 sessions + detector proof
 make readme-check && make number-audit   # every number regenerated, or marked
 ```
 
-(manual: make synthea) `make synthea && make load` builds the full dataset (188 MB). FHIR
-tests skip with no endpoint; CI runs HAPI as a service, so zero skips.
+(manual: make synthea) `make synthea && make load` builds the full dataset (188 MB). FHIR tests skip with no endpoint; CI runs HAPI as a service, so zero skips.
 
 (manual: make eval ARGS="--model real") Real-model path: Anthropic or any OpenAI-compatible
 endpoint. `EVAL_MODEL` is `<provider>:<model>`; `CLINICAL_JUDGE_MODEL` sets the judge;
-`--semantic local|llm:<model>` adds the second stage; `--turns-subset N` takes a stratified
-slice. A 429 stops the run, `EVAL_MODEL_MIN_INTERVAL_MS` paces it, `--max-calls` caps spend.
+`CLINICAL_STAGE` picks the second stage; `--turns-subset N` takes a stratified slice. A 429
+stops the run, `EVAL_MODEL_MIN_INTERVAL_MS` paces it, `--max-calls` caps spend.
 
 ```bash
 export EVAL_MODEL=openai-compatible:openai/gpt-oss-120b
 export EVAL_MODEL_BASE_URL=https://api.groq.com/openai/v1  # EVAL_MODEL_API_KEY=... (never logged)
-make eval ARGS="--model real --turns-subset 180 --semantic local"
+make eval ARGS="--model real --turns-subset 180"
 ```
 
 (manual: python scripts/model_sweep.py --resume) **Five open models, same turns, same policy, temperature 0, $0:** the out-of-scope counter reports 19 for `qwen3.8-27b` of which a hand read confirms **none** are real, and 14 for `allam-2-7b` of which **all** are. It measures whether a model says topic words. The safety-tuned `gpt-oss-safeguard-20b` is worst on both axes that matter: 26 flagged, 19 empty drafts, and 27.0% [15.4, 43.0] of the out-of-scope content it produces goes unflagged. Counts for the other two are 29 and 21. Full table in [`LIMITATIONS.md`](LIMITATIONS.md).

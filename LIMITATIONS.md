@@ -639,41 +639,39 @@ a harness with no network in it. The rule now asks "slower than this provider us
 instead of "slower than something that never made a network call". All five models are quiet
 under it, which is what a healthy run should look like.
 
-## Full held-out pass with the 7B stage (manual: python scripts/heldout_recall.py local+llm:allam-2-7b)
+## The LLM stage: measured, offered, not shipped (manual: python scripts/heldout_recall.py local+llm:allam-2-7b)
 
-Complete, over all 787 held-out lines. 433 calls across two days, **0 failures** — none
-rate-limited, none unparseable — plus 131 verdicts resumed from the previous day's cache.
-The 20% failure bar is met with room to spare, so the stage is eligible to ship, and
-`data/policy.yaml` selects it whenever a provider key is present.
+Complete over all 787 held-out v2 lines with the shipped rubric. 433 calls across two days,
+**0 failures** — none rate-limited, none unparseable.
 
-| Stage on all of held-out v2 | Recall | 95% CI | Precision | 95% CI |
-|---|---:|---|---:|---|
-| phrase table only | 8.1% | [0.058, 0.113] | 0.674 | [0.530, 0.791] |
-| + MiniLM centroid | 51.0% | [0.460, 0.560] | 0.886 | [0.838, 0.922] |
-| + `allam-2-7b` | **91.9%** | [0.887, 0.942] | **0.641** | [0.599, 0.680] |
+| Stage on all of held-out v2 | Recall | 95% CI | Precision | 95% CI | Refuses in-scope callers |
+|---|---:|---|---:|---|---:|
+| phrase table only | 8.1% | [0.058, 0.113] | 0.674 | [0.530, 0.791] | 3.7% |
+| **+ MiniLM centroid (shipped)** | **51.0%** | [0.460, 0.560] | **0.886** | [0.838, 0.922] | **6.2%** |
+| + `allam-2-7b`, selectable | 91.9% | [0.887, 0.942] | 0.641 | [0.599, 0.680] | **48.6%** |
 
-Per category with the LLM stage: prescribe 97.4%, diagnose 87.6%, hospice 77.0%, mental
-health 98.6%, under-two 100.0%. By register: colloquial 95.7%, transcript-messy 94.9%,
-third-person 91.3%, oblique 85.9%. Oblique is still the hardest register under every
-configuration, but the spread has closed from 22 points to 10.
+MiniLM is the default. The LLM stage finds 41 points more of what it should refuse and
+refuses 197 of 405 in-scope callers to do it — 82.3% of the `diagnose` negatives, people
+asking an administrative question that happens to mention a symptom. It wins on F1
+(0.755 against 0.647), which is why F1 is the wrong summary for a call handler: the two
+error types are not interchangeable, and one of them is a patient who asked when to arrive
+and was told nobody could help. Both rows are published and `policy.yaml` carries both
+measurements beside the stage names, so the trade is visible where it is chosen.
 
-**The cost is on the other side of the ledger, and it is large.** The stage refuses 197 of
-405 in-scope callers — 48.6% [43.8, 53.5]. By category: diagnose 82.3%, under-two 65.8%,
-mental health 65.0%, prescribe 25.0%, hospice 9.2%. Four in five people asking an
-administrative question that happens to mention a symptom are refused. On F1 the LLM stage
-wins (0.755 against 0.647), which is exactly why F1 is the wrong summary for a clinical
-call handler: the two error types are not interchangeable, and one of them is a patient who
-asked when to arrive and was told nobody could help.
+(manual: python scripts/rubric_dev.py --version v4 --sample 25)
+**A rubric rewrite was attempted and did not clear its own bar.** Seven versions, developed
+on v1 and never on v2, logged with numbers in [`NOTES/rubric-dev.md`](NOTES/rubric-dev.md).
+The gate was set first: v1 precision ≥ 0.85 at recall ≥ 80%, then freeze and run once on v2.
+The best version reached 0.683 [0.603, 0.754] precision at 0.776 recall on 250 v1 lines. The
+interval does not touch the bar, so nothing was frozen and **the single v2 measurement was
+not spent on it**. Making the model state the caller's request before judging it was the one
+change that helped, halving refused negatives from 0.500 to 0.300; asking it whether a turn
+"mentions" a topic made it worse; requiring it to quote its evidence made it worst of all,
+at 92.5% of negatives refused.
 
-Both rows are published, and `policy.yaml` carries both measurements beside the stage names
-so the trade is visible at the point where it is chosen rather than in a report someone has
-to go and find.
-
-**Key-absent fallback.** With no provider key the stage downgrades to the MiniLM centroid
-and prints the downgrade to stderr. It does not fail open, and it does not fail silently —
-a guardrail quietly running a weaker stage than its policy names is precisely the drift
-this repository exists to catch. `tests/test_stage_selection.py` covers both paths and the
-announcement.
+**Key-absent fallback.** The default stage needs no provider key. Selecting the LLM stage
+without one downgrades to MiniLM and prints the downgrade to stderr: it does not fail open,
+and it does not fail silently. `tests/test_stage_selection.py` covers all four paths.
 
 ## Evidence tables (manual: make eval && make loadtest)
 

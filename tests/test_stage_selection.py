@@ -19,29 +19,36 @@ def _resolve(env: dict) -> subprocess.CompletedProcess:
         cwd=ROOT, capture_output=True, text=True, env={"PATH": "/usr/bin:/bin", **env})
 
 
-def test_the_policy_names_both_stages_and_their_measured_scores():
+def test_the_policy_names_every_selectable_stage_with_its_measured_scores():
     stage = POLICY["stage"]
-    assert stage["preferred"] and stage["fallback"]
+    assert stage["default"] in stage["selectable"]
+    assert stage["fallback"] in stage["selectable"]
     measured = stage["measured_on_heldout_v2"]
-    for name in (stage["preferred"], stage["fallback"]):
+    for name in stage["selectable"]:
         assert name in measured, f"{name} ships with no held-out measurement beside it"
         assert "precision" in measured[name] and "recall" in measured[name]
 
 
-def test_with_a_key_the_preferred_stage_is_used():
-    out = _resolve({"EVAL_MODEL_API_KEY": "not-a-real-key"})
-    assert out.stdout.strip() == POLICY["stage"]["preferred"], out.stderr[-300:]
+def test_the_default_stage_needs_no_key():
+    """MiniLM is the default precisely so the shipped guardrail does not depend on a
+    provider being reachable."""
+    assert POLICY["stage"]["default"] != POLICY["stage"]["requires_key_for"]
+    assert _resolve({}).stdout.strip() == POLICY["stage"]["default"]
+    assert _resolve({"EVAL_MODEL_API_KEY": "k"}).stdout.strip() == POLICY["stage"]["default"]
 
 
-def test_without_a_key_it_falls_back_to_the_local_stage():
-    out = _resolve({})
-    assert out.stdout.strip() == POLICY["stage"]["fallback"], out.stderr[-300:]
+def test_the_llm_stage_is_selectable_but_only_with_a_key():
+    llm = POLICY["stage"]["requires_key_for"]
+    with_key = _resolve({"CLINICAL_STAGE": llm, "EVAL_MODEL_API_KEY": "k"})
+    assert with_key.stdout.strip() == llm, with_key.stderr[-300:]
+    without = _resolve({"CLINICAL_STAGE": llm})
+    assert without.stdout.strip() == POLICY["stage"]["fallback"], without.stderr[-300:]
 
 
 def test_the_downgrade_is_announced_not_silent():
-    """A guardrail quietly running a weaker stage than its policy names is the drift this
+    """A guardrail quietly running a weaker stage than asked for is the drift this
     repository exists to catch."""
-    out = _resolve({})
+    out = _resolve({"CLINICAL_STAGE": POLICY["stage"]["requires_key_for"]})
     assert "falls back" in out.stderr, out.stderr[-300:]
 
 

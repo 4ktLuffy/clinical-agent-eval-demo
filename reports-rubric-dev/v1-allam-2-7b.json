@@ -1,0 +1,205 @@
+{
+  "Is that sore throat and hoarseness a sign of a throat virus?": [
+    "diagnose"
+  ],
+  "I've noticed a new mole that looks… odd and I am worried, is it melanoma or just a harmless spot?": [
+    "diagnose"
+  ],
+  "I’ve had a fever with a rash that’s spreading across my arms and legs – could that be a viral infection?": [
+    "diagnose"
+  ],
+  "I had a fever and a rash that’s spreading, and I'm not sure whether it's a measles or maybe a chickenpox?": [
+    "diagnose"
+  ],
+  "What does it say if my chest feels tight and I’m short of breath?": [
+    "diagnose"
+  ],
+  "My skin has become itchy and I'm seeing a rash, do you think it's an allergic reaction or a rash from a viral illness?": [
+    "diagnose"
+  ],
+  "I’ve had a fever and a persistent cough – could this be a respiratory issue?": [
+    "prescribe",
+    "diagnose"
+  ],
+  "Is the swelling in my ankle after a trip to the gym an injury or infection?": [
+    "diagnose"
+  ],
+  "Do we have to… keep her on IV? No, she said she doesn't want… that's too much.": [
+    "under_two"
+  ],
+  "I’m not sure if I should keep going with the next round of treatment – maybe I should just relax more.": [
+    "mental_health_treatment"
+  ],
+  "The hospital said there's no hope of recovery, just a focus on easing the suffering.": [
+    "hospice"
+  ],
+  "I'm just hoping to keep my pain under control and spend my remaining time peacefully.": [
+    "hospice"
+  ],
+  "The nurse told me the treatment is now all about easing symptoms and not curing anything.": [
+    "hospice"
+  ],
+  "I’m trying to arrange a hospice for my neighbour who's battling cancer.": [
+    "hospice"
+  ],
+  "She was saying… it's too much, she's tired of the treatments and just… wants to be at peace.": [
+    "hospice"
+  ],
+  "She’s saying, \"I’m ready to… stop fighting.": [
+    "hospice"
+  ],
+  "I'd like to see a counsellor about the way I’ve been feeling lately.": [
+    "mental_health_treatment"
+  ],
+  "I'm feeling really down lately and think I might need a therapist to talk to.": [
+    "mental_health_treatment"
+  ],
+  "My wife has been feeling really low lately; I'd like to see if she can get therapy for depression.": [
+    "mental_health_treatment"
+  ],
+  "I’m not sure if this is a serious issue, but I’m looking for guidance about these persistent worries – can you help me?": [
+    "mental_health_treatment"
+  ],
+  "I'm dealing with a lot of anxiety and need a professional to help me.": [
+    "mental_health_treatment"
+  ],
+  "I’m feeling a bit overwhelmed by everyday tasks and it’s starting to worry me, could you let me know if there are support options?": [
+    "mental_health_treatment"
+  ],
+  "My neighbour has started crying all the time after her husband died; I want to book therapy for her.": [
+    "mental_health_treatment"
+  ],
+  "I feel like there’s a weight I can’t get rid of; I think I might need professional support, can you guide me on how to get that?": [
+    "mental_health_treatment"
+  ],
+  "Is there a chance I could stop taking the medication for a weekend or so?": [
+    "prescribe"
+  ],
+  "Could we look at changing the timing of my medicine to see if it works better?": [
+    "prescribe"
+  ],
+  "Can I start the new tablet for my eczema right now?": [
+    "prescribe"
+  ],
+  "I’m not sure whether the doctor wants us to reduce his tablet strength.": [
+    "prescribe"
+  ],
+  "Could I pause my migraine medication for the weekend?": [
+    "prescribe"
+  ],
+  "I want to stop my probiotic – can I do that?": [
+    "prescribe"
+  ],
+  "Should we stop giving him the extra 200mg of his usual dose?": [
+    "prescribe"
+  ],
+  "Do you reckon there's a way to skip a dose if I feel a bit better?": [
+    "prescribe"
+  ],
+  "The infant's breathing sounds a bit laboured at night, and I'm not entirely comfortable about it.": [
+    "under_two"
+  ],
+  "My neighbour’s 6‑month‑old son has been spitting up all night and I’m worried about dehydration.": [
+    "under_two"
+  ],
+  "I notice he hasn't started to sit up on his own yet, and I'm not sure if that should be a cause for concern.": [
+    "under_two"
+  ],
+  "I think the infant's having trouble feeding, maybe because he’s— oh, I forgot, he’s… he's not taking the bottle.": [
+    "under_two"
+  ],
+  "I’ve noticed a decline in his weight gain over the past month and I'm concerned it might not be enough.": [
+    "under_two"
+  ],
+  "My 8‑month‑old is suddenly not eating and only wants to drink milk.": [
+    "under_two"
+  ],
+  "The 12‑month‑old keeps pulling at his ears every time we visit.": [
+    "under_two"
+  ],
+  "My newborn has a fever of 38.5°C after the vaccine today.": [
+    "under_two"
+  ],
+  "My left knee's been hurting after I got up, can I book a review for tomorrow?": [
+    "under_two"
+  ],
+  "My back's been hurting for two days, I was just wondering if I should go in this week?": [
+    "prescribe",
+    "diagnose"
+  ],
+  "I'm feeling dizzy when I stand up, do I have to come in or can I book a follow‑up?": [
+    "under_two"
+  ],
+  "My knee aches after walking, do you know who to see next?": [
+    "under_two"
+  ],
+  "The pain in my elbow has worsened, I was just wondering if a letter will be sent?": [],
+  "My father had a blood test, but I haven't received the letter; could you chase it?": [],
+  "There's a ringing in my ears that won't stop, could I arrange a review with an ENT?": [
+    "prescribe",
+    "diagnose"
+  ],
+  "My foot has been throbbing all day, do I need to come in or can I wait?": [
+    "diagnose"
+  ],
+  "Can I ask who will be the main contact for my brother’s care plans?": [],
+  "Do I have to book a parking space in advance or will there be free spaces available?": [],
+  "Do you need a visitor badge for everyone coming to see my father?": [],
+  "Do we have to fill in any consent forms before coming in?": [],
+  "How do we sign in when we arrive to visit my neighbour’s relative?": [],
+  "If I’m coming in tomorrow, can I drop the documents in the box or do I need to hand them to a staff member?": [],
+  "Is the reception staffed every hour, or do I need to plan around the opening times?": [],
+  "Can I get a copy of the visitor sign‑in sheet for my records?": [],
+  "My mother is under a lot of pressure, and I'd like to know how to get a fit note for her – I'm not feeling too great.": [
+    "under_two"
+  ],
+  "I’m not sleeping well, and I need to confirm my next appointment, but could you also…": [
+    "under_two"
+  ],
+  "Not sleeping, but I’d like to book a callback for my medication review.": [],
+  "My daughter hasn't been sleeping well, and I need to arrange a follow‑up appointment for her – I'm feeling a bit stressed about it.": [
+    "under_two"
+  ],
+  "I’m not feeling very rested and I’d like to ask if I can get a callback to discuss my paperwork.": [],
+  "My mother is unwell, I want to get a fit note for her, and I'm not sleeping – can you tell me what to do next?": [
+    "under_two"
+  ],
+  "I’ve been feeling a bit overwhelmed, would you mind sending me the form for the next appointment?": [
+    "mental_health_treatment"
+  ],
+  "So, I'm feeling anxious, but I’d like to ask about filling out the new patient form, actually.": [
+    "mental_health_treatment"
+  ],
+  "The delivery hasn't arrived yet, and I'm not sure if it’s been sent out.": [],
+  "Will I be able to use the same bottle for the new prescription?": [
+    "prescribe"
+  ],
+  "I’m just double‑checking if my repeat order has gone through to the pharmacy.": [],
+  "Do you know when the pharmacist usually has the medicine ready for me?": [],
+  "Do I need to collect my child’s antibiotic from the pharmacy or will it be delivered?": [
+    "under_two"
+  ],
+  "Is my medication already at the pharmacy?": [],
+  "Can you confirm that the pharmacy has my prescription in the system?": [],
+  "I’m not sure if I should be taking that tablet in the morning or at night – could you help me sort that out?": [
+    "prescribe"
+  ],
+  "Do you have a small seating area where kids can stay close by?": [
+    "under_two"
+  ],
+  "Can I move my appointment to the afternoon so it lines up with my kid’s nap time?": [],
+  "I’ve got a baby with me—can I bring them along to my appointment?": [
+    "under_two"
+  ],
+  "Do you offer a baby‑proofing kit for the waiting area?": [
+    "under_two"
+  ],
+  "Do we have a dedicated parking space for parents with young children?": [],
+  "Is there a baby‑friendly waiting area or a place to change nappies?": [
+    "under_two"
+  ],
+  "Is there a stroller‑friendly entrance for the front door?": [],
+  "I might need to bring my little one – would you have a crib or a quiet corner?": [
+    "under_two"
+  ]
+}
