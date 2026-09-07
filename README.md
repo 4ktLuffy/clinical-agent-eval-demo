@@ -69,9 +69,8 @@ recall at 0.674 → 0.886 precision. Detail and mutation rows in
 uv venv --python 3.12 && uv pip install -e ".[dev]"   # 3.14 also works
 ```
 
-Everything below `make eval` needs a running Docker daemon; without one `make fhir-up`
-fails with docker's own "is the daemon running" error. `make synthea` bind-mounts into a
-container, so the checkout must sit where your Docker VM mounts (`$HOME` on colima).
+Everything below `make eval` needs a running Docker daemon. `make synthea` bind-mounts into
+a container, so the checkout must sit where your Docker VM mounts (`$HOME` on colima).
 
 ```bash
 make fhir-up && make fixture-load    # live FHIR in ~30s, 10 patients, no download
