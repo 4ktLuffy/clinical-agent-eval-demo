@@ -1,4 +1,6 @@
 NOTES/recon-private.md
+# Drafts for an application. Nothing here is sent from this repository.
+NOTES/application/
 __pycache__/
 *.pyc
 .venv/
