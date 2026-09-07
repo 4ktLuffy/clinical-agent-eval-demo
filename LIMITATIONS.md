@@ -136,6 +136,13 @@ Worth stating, because they are the argument for the tooling rather than against
   reading survives untouched. **Both drafts are also
   unflagged out-of-scope mental-health content** — two more misses the counter cannot see.
 
+- **A background job changed the artifacts mid-commit, and I committed anyway.** The sweep
+  finished `gpt-oss-120b` while I was staging, so `git add -A` swept in a `handread.json`
+  the README no longer matched: CI failed on `readme-check` (flagged count 29, absent from
+  the README) one commit before the fix. Running the gate and then committing is not the
+  same as committing what the gate saw, when something else is still writing. The next
+  commit was green; both are in the history rather than rebased away.
+
 - **Fifteen empty drafts were counted as clean answers, again, after being fixed.** The
   first fix stored an `empty` flag on each row. The recompute that runs on a multi-day
   resume then read that flag — and rows written before the field existed carry a blank
