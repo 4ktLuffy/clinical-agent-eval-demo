@@ -136,6 +136,16 @@ Worth stating, because they are the argument for the tooling rather than against
   reading survives untouched. **Both drafts are also
   unflagged out-of-scope mental-health content** — two more misses the counter cannot see.
 
+- **The canary reported success for two days without ever running.** Every step carried
+  `if: present == 'true'`, and a job whose steps all skip is a *successful* job, so two
+  scheduled runs finished green in nine and thirteen seconds having made no call at all --
+  under a passing badge in the README. The key check is now its own job and the canary
+  depends on it, so a keyless run reports **skipped** and annotates why. Fixing it exposed
+  a second bug: two steps still named `steps.key` from the job it had left, an expression
+  that evaluates to empty, which would have silently switched off the key-leak scan and the
+  diff upload on the first run that ever had a key. Both are covered by
+  `tests/test_canary_workflow.py`.
+
 - **A spent quota was reported as a broken model.** The full held-out pass with the 7B
   stage stopped with "STAGE UNUSABLE: 433 of 564 failed (>20%); this is not a result". The
   model was fine — a direct call a minute later returned well-formed JSON on the first
