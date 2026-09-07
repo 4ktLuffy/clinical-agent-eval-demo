@@ -36,6 +36,9 @@ IDENTIFIER_FIXTURES = {
     # that used to sit here are now assembled at runtime, so no dialable number is in the
     # tree even in an exempted file.
     "tests/test_runtime_phi.py",
+    # Holds the must-match half of the lint's own negative control: it has to contain
+    # identifier shapes to prove the patterns still fire. All values are reserved ranges.
+    "tests/test_phi_lint_patterns.py",
     # The redaction module must contain the shapes it redacts, exactly as this linter must
     # contain the shapes it looks for. Both are pattern definitions, not data.
     "src/clinical_agent/phi.py",
@@ -49,7 +52,12 @@ PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("email", re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.]{2,}\b")),
     # The lint scanned only US shapes until a planted UK number walked straight through a
     # generated report. A pattern set that cannot fail its own negative control is decoration.
-    ("uk-phone", re.compile(r"\b0\d{2,4}[\s-]?\d{3,4}[\s-]?\d{3,4}\b")),
+    # Not preceded or followed by a digit or a decimal point: `\b` treats the dot in
+    # 2680.0604999880306 as a word boundary, so a latency float in a report was read as a
+    # UK phone number. The pattern still has to catch a real one -- see the negative control
+    # in tests/test_phi_lint_patterns.py.
+    ("uk-phone", re.compile(
+        r"(?<![\dA-Za-z.])0\d{2,4}[\s-]?\d{3,4}[\s-]?\d{3,4}(?![\dA-Za-z.])")),
     ("uk-dob", re.compile(r"\b\d{1,2}[/-]\d{1,2}[/-]\d{4}\b")),
     ("mrn", re.compile(r"\b(?:MRN|NHS(?:\s+number)?|record\s+number)\b"
                        r"(?:\s+(?:is|no\.?|number|#))?[:\s#]*[A-Z]{0,3}\d[\d\s-]{4,}\d",
@@ -69,6 +77,22 @@ FORBIDDEN_PHRASES = ("gold standard", "ground truth", "clinician-labelled", "cli
 # which must contain PHI-shaped literals in order to prove they get removed. It is a
 # per-line pragma rather than a per-file exemption so that every use is visible in a diff.
 PRAGMA = "phi-lint: allow-fixture"
+
+
+_HEX_BLOB = re.compile(r"[0-9a-f]{16,}")
+
+
+def _inside_hex_blob(line: str, start: int, end: int) -> bool:
+    """True when a numeric match sits inside a long hex run.
+
+    The hash-chained audit log is full of sha256 digests, and one beginning
+    "00172385808c23ec..." was read as a UK phone number. A 16-plus character hex run is a
+    digest or an id, not a person. Deliberately narrow: it suppresses a match only when the
+    whole match lies inside such a run, so a phone number written next to a hash is still
+    caught.
+    """
+    return any(blob.start() <= start and end <= blob.end()
+               for blob in _HEX_BLOB.finditer(line))
 
 
 def files() -> list[Path]:
@@ -115,6 +139,8 @@ def main() -> int:
                 continue
             for name, pattern in PATTERNS:
                 for match in pattern.finditer(line):
+                    if _inside_hex_blob(line, match.start(), match.end()):
+                        continue
                     hits.append(f"{rel}:{lineno}: {name}: {match.group(0)!r}")
             if set(rel.parts) & PHRASE_EXEMPT_DIRS:
                 continue

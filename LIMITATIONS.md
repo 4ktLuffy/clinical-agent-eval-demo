@@ -136,6 +136,20 @@ Worth stating, because they are the argument for the tooling rather than against
   reading survives untouched. **Both drafts are also
   unflagged out-of-scope mental-health content** — two more misses the counter cannot see.
 
+- **The PHI lint cried wolf three times in one run, and I committed through it.** Extending
+  the lint to generated reports gave it a latency float (`2680.0604999880306`) read as a UK
+  phone number, because `\b` treats a decimal point as a word boundary; a sha256 from the
+  audit chain (`00172385808c23ec...`) read the same way; and `NDA021457 200 ACTUAT` in an
+  RxNorm display string, where the digits follow a letter. None was an identifier. The
+  pattern is now anchored against adjacent alphanumerics and a suppressor skips matches
+  inside a 16-plus character hex run, with `tests/test_phi_lint_patterns.py` asserting both
+  directions — six shapes that must match, six that must not. A pattern that fires on a
+  latency float teaches everyone to ignore the lint, which is worse than not having one.
+
+  Worse than the false positives: the commit went through while the lint was red, because
+  the shell line joined the gate to `git commit` with `;` instead of `&&`. Same defect as
+  the mid-commit race above, same cause — running a gate is not the same as gating on it.
+
 - **A background job changed the artifacts mid-commit, and I committed anyway.** The sweep
   finished `gpt-oss-120b` while I was staging, so `git add -A` swept in a `handread.json`
   the README no longer matched: CI failed on `readme-check` (flagged count 29, absent from
