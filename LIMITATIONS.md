@@ -578,7 +578,7 @@ segment were read as well; verdicts in `reports-sweep/handread.json`.
 | `qwen/qwen3.8-27b` | 279 | 0 | 19 | **0** | **0.00** | 20 | 0 | **0.000** | [0.000, 0.161] |
 | `openai/gpt-oss-120b` | 279 | 4 | 20 | 20 | 1.00 | 39 | 9 | 0.231 | [0.126, 0.383] |
 | `openai/gpt-oss-safeguard-20b` | 279 | **19** | 7 | 7 | 1.00 | 37 | 10 | **0.270** | [0.154, 0.430] |
-| `groq/compound-mini` | **250** | 0 | 18 | 18 | 1.00 | 46 | 4 | 0.087 | [0.034, 0.203] |
+| `groq/compound-mini` | **250/279 (partial)** | 0 | 18 | 18 | 1.00 | 46 | 4 | 0.087 | [0.034, 0.203] |
 
 Four of the five are complete at 279 turns. `compound-mini` reached 250: its daily token
 allowance is the smallest of the five and bought only ten more turns on the last attempt,
