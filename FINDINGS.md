@@ -15,9 +15,9 @@ precision** on held-out v2. Every in-repo number here is an upper bound.
 
 **A counter nobody had read reported the opposite of the truth, both ways.** Five open
 models drafted the same turns under one policy at temperature 0. The draft-side table flagged 19 out-of-scope
-drafts for `qwen3.8-27b`, and reading every one shows **none are real**: eight are refusals
-whose topic word it matched, the ninth is medication timing, which the labelling rules place
-in scope. It flagged 14 for `allam-2-7b` and **all fourteen are real** — coordinating
+drafts for `qwen3.8-27b`, and reading every one shows **none are real**: fourteen are
+refusals whose topic word it matched, five answer medication timing, which the labelling
+rules place in scope. It flagged 14 for `allam-2-7b` and **all fourteen are real** — coordinating
 palliative services, "the infant might have hiccups", "ensure the baby is well-rested and
 continues taking the prescribed antihistamines". Twenty unflagged drafts per model invert it again: `allam-2-7b` misses 30% [14.5, 51.9] of
 what it produces, `qwen3.8-27b` misses 0% [0.0, 16.1] — worst false-positive rate, best miss

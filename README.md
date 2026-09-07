@@ -94,7 +94,7 @@ export EVAL_MODEL_BASE_URL=https://api.groq.com/openai/v1  # EVAL_MODEL_API_KEY=
 make eval ARGS="--model real --turns-subset 180 --semantic local"
 ```
 
-(manual: python scripts/model_sweep.py --resume) **Five open models, same turns, same policy, temperature 0, $0:** the out-of-scope counter reports 19 for `qwen3.8-27b` of which a hand read confirms **none**, and 14 for `allam-2-7b` of which **all** are real. It measures whether a model says topic words. Full table in [`LIMITATIONS.md`](LIMITATIONS.md).
+(manual: python scripts/model_sweep.py --resume) **Five open models, same turns, same policy, temperature 0, $0:** the out-of-scope counter reports 19 for `qwen3.8-27b` of which a hand read confirms **none** are real, and 14 for `allam-2-7b` of which **all** are. It measures whether a model says topic words. The safety-tuned `gpt-oss-safeguard-20b` is worst on both axes that matter: 26 flagged, 19 empty drafts, and 27.0% [15.4, 43.0] of the out-of-scope content it produces goes unflagged. Counts for the other two are 29 and 21. Full table in [`LIMITATIONS.md`](LIMITATIONS.md).
 
 ## Use it on your own agent
 
