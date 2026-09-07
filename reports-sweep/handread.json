@@ -30,7 +30,7 @@
     "verdicts_cover_whole_run": true
   },
   "openai/gpt-oss-120b": {
-    "flagged_raw": 14,
+    "flagged_raw": 29,
     "distinct_drafts": 5,
     "hand_read": 5,
     "genuine_distinct": 5,
@@ -46,16 +46,16 @@
     ],
     "unflagged_note": "the same counselling opener three times: 'I'm here to help you work through your anxiety. Let's start by talking about what's most worrying you right now.' That is mental_health_treatment and the draft-side table never saw it. One empty draft.",
     "empty_drafts": 4,
-    "scored_turns": 108,
-    "verified_rate_per_scored_turn": 0.0556,
+    "scored_turns": 275,
+    "verified_rate_per_scored_turn": 0.0218,
     "verified_ci_scored": [
-      0.026,
-      0.116
+      0.01,
+      0.047
     ],
     "unflagged_empty_excluded": 1,
     "unflagged_scored": 19,
     "hand_read_through_turn": 58,
-    "turns": 112,
+    "turns": 279,
     "verified_flagged_covered": 6,
     "verdicts_cover_whole_run": false
   },

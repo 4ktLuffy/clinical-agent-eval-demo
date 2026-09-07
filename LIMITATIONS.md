@@ -136,6 +136,21 @@ Worth stating, because they are the argument for the tooling rather than against
   reading survives untouched. **Both drafts are also
   unflagged out-of-scope mental-health content** — two more misses the counter cannot see.
 
+- **Fifteen empty drafts were counted as clean answers, again, after being fixed.** The
+  first fix stored an `empty` flag on each row. The recompute that runs on a multi-day
+  resume then read that flag — and rows written before the field existed carry a blank
+  draft and no flag, so `gpt-oss-safeguard-20b` reported 1 empty draft when it had 16, and
+  `gpt-oss-120b` 2 when it had 4. Emptiness is now derived from the draft text everywhere,
+  so an old artifact and a new one answer the question the same way. The test that was
+  supposed to protect this had pinned the exact source line, so fixing the bug broke the
+  test rather than being caught by it; it now asserts the behaviour.
+
+- **The PHI redactor erased the harness's own provenance.** Sweep results were scrubbed
+  whole before being written, so `run_date` became `"[DATE]"` and `segments` became
+  `["[DATE]", "[DATE]", "[DATE]"]` — destroying the record of which day each segment ran,
+  which is the one thing a multi-day resume needs to keep. The scrub now covers the model's
+  text and not the metadata around it.
+
 - **The canary reported success for two days without ever running.** Every step carried
   `if: present == 'true'`, and a job whose steps all skip is a *successful* job, so two
   scheduled runs finished green in nine and thirteen seconds having made no call at all --
@@ -611,17 +626,41 @@ a harness with no network in it. The rule now asks "slower than this provider us
 instead of "slower than something that never made a network call". All five models are quiet
 under it, which is what a healthy run should look like.
 
-## Full held-out pass with the 7B stage (manual: CLINICAL_STAGE_CACHE=reports-stage-cache/allam-2-7b.json python scripts/heldout_recall.py local+llm:allam-2-7b)
+## Full held-out pass with the 7B stage (manual: python scripts/heldout_recall.py local+llm:allam-2-7b)
 
-**Not shipped, and not yet complete.** `allam-2-7b` behind the centroid over all 787
-held-out lines needs more calls than a free tier allows in a day. One attempt per day, no
-retry into a limit: the first attempt made 564 calls, 131 of which returned verdicts before
-the daily token allowance ran out. Those verdicts are cached in `reports-stage-cache/`, so
-the next day's attempt resumes rather than re-billing them.
+Complete, over all 787 held-out lines. 433 calls across two days, **0 failures** — none
+rate-limited, none unparseable — plus 131 verdicts resumed from the previous day's cache.
+The 20% failure bar is met with room to spare, so the stage is eligible to ship, and
+`data/policy.yaml` selects it whenever a provider key is present.
 
-The model can close answers: a direct call with the same rubric returns
-`{"categories": ["prescribe"]}` on the first attempt, `finish_reason=stop`. The item is
-incomplete on quota, not on capability, and no P/R row is published until the pass finishes.
+| Stage on all of held-out v2 | Recall | 95% CI | Precision | 95% CI |
+|---|---:|---|---:|---|
+| phrase table only | 8.1% | [0.058, 0.113] | 0.674 | [0.530, 0.791] |
+| + MiniLM centroid | 51.0% | [0.460, 0.560] | 0.886 | [0.838, 0.922] |
+| + `allam-2-7b` | **91.9%** | [0.887, 0.942] | **0.641** | [0.599, 0.680] |
+
+Per category with the LLM stage: prescribe 97.4%, diagnose 87.6%, hospice 77.0%, mental
+health 98.6%, under-two 100.0%. By register: colloquial 95.7%, transcript-messy 94.9%,
+third-person 91.3%, oblique 85.9%. Oblique is still the hardest register under every
+configuration, but the spread has closed from 22 points to 10.
+
+**The cost is on the other side of the ledger, and it is large.** The stage refuses 197 of
+405 in-scope callers — 48.6% [43.8, 53.5]. By category: diagnose 82.3%, under-two 65.8%,
+mental health 65.0%, prescribe 25.0%, hospice 9.2%. Four in five people asking an
+administrative question that happens to mention a symptom are refused. On F1 the LLM stage
+wins (0.755 against 0.647), which is exactly why F1 is the wrong summary for a clinical
+call handler: the two error types are not interchangeable, and one of them is a patient who
+asked when to arrive and was told nobody could help.
+
+Both rows are published, and `policy.yaml` carries both measurements beside the stage names
+so the trade is visible at the point where it is chosen rather than in a report someone has
+to go and find.
+
+**Key-absent fallback.** With no provider key the stage downgrades to the MiniLM centroid
+and prints the downgrade to stderr. It does not fail open, and it does not fail silently —
+a guardrail quietly running a weaker stage than its policy names is precisely the drift
+this repository exists to catch. `tests/test_stage_selection.py` covers both paths and the
+announcement.
 
 ## Evidence tables (manual: make eval && make loadtest)
 

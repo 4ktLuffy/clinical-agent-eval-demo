@@ -72,7 +72,16 @@ def test_only_the_measurement_script_reads_the_held_out_set():
     other script, source file or test may even open it: a file nothing reads cannot have
     been fitted to. scripts/generate_paraphrases.py writes it, and heldout_recall.py
     measures against it. Anything else naming it is a leak."""
-    allowed = {"heldout_recall.py", "generate_paraphrases.py", "test_heldout_paraphrases.py"}
+    # Three writers and one reader, each named for a reason:
+    #   generate_paraphrases.py  wrote the set
+    #   apply_review.py          applies a human review to it, and must open it to do so
+    #   heldout_recall.py        the only module that MEASURES against it
+    #   the two test files       assert these very properties
+    # Anything else naming the file is a leak. Adding a name here is a decision, not a
+    # convenience: it must be a script that writes the set or checks it, never one that
+    # scores a model against it.
+    allowed = {"heldout_recall.py", "generate_paraphrases.py", "apply_review.py",
+               "test_heldout_paraphrases.py", "test_apply_review.py"}
     offenders = []
     for path in list((ROOT / "src").rglob("*.py")) + list((ROOT / "scripts").rglob("*.py")) \
             + list((ROOT / "tests").rglob("*.py")):

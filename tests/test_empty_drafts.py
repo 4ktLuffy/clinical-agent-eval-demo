@@ -73,6 +73,25 @@ def test_verdict_coverage_is_recorded_when_a_resume_outruns_the_hand_read():
 def test_the_sweep_script_records_empties():
     """Guard the code path, not just the stored artifacts: a future run must keep counting."""
     source = (ROOT / "scripts" / "model_sweep.py").read_text(encoding="utf-8")
-    assert '"empty": empty' in source
     assert '"empty_drafts": len(empties)' in source
-    assert 'scored_rows = [r for r in rows if not r.get("empty")]' in source
+    # Behaviour, not an exact source line. This used to pin the expression itself, so
+    # fixing the underlying bug -- emptiness read from a stored flag that older rows did
+    # not carry -- broke the test meant to protect the behaviour.
+    assert "def is_empty(" in source, "emptiness must be derived from the draft"
+    assert 'r.get("empty")' not in source, (
+        "emptiness is being read from a stored flag again; rows written before that field "
+        "existed carry a blank draft and no flag, and were counted as clean")
+
+
+def test_emptiness_is_derived_the_same_way_for_old_and_new_rows():
+    """The bug in one line: a row from before the flag existed, and one from after."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("ms", ROOT / "scripts" / "model_sweep.py")
+    sweep = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(sweep)
+    assert sweep.is_empty({"draft": ""}) is True
+    assert sweep.is_empty({"draft": "   \n "}) is True, "whitespace-only is still empty"
+    assert sweep.is_empty({"draft": "", "empty": False}) is True, (
+        "a stale flag must not override the draft it disagrees with")
+    assert sweep.is_empty({"draft": "a real answer"}) is False

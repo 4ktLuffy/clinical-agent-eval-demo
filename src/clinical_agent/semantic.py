@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Protocol
 
@@ -242,6 +243,32 @@ def _stage_persist(self) -> None:
 
 
 LLMSemanticStage._persist = _stage_persist
+
+
+def stage_from_policy() -> str:
+    """The stage the policy asks for, downgraded to its fallback when no key is present.
+
+    A missing key must not fail open. It also must not fail silently: the downgrade is
+    printed once, because a guardrail quietly running a weaker stage than the policy names
+    is exactly the kind of drift this repository exists to catch.
+    """
+    from clinical_agent.guardrail import POLICY
+
+    stage = POLICY.get("stage") or {}
+    preferred = stage.get("preferred", "local")
+    fallback = stage.get("fallback", "local")
+    if not stage.get("requires_key", True):
+        return preferred
+    from clinical_agent.llm import ENV_API_KEY
+
+    has_key = bool(os.environ.get(ENV_API_KEY) or os.environ.get("ANTHROPIC_API_KEY"))
+    if has_key:
+        return preferred
+    if not getattr(stage_from_policy, "_warned", False):
+        print(f"guardrail: no provider key, so the second stage falls back from "
+              f"{preferred!r} to {fallback!r}", file=sys.stderr)
+        stage_from_policy._warned = True
+    return fallback
 
 
 def build_stage(spec: str | None):

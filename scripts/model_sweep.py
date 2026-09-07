@@ -102,7 +102,7 @@ def run_model(model: str, turns: list, corpus, pace: float) -> dict:
         # An empty draft is a provider failure, not a clean answer. It cannot match the
         # draft-side table, so before this it counted as evidence of good behaviour --
         # 15 of safeguard-20b's 201 turns were scored that way.
-        empty = not draft
+        empty = is_empty({"draft": draft})
         decision = classify(turn["text"], draft, hits[0].score if hits else 0.0, None)
         rows.append({**turn, "draft": draft, "empty": empty,
                      "draft_categories": list(decision.draft_categories),
@@ -116,8 +116,8 @@ def run_model(model: str, turns: list, corpus, pace: float) -> dict:
         ordered = sorted(values)
         return ordered[min(int(q * len(ordered)), len(ordered) - 1)]
 
-    empties = [r for r in rows if r.get("empty")]
-    scored_rows = [r for r in rows if not r.get("empty")]
+    empties = [r for r in rows if is_empty(r)]
+    scored_rows = [r for r in rows if not is_empty(r)]
     out_of_scope = [r for r in scored_rows if r["draft_categories"]]
     return {
         "model": model, "run_date": date.today().isoformat(), "turns": len(rows),
@@ -135,12 +135,23 @@ def run_model(model: str, turns: list, corpus, pace: float) -> dict:
     }
 
 
+def is_empty(row: dict) -> bool:
+    """Emptiness is derived from the draft, never read from a stored flag.
+
+    Rows written before the `empty` field existed carry a blank draft and no flag, so
+    `row.get("empty")` called them clean and they were counted as evidence of good
+    behaviour. Deriving it means an old artifact and a new one answer the same question the
+    same way.
+    """
+    return not (row.get("draft") or "").strip()
+
+
 def merge(previous: dict, addition: dict) -> dict:
     """Stitch a resumed segment onto the rows already recorded, and recompute every
     aggregate over the union. Summing two p95s would be arithmetic on a statistic."""
     rows = previous["rows"] + addition["rows"]
-    empties = [r for r in rows if r.get("empty")]
-    scored = [r for r in rows if not r.get("empty")]
+    empties = [r for r in rows if is_empty(r)]
+    scored = [r for r in rows if not is_empty(r)]
     out_of_scope = [r for r in scored if r["draft_categories"]]
     merged = {**previous, **addition, "rows": rows, "turns": len(rows),
               "empty_drafts": len(empties), "scored_turns": len(scored),
@@ -211,7 +222,12 @@ def main(argv=None) -> int:
         # identifier or a crisis number, and neither belongs in a committed artifact.
         from clinical_agent.phi import scrub_for_log as _scrub
 
-        path.write_text(json.dumps(_scrub(result), indent=2) + "\n", encoding="utf-8")
+        # Scrub the model's text, not this harness's own metadata. Scrubbing the whole
+        # object turned run_date into "[DATE]" and segments into ["[DATE]", "[DATE]"],
+        # destroying the record of which day each segment ran -- the provenance the
+        # multi-day resume exists to keep.
+        scrubbed = {**result, "rows": _scrub(result["rows"])}
+        path.write_text(json.dumps(scrubbed, indent=2) + "\n", encoding="utf-8")
         record_progress(model, result, len(turns))
         print(f"    turns={result['turns']} oos={result['out_of_scope_drafts']} "
               f"caught={result['draft_side_catches']} p50={result['latency_p50_ms']} "

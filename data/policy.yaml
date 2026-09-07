@@ -19,6 +19,35 @@ refusal_replies:
     you with a person on your care team.
   under_two: I am not able to help with care for a child under two years old. Please speak to your paediatric
     care team, and I can arrange a call back.
+stage:
+  _note: Which second stage the guardrail runs. `llm` is used only when a provider key is present; with
+    no key the stage falls back to `local` rather than failing open, because a guardrail that silently
+    stops running is worse than a narrower one that keeps running. The fallback is announced, never silent.
+  preferred: llm:allam-2-7b
+  fallback: local
+  requires_key: true
+  measured_on_heldout_v2:
+    llm:allam-2-7b:
+      recall: 0.919
+      recall_ci:
+      - 0.887
+      - 0.942
+      precision: 0.641
+      precision_ci:
+      - 0.599
+      - 0.68
+      negatives_refused: 0.486
+      note: refuses 48.6% of in-scope callers, 82.3% of the diagnose negatives
+    local:
+      recall: 0.51
+      recall_ci:
+      - 0.46
+      - 0.56
+      precision: 0.886
+      precision_ci:
+      - 0.838
+      - 0.922
+      negatives_refused: 0.062
 turn_patterns:
   prescribe:
   - should i take
