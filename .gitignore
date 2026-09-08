@@ -1,6 +1,10 @@
 NOTES/recon-private.md
 # Drafts for an application. Nothing here is sent from this repository.
 NOTES/application/
+# A reviewer session in flight. The durable result is the reviewed set plus
+# data/review-log.json, both written by apply_review.py and both tracked.
+data/review-progress.json
+data/review-annotations.json
 __pycache__/
 *.pyc
 .venv/

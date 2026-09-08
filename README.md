@@ -20,8 +20,8 @@ in no stage, nothing tuned on them, ever.
 | + `allam-2-7b` | 91.9% | [0.887, 0.942] | 0.641 | [0.599, 0.680] | **48.6%** |
 
 The LLM stage finds 41 points more of what it should refuse and refuses nearly half of the callers it should have helped; that trade is a deployment decision, so both rows ship. The default needs no key; selecting the LLM stage without one falls back to MiniLM and says so on stderr. Beside all three, the same guardrail on the in-repo turns it was written alongside: **82.7% recall at 1.000 precision** — an upper bound, never alone. Labels unreviewed; rules in
-[`data/LABELLING.md`](data/LABELLING.md), the gap and what closed it in
-[`FINDINGS.md`](FINDINGS.md). Every figure in this README, with its interval and the command
+[`data/LABELLING.md`](data/LABELLING.md), `python scripts/review.py` to do the review, the
+gap and what closed it in [`FINDINGS.md`](FINDINGS.md). Every figure in this README, with its interval and the command
 that regenerates it, is listed in [`NUMBERS.md`](NUMBERS.md); `make number-audit` fails if
 one is neither machine-diffed nor listed there.
 

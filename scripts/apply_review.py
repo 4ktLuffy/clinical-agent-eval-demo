@@ -51,10 +51,28 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--path", type=Path, default=HELD_OUT)
     parser.add_argument("--log", type=Path, default=LOG)
+    parser.add_argument("--annotations", type=Path, default=None,
+                        help="JSON written by scripts/review.py: {text: 'strike: two words'}. "
+                             "The reviewer never edits the held-out set itself, so this is "
+                             "how its verdicts reach it -- through the one script that is "
+                             "idempotent, logged and tested.")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
 
     data = json.loads(args.path.read_text(encoding="utf-8"))
+
+    if args.annotations:
+        external = json.loads(args.annotations.read_text(encoding="utf-8"))
+        notes = external.get("annotations", external)
+        attached = 0
+        for half in ("categories", "negatives"):
+            for rows in data[half].values():
+                for entry in rows:
+                    note = notes.get(entry["text"])
+                    if note and entry.get("note") != note:
+                        entry["note"] = note
+                        attached += 1
+        print(f"attached {attached} annotation(s) from {args.annotations.name}")
     changes: list[dict] = []
     already = 0
 

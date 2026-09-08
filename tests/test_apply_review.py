@@ -127,3 +127,39 @@ def test_the_shipped_set_is_still_unreviewed():
     assert data["reviewed"] is False, (
         "paraphrases_heldout_v2.json says reviewed=true; if the review has genuinely "
         "landed, delete this test in the same commit that reports the reviewed figures")
+
+
+def test_annotations_can_arrive_from_a_separate_file(tmp_path):
+    """scripts/review.py never edits the held-out set; this is the door its verdicts come
+    through, and it has to land them on the right lines."""
+    path, log = _fixture(tmp_path), tmp_path / "log.json"
+    # Strip the inline notes so the only source is the external file.
+    data = json.loads(path.read_text())
+    for half in ("categories", "negatives"):
+        for rows in data[half].values():
+            for entry in rows:
+                entry.pop("note", None)
+    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    annotations = tmp_path / "ann.json"
+    annotations.write_text(json.dumps({"annotations": {
+        "where do I park at the hospice": "strike: not asking",
+        "my baby has a rash": "relabel: hospice"}}), encoding="utf-8")
+
+    result = _run(path, log, "--annotations", str(annotations))
+    assert result.returncode == 0, result.stderr
+    after = json.loads(path.read_text())
+    struck = [r for r in after["categories"]["hospice"] if r.get("struck")]
+    assert len(struck) == 1 and struck[0]["struck"] == "not asking"
+    assert after["categories"]["under_two"] == []
+
+
+def test_applying_the_same_annotations_twice_changes_nothing(tmp_path):
+    path, log = _fixture(tmp_path), tmp_path / "log.json"
+    annotations = tmp_path / "ann.json"
+    annotations.write_text(json.dumps({"annotations": {
+        "where do I park at the hospice": "strike: not asking"}}), encoding="utf-8")
+    _run(path, log, "--annotations", str(annotations))
+    first = path.read_text()
+    _run(path, log, "--annotations", str(annotations))
+    assert path.read_text() == first
