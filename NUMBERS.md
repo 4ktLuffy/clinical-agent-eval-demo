@@ -44,7 +44,7 @@ it and 51.0% is the first finding in [`FINDINGS.md`](FINDINGS.md), not a roundin
 | Rubric turns | 1,209 | `make eval` |
 | Rubric dimensions | 98.3%–100.0% | `make eval` |
 | Dataset | 214 patients, 12,088 encounters, 122,480 observations | `make fhir-check` |
-| Tests | 202, 0 skipped with FHIR up | `pytest` |
+| Tests | 206, 0 skipped with FHIR up | `pytest` |
 
 ## Everything else
 
