@@ -109,19 +109,4 @@ subprocess scoped to one patient, behind PHI redaction, against HAPI FHIR R4, wr
 hash-chained audit line per access. The guardrail feeds telemetry (four detectors) and the
 rubric, whose replay gate blocks a deploy on regression.
 
-## Mapping to the day-90 FDE outcome (manual: python scripts/verify_quotes.py)
-
-(manual: python scripts/verify_quotes.py) Hippocratic AI has raised $444M and reports 250M+ patient interactions across 300+ live use cases (PR Newswire, August 2026). Built from public material; not affiliated with them.
-
-(manual: python scripts/verify_quotes.py) The [Forward Deployed Engineer posting](https://jobs.ashbyhq.com/Hippocratic%20AI/378e1797-b92c-4fce-98d2-03481e214bb5)
-says that by day 90 you will have "designed and implemented a RAG pipeline grounded in
-customer data", "built tool-calling and MCP integrations", "executed a production go-live
-with zero surprises", and "established monitoring that catches anomalies before customers
-do" — with architectures "handling errors gracefully and enforcing safety constraints" and
-monitoring as "instrumenting deployed agents". A miniature of that arc.
-
-## Related work
-
-(manual: links only, no measurement) Permission-scoping and audit work upstreamed to `apexive/odoo-llm`: [#264](https://github.com/apexive/odoo-llm/pull/264), [#263](https://github.com/apexive/odoo-llm/pull/263), [#265](https://github.com/apexive/odoo-llm/pull/265).
-
 ## Licence — MIT

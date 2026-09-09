@@ -65,7 +65,7 @@ jobs:
         run: make fixture-load PY=python
       - name: PHI lint
         run: python scripts/phi_lint.py
-      - name: Quote check
+      - name: README describes the software, not an application
         run: python scripts/verify_quotes.py
       - name: Tests
         run: pytest -q
