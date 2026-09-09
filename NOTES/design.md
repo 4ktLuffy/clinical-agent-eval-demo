@@ -1,7 +1,6 @@
 # Design note
 
-Approved scope changes 1–8 from `NOTES/recon.md`, with 9 rejected: the loop stays
-hand-rolled. This note fixes the shape of the code before any is written, and lists the
+Eight approved scope changes, with a ninth rejected: the loop stays hand-rolled. This note fixes the shape of the code before any is written, and lists the
 provenance of every number the README will print.
 
 Vocabulary rule for the whole repo: the expected values in `turns.json` are **synthetic
